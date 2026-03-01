@@ -1,0 +1,23 @@
+# ── Root Project .gitignore ───────────────────────────────
+
+# Dependencies
+node_modules/
+
+# Environment Variables (JANGAN PERNAH PUSH!)
+.env
+.env.local
+.env.*
+!.env.example
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
