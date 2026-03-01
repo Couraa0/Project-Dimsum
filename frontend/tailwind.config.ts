@@ -30,6 +30,7 @@ export default {
                 float: 'float 3s ease-in-out infinite',
                 'slide-up': 'slide-up 0.5s ease forwards',
                 'fade-in': 'fade-in 0.4s ease forwards',
+                'scan-line': 'scan-line 2s ease-in-out infinite',
             },
             keyframes: {
                 float: {
@@ -43,6 +44,12 @@ export default {
                 'fade-in': {
                     from: { opacity: '0' },
                     to: { opacity: '1' },
+                },
+                'scan-line': {
+                    '0%': { top: '8%', opacity: '0' },
+                    '10%': { opacity: '1' },
+                    '90%': { opacity: '1' },
+                    '100%': { top: '92%', opacity: '0' },
                 },
             },
         },

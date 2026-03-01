@@ -15,7 +15,7 @@ Website profesional full-stack untuk **Dimsum Ratu**, UMKM kuliner dimsum di Kar
 | 🏠 Landing Page | Hero, best sellers, testimonial, dan CTA |
 | 📋 Katalog Menu | Filter kategori, search, tambah ke keranjang |
 | 🛒 Pemesanan Online | Multi-step checkout (Dine-in / Take Away / Delivery) |
-| 📱 QR Code Dine-In | Scan QR → buka menu meja otomatis |
+| 📱 In-App QR Scanner | Scan QR meja langsung dari dalam web browser (Halaman Cart) |
 | 👨‍💼 Admin Dashboard | Kelola pesanan, menu, meja, dan laporan penjualan |
 | 📊 Laporan | Grafik harian & bulanan, export CSV |
 
@@ -151,8 +151,9 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 1. Login Admin → **Meja & QR Code** → Tambah Meja
 2. QR Code otomatis ter-generate
 3. Download QR → print → tempel di meja fisik
-4. Customer scan QR → buka: `https://dimsum-yummy.vercel.app/dinein?meja=01`
-5. Customer pilih menu & pesan langsung dari smartphone
+4. Customer buka web, ke halaman Cart
+5. Customer klik "Buka Kamera & Scan QR" pada bagian Dine In
+6. Scanner dalam browser membaca QR, mengisi nomor meja, dan customer bisa checkout.
 
 ---
 
@@ -181,7 +182,8 @@ Password : admin123
 
 ## 👨‍💻 Developer
 
-**Muhammad Rakha** – [@Couraa0](https://github.com/Couraa0)
+**Muhammad Rakha Syamputra** – [@Couraa0](https://github.com/Couraa0)
+**Fauzan Farhan Gayo** – [@Ojangboy](https://github.com/Ojangboy)
 
 ---
 

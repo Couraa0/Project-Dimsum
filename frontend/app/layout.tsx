@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import ClientLayout from '@/components/layout/ClientLayout';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -19,9 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="id">
       <body>
-        <Navbar />
-        <main className="min-h-screen pt-16">{children}</main>
-        <Footer />
+        <ClientLayout>{children}</ClientLayout>
         <Toaster
           position="bottom-center"
           toastOptions={{

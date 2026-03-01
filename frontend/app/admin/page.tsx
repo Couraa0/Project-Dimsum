@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
@@ -35,7 +36,9 @@ export default function AdminLoginPage() {
         <div className="min-h-screen bg-gradient-to-br from-[#C1121F] via-[#a50f1a] to-[#8b0e16] flex items-center justify-center px-4">
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-2xl">🥟</div>
+                    <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-2xl overflow-hidden p-2">
+                        <Image src="/logo.png" alt="Logo" width={64} height={64} className="object-contain" />
+                    </div>
                     <h1 className="text-3xl font-bold text-white">Dimsum Ratu</h1>
                     <p className="text-white/70 mt-1">Dashboard Admin</p>
                 </div>

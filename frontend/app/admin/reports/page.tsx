@@ -9,7 +9,11 @@ export default function AdminReportsPage() {
     const [dailyReport, setDailyReport] = useState<any>(null);
     const [monthlyData, setMonthlyData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [date, setDate] = useState(() => {
+        const jktTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+        const d = new Date(jktTime);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    });
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear] = useState(new Date().getFullYear());
 

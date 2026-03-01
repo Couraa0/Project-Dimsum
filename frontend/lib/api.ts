@@ -17,8 +17,11 @@ api.interceptors.response.use(
     (res) => res,
     (err) => {
         if (err.response?.status === 401 && typeof window !== 'undefined') {
-            localStorage.removeItem('admin_token');
-            window.location.href = '/admin/login';
+            // Hanya redirect ke admin login jika sedang di halaman admin
+            if (window.location.pathname.startsWith('/admin')) {
+                localStorage.removeItem('admin_token');
+                window.location.href = '/admin';
+            }
         }
         return Promise.reject(err);
     }
@@ -48,6 +51,7 @@ export const ordersApi = {
     create: (data: object) => api.post('/orders', data),
     getAll: (params?: object) => api.get('/orders', { params }),
     getById: (id: string) => api.get(`/orders/${id}`),
+    trackOrder: (orderNumber: string) => api.get(`/orders/track/${orderNumber}`),
     updateStatus: (id: string, status: string) => api.patch(`/orders/${id}/status`, { status }),
     updatePayment: (id: string, paymentStatus: string) => api.patch(`/orders/${id}/payment`, { paymentStatus }),
     getDailyReport: (date?: string) => api.get('/orders/report/daily', { params: { date } }),

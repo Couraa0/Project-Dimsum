@@ -71,6 +71,16 @@ exports.getOrderById = async (req, res) => {
     }
 };
 
+exports.getByOrderNumber = async (req, res) => {
+    try {
+        const order = await Order.findOne({ orderNumber: req.params.orderNumber }).populate('items.menuItem', 'name image');
+        if (!order) return res.status(404).json({ success: false, message: 'Pesanan tidak ditemukan. Pastikan nomor pesanan benar.' });
+        res.json({ success: true, data: order });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
 exports.updateStatus = async (req, res) => {
     try {
         const { status } = req.body;
@@ -101,15 +111,28 @@ exports.updatePayment = async (req, res) => {
 exports.getDailyReport = async (req, res) => {
     try {
         const { date } = req.query;
-        const targetDate = date ? new Date(date) : new Date();
-        targetDate.setHours(0, 0, 0, 0);
-        const endDate = new Date(targetDate); endDate.setHours(23, 59, 59, 999);
+        let startUTC, endUTC, targetDateStr;
+
+        if (date) {
+            targetDateStr = date;
+            startUTC = new Date(`${date}T00:00:00+07:00`);
+            endUTC = new Date(`${date}T23:59:59.999+07:00`);
+        } else {
+            const jktTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+            const d = new Date(jktTime);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            targetDateStr = `${y}-${m}-${day}`;
+            startUTC = new Date(`${targetDateStr}T00:00:00+07:00`);
+            endUTC = new Date(`${targetDateStr}T23:59:59.999+07:00`);
+        }
 
         const [orders, totalRevenue, topItems] = await Promise.all([
-            Order.find({ createdAt: { $gte: targetDate, $lte: endDate }, status: { $ne: 'cancelled' } }),
-            Order.aggregate([{ $match: { createdAt: { $gte: targetDate, $lte: endDate }, status: { $ne: 'cancelled' }, paymentStatus: 'paid' } }, { $group: { _id: null, total: { $sum: '$total' } } }]),
+            Order.find({ createdAt: { $gte: startUTC, $lte: endUTC }, status: { $ne: 'cancelled' } }),
+            Order.aggregate([{ $match: { createdAt: { $gte: startUTC, $lte: endUTC }, status: { $ne: 'cancelled' } } }, { $group: { _id: null, total: { $sum: '$total' } } }]),
             Order.aggregate([
-                { $match: { createdAt: { $gte: targetDate, $lte: endDate }, status: { $ne: 'cancelled' } } },
+                { $match: { createdAt: { $gte: startUTC, $lte: endUTC }, status: { $ne: 'cancelled' } } },
                 { $unwind: '$items' },
                 { $group: { _id: '$items.menuItem', name: { $first: '$items.name' }, totalQty: { $sum: '$items.quantity' }, totalRevenue: { $sum: '$items.subtotal' } } },
                 { $sort: { totalQty: -1 } },
@@ -120,7 +143,7 @@ exports.getDailyReport = async (req, res) => {
         res.json({
             success: true,
             data: {
-                date: targetDate.toISOString().split('T')[0],
+                date: targetDateStr,
                 totalOrders: orders.length,
                 totalRevenue: totalRevenue[0]?.total || 0,
                 byType: { 'dine-in': orders.filter(o => o.type === 'dine-in').length, 'takeaway': orders.filter(o => o.type === 'takeaway').length, 'delivery': orders.filter(o => o.type === 'delivery').length },
@@ -135,12 +158,30 @@ exports.getDailyReport = async (req, res) => {
 exports.getMonthlyReport = async (req, res) => {
     try {
         const { year = new Date().getFullYear(), month } = req.query;
-        const startDate = month ? new Date(year, month - 1, 1) : new Date(year, 0, 1);
-        const endDate = month ? new Date(year, month, 0, 23, 59, 59) : new Date(year, 11, 31, 23, 59, 59);
+        let startDate, endDate;
+        if (month) {
+            const m = String(month).padStart(2, '0');
+            startDate = new Date(`${year}-${m}-01T00:00:00+07:00`);
+            const d = new Date(year, month, 0).getDate();
+            endDate = new Date(`${year}-${m}-${d}T23:59:59.999+07:00`);
+        } else {
+            startDate = new Date(`${year}-01-01T00:00:00+07:00`);
+            endDate = new Date(`${year}-12-31T23:59:59.999+07:00`);
+        }
 
         const data = await Order.aggregate([
             { $match: { createdAt: { $gte: startDate, $lte: endDate }, status: { $ne: 'cancelled' } } },
-            { $group: { _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' }, day: { $dayOfMonth: '$createdAt' } }, totalOrders: { $sum: 1 }, totalRevenue: { $sum: '$total' } } },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: { date: '$createdAt', timezone: 'Asia/Jakarta' } },
+                        month: { $month: { date: '$createdAt', timezone: 'Asia/Jakarta' } },
+                        day: { $dayOfMonth: { date: '$createdAt', timezone: 'Asia/Jakarta' } }
+                    },
+                    totalOrders: { $sum: 1 },
+                    totalRevenue: { $sum: '$total' }
+                }
+            },
             { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 } }
         ]);
         res.json({ success: true, data });

@@ -15,7 +15,7 @@ export default function AdminDashboard() {
     useEffect(() => {
         Promise.all([
             ordersApi.getDailyReport(),
-            ordersApi.getAll({ limit: '8' }),
+            ordersApi.getAll({ limit: '3' }),
         ]).then(([reportRes, ordersRes]) => {
             setReport(reportRes.data.data);
             setRecentOrders(ordersRes.data.data);
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
                         <Link href="/admin/orders" className="text-sm text-[#C1121F] font-medium hover:underline">Lihat Semua →</Link>
                     </div>
                     <div className="space-y-3">
-                        {recentOrders.map(order => (
+                        {recentOrders.slice(0, 3).map(order => (
                             <div key={order._id} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors">
                                 <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
                                     <ShoppingBag size={16} className="text-[#C1121F]" />

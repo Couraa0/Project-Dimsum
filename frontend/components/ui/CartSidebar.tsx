@@ -48,8 +48,8 @@ export default function CartSidebar({ onClose }: { onClose?: () => void }) {
                         <span className="text-gray-600 font-medium">Total</span>
                         <span className="font-bold text-[#C1121F] text-lg">{formatCurrency(getTotal())}</span>
                     </div>
-                    <a href="/order" className="block w-full py-3 bg-[#C1121F] text-white text-center rounded-xl font-semibold hover:bg-[#a50f1a] transition-colors shadow-md shadow-red-200">
-                        Lanjut Pesan →
+                    <a href="/cart" className="block w-full py-3 bg-[#C1121F] text-white text-center rounded-xl font-semibold hover:bg-[#a50f1a] transition-colors shadow-md shadow-red-200">
+                        Lanjut ke Keranjang →
                     </a>
                 </div>
             )}

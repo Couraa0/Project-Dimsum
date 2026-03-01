@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, UtensilsCrossed, ShoppingBag, QrCode, BarChart3, LogOut, Menu, X, ChevronRight, Tag, Settings } from 'lucide-react';
@@ -40,7 +41,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Logo */}
             <div className="p-6 border-b border-gray-100">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#C1121F] rounded-xl flex items-center justify-center text-xl">🥟</div>
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
+                        <Image src="/logo.png" alt="Logo" width={48} height={48} className="object-cover" />
+                    </div>
                     <div>
                         <div className="font-bold text-gray-900 leading-none">Dimsum Ratu</div>
                         <div className="text-xs text-gray-400">Admin Panel</div>
@@ -108,7 +111,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {/* Mobile Header */}
                 <header className="md:hidden flex items-center justify-between px-4 h-14 bg-white border-b border-gray-100">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-[#C1121F] rounded-xl flex items-center justify-center text-white text-sm">🥟</div>
+                        <div className="w-8 h-8 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
+                            <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-cover" />
+                        </div>
                         <span className="font-bold text-gray-800 text-sm">Dimsum Ratu Admin</span>
                     </div>
                     <button onClick={() => setSidebarOpen(true)} className="p-2 hover:bg-gray-100 rounded-xl">
