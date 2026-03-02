@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -8,7 +9,7 @@ import {
     UtensilsCrossed, Star, ChevronRight, Users,
     Search, Package
 } from 'lucide-react';
-import { menuApi, categoriesApi, tablesApi, ordersApi } from '@/lib/api';
+import { menuApi, categoriesApi, tablesApi } from '@/lib/api';
 import type { MenuItem, Category } from '@/types';
 import { formatCurrency, getImageUrl } from '@/lib/utils';
 import { useCartStore } from '@/store/cartStore';
@@ -18,6 +19,7 @@ import { toast } from 'react-hot-toast';
 
 function DineInContent() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const tableNum = searchParams.get('meja') || '';
 
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -27,14 +29,11 @@ function DineInContent() {
     const [loading, setLoading] = useState(true);
     const [tableInfo, setTableInfo] = useState<any>(null);
     const [showCart, setShowCart] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
-    const [orderNumber, setOrderNumber] = useState('');
-    const [orderLoading, setOrderLoading] = useState(false);
-    const [name, setName] = useState('');
+    const [mounted, setMounted] = useState(false);
 
     const {
-        items: cartItems, addItem, updateQuantity, removeItem,
-        clearCart, getTotal, getCount,
+        items: cartItems, addItem, updateQuantity,
+        getTotal, getCount,
         setOrderType, setTableNumber,
     } = useCartStore();
 
@@ -43,6 +42,7 @@ function DineInContent() {
 
     /* set cart store */
     useEffect(() => {
+        setMounted(true);
         if (tableNum) { setOrderType('dine-in'); setTableNumber(tableNum); }
     }, [tableNum]);
 
@@ -70,81 +70,19 @@ function DineInContent() {
         return matchCat && matchSearch;
     });
 
-    /* place order */
-    const handleOrder = async () => {
+    /* go to checkout */
+    const handleCheckout = () => {
         if (cartItems.length === 0) return toast.error('Pilih menu terlebih dahulu!');
-        if (!name.trim()) return toast.error('Masukkan nama Anda!');
-        setOrderLoading(true);
-        try {
-            const res = await ordersApi.create({
-                type: 'dine-in',
-                tableNumber: tableNum,
-                paymentMethod: 'cash',
-                customer: { name: name.trim(), phone: '' },
-                items: cartItems.map(i => ({
-                    menuItemId: i.menuItem._id,
-                    name: i.menuItem.name,
-                    quantity: i.quantity,
-                    notes: i.notes,
-                })),
-            });
-            setOrderNumber(res.data.data.orderNumber);
-            clearCart();
-            setShowCart(false);
-            setShowSuccess(true);
-        } catch (err: any) {
-            toast.error(err.response?.data?.message || 'Gagal membuat pesanan');
-        } finally {
-            setOrderLoading(false);
-        }
+        router.push('/order');
     };
-
-    /* ── SUCCESS ──────────────────────────────────────────── */
-    if (showSuccess) return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-            <div className="bg-gradient-to-br from-[#C1121F] to-[#8b0e16] pt-12 pb-20">
-                <div className="max-w-md mx-auto px-5 text-center">
-                    <div className="w-20 h-20 bg-white/15 backdrop-blur rounded-3xl flex items-center justify-center mx-auto mb-4">
-                        <CheckCircle size={40} className="text-white" />
-                    </div>
-                    <h1 className="text-2xl font-extrabold text-white mb-1">Pesanan Diterima!</h1>
-                    <p className="text-white/65 text-sm">Staff kami akan segera menyajikan pesanan</p>
-                </div>
-            </div>
-
-            <div className="max-w-md mx-auto px-5 -mt-10 pb-10 w-full">
-                <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="text-center px-6 pt-6 pb-4 border-b border-dashed border-gray-200">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Nomor Pesanan</p>
-                        <div className="text-3xl font-extrabold text-[#C1121F] font-mono tracking-wider">{orderNumber}</div>
-                        <p className="text-xs text-gray-400 mt-1.5">Meja <strong className="text-gray-700">{tableNum}</strong></p>
-                    </div>
-                    <div className="px-6 py-4 bg-amber-50 text-center">
-                        <p className="text-sm text-amber-700 font-medium">⏳ Sedang diproses — bayar di kasir setelah selesai</p>
-                    </div>
-                </div>
-
-                <div className="mt-4 flex flex-col gap-3">
-                    <Link href={`/track?q=${orderNumber}`}
-                        className="w-full py-4 bg-[#C1121F] text-white rounded-2xl font-bold hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-200 flex items-center justify-center gap-2 hover:scale-[1.01]">
-                        🔍 Pantau Status Pesanan
-                    </Link>
-                    <button onClick={() => setShowSuccess(false)}
-                        className="w-full py-4 border-2 border-gray-200 text-gray-600 rounded-2xl font-semibold hover:border-[#C1121F] hover:text-[#C1121F] transition-all">
-                        Pesan Lagi
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
 
     /* ── MAIN ─────────────────────────────────────────────── */
     return (
         <div className="min-h-screen bg-gray-50 pb-32">
 
             {/* ── Header ──────────────────────────────────── */}
-            <div className="bg-gradient-to-b from-[#C1121F] to-[#9e0f1a] px-4 pt-8 pb-14">
-                <div className="max-w-2xl mx-auto">
+            <div className="bg-gradient-to-b from-[#C1121F] to-[#9e0f1a] pt-12 pb-16">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6">
                     {/* Badge */}
                     <div className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur rounded-full px-3 py-1 mb-3">
                         <UtensilsCrossed size={13} className="text-white/80" />
@@ -244,7 +182,9 @@ function DineInContent() {
                                     {/* Info */}
                                     <div className="p-4">
                                         <h3 className="font-semibold text-gray-800 mb-1 text-sm leading-snug">{item.name}</h3>
-                                        <div className="flex items-center justify-between mt-3">
+                                        <p className="text-gray-400 text-xs mb-3 leading-relaxed line-clamp-2">{item.description}</p>
+                                        <div className="flex items-center justify-between">
+                                            <span className="font-bold text-[#C1121F] text-base">{formatCurrency(item.price)}</span>
                                             {/* Qty controls or Add button */}
                                             {cartItem ? (
                                                 <div className="flex items-center gap-2">
@@ -268,8 +208,8 @@ function DineInContent() {
                                                         toast.success(`${item.name} ditambahkan!`, { icon: '🥟', duration: 1500 });
                                                     }}
                                                     disabled={!item.isAvailable}
-                                                    className="flex items-center gap-1 px-3 py-2 bg-[#C1121F] text-white rounded-full text-xs font-bold hover:bg-[#a50f1a] disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105 shadow-md shadow-red-100">
-                                                    <Plus size={13} /> Tambah
+                                                    className="w-8 h-8 bg-[#C1121F] text-white rounded-full flex items-center justify-center hover:bg-[#a50f1a] disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-110 shadow-md shadow-red-100">
+                                                    <Plus size={16} />
                                                 </button>
                                             )}
                                         </div>
@@ -282,41 +222,34 @@ function DineInContent() {
             </div>
 
             {/* ── Floating Cart Button ─────────────────────── */}
-            {count > 0 && !showCart && (
-                <div className="fixed bottom-6 left-0 right-0 z-40 flex justify-center px-4">
-                    <button
-                        onClick={() => setShowCart(true)}
-                        className="bg-[#C1121F] text-white px-6 py-4 rounded-2xl shadow-xl shadow-red-300/50 flex items-center gap-3 hover:bg-[#a50f1a] transition-all hover:scale-[1.02] active:scale-95 max-w-xs w-full">
-                        <div className="relative">
-                            <ShoppingCart size={20} />
-                            <span className="absolute -top-2 -right-2 bg-white text-[#C1121F] text-[9px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center">
-                                {count}
-                            </span>
-                        </div>
-                        <div className="flex-1 text-left">
-                            <div className="text-xs text-white/70 leading-none">{count} item</div>
-                            <div className="font-extrabold text-sm leading-tight">{formatCurrency(total)}</div>
-                        </div>
-                        <ChevronRight size={18} className="text-white/70" />
-                    </button>
-                </div>
+            {mounted && count > 0 && !showCart && (
+                <button
+                    onClick={() => setShowCart(true)}
+                    className="fixed bottom-6 right-6 bg-[#C1121F] text-white rounded-2xl px-6 py-4 shadow-xl shadow-red-300/50 flex items-center gap-3 hover:bg-[#a50f1a] transition-all hover:scale-105 z-40">
+                    <div className="relative shrink-0">
+                        <ShoppingCart size={20} />
+                        <span className="absolute -top-2 -right-2 bg-white text-[#C1121F] text-[10px] font-extrabold w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
+                            {count}
+                        </span>
+                    </div>
+                    <div className="text-left">
+                        <div className="text-xs text-white/80 leading-snug">{count} item</div>
+                        <div className="font-extrabold text-sm leading-tight">{formatCurrency(total)}</div>
+                    </div>
+                    <ChevronRight size={16} className="text-white/60 ml-2" />
+                </button>
             )}
 
-            {/* ── Cart Bottom Sheet ────────────────────────── */}
+            {/* ── Cart Sidebar ────────────────────────── */}
             {showCart && (
-                <div className="fixed inset-0 z-50 flex flex-col justify-end">
+                <div className="fixed inset-0 z-50 flex">
                     {/* backdrop */}
                     <div className="flex-1 bg-black/40 backdrop-blur-sm" onClick={() => setShowCart(false)} />
 
-                    {/* sheet */}
-                    <div className="bg-white rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl">
-                        {/* handle */}
-                        <div className="flex justify-center pt-3 pb-1">
-                            <div className="w-10 h-1 bg-gray-200 rounded-full" />
-                        </div>
-
+                    {/* sidebar */}
+                    <div className="w-full max-w-sm bg-white shadow-2xl flex flex-col h-full transform transition-transform">
                         {/* header */}
-                        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                             <div>
                                 <h2 className="font-extrabold text-gray-900">Pesanan Meja {tableNum}</h2>
                                 <p className="text-xs text-gray-400 mt-0.5">{count} item · {formatCurrency(total)}</p>
@@ -364,29 +297,13 @@ function DineInContent() {
                                 <span className="text-xl font-extrabold text-[#C1121F]">{formatCurrency(total)}</span>
                             </div>
 
-                            {/* name input */}
-                            <div>
-                                <label className="text-xs font-bold text-gray-600 mb-1.5 block">Nama Pemesan <span className="text-[#C1121F]">*</span></label>
-                                <input
-                                    type="text"
-                                    placeholder="Contoh: Budi Santoso"
-                                    value={name}
-                                    onChange={e => setName(e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C1121F] focus:ring-2 focus:ring-red-100 bg-gray-50 transition-all"
-                                />
-                            </div>
-
-                            {/* order button */}
+                            {/* checkout button */}
                             <button
-                                onClick={handleOrder}
-                                disabled={orderLoading}
-                                className="w-full py-4 bg-[#C1121F] text-white rounded-2xl font-bold hover:bg-[#a50f1a] disabled:opacity-60 transition-all shadow-lg shadow-red-200 flex items-center justify-center gap-2 hover:scale-[1.01]">
-                                {orderLoading
-                                    ? <><span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Memproses...</>
-                                    : <><CheckCircle size={18} /> Pesan Sekarang</>
-                                }
+                                onClick={handleCheckout}
+                                className="w-full py-4 bg-[#C1121F] text-white rounded-2xl font-bold hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-200 flex items-center justify-center gap-2 hover:scale-[1.01]">
+                                <CheckCircle size={18} /> Lanjut ke Checkout
                             </button>
-                            <p className="text-center text-xs text-gray-400">Bayar di kasir setelah selesai makan</p>
+                            <p className="text-center text-xs text-gray-400">Pilih metode bayar di halaman berikutnya</p>
                         </div>
                     </div>
                 </div>

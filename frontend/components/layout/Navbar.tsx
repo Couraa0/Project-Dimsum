@@ -44,9 +44,9 @@ export default function Navbar() {
                     <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-sm ring-2 ring-red-100 group-hover:ring-red-300 transition-all">
                         <Image src="/logo.png" alt="Dimsum Ratu Logo" width={36} height={36} className="object-cover" />
                     </div>
-                    <div className="leading-tight">
-                        <span className="font-extrabold text-[#C1121F] text-base leading-none block tracking-tight">Dimsum</span>
-                        <span className="font-bold text-gray-600 text-xs leading-none block tracking-wide uppercase">Ratu</span>
+                    <div className="flex items-center gap-1">
+                        <span className="font-extrabold text-[#C1121F] text-lg tracking-tight">Dimsum</span>
+                        <span className="font-bold text-gray-600 text-lg tracking-wide uppercase">Ratu</span>
                     </div>
                 </Link>
 

@@ -14,11 +14,13 @@ export default function MenuPage() {
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(true);
     const [showCart, setShowCart] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const count = useCartStore(s => s.getCount());
     const total = useCartStore(s => s.getTotal());
     const formatCurrency = (n: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
 
     useEffect(() => {
+        setMounted(true);
         categoriesApi.getAll().then(res => setCategories(res.data.data));
     }, []);
 
@@ -100,7 +102,7 @@ export default function MenuPage() {
                 )}
 
                 {/* Floating Cart Button */}
-                {count > 0 && (
+                {mounted && count > 0 && (
                     <button
                         onClick={() => setShowCart(true)}
                         className="fixed bottom-6 right-6 bg-[#C1121F] text-white rounded-2xl px-6 py-4 shadow-red flex items-center gap-3 hover:bg-[#a50f1a] transition-all hover:scale-105 z-40"
