@@ -48,6 +48,33 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
     ]
 }));
 
+// Database connection logic for Serverless
+let isConnected = false;
+const connectDB = async () => {
+    if (isConnected) return;
+    try {
+        const db = await mongoose.connect(process.env.MONGODB_URI, {
+            serverSelectionTimeoutMS: 5000,
+        });
+        isConnected = db.connections[0].readyState === 1;
+        console.log('✅ MongoDB Connected');
+        // Run seed asynchronously
+        seedData().catch(err => console.error('Seed error:', err));
+    } catch (err) {
+        console.error('❌ MongoDB connection failed:', err.message);
+        throw err;
+    }
+};
+
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        return res.status(500).json({ success: false, message: 'Database connection error', detail: err.message });
+    }
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -71,20 +98,13 @@ app.use((err, req, res, next) => {
     res.status(err.statusCode || 500).json({ success: false, message: err.message || 'Internal Server Error' });
 });
 
-// DB + Server
+// Server initialization for local development
 const PORT = process.env.PORT || 5000;
-
-mongoose.connect(process.env.MONGODB_URI)
-    .then(async () => {
-        console.log('✅ MongoDB Connected');
-        await seedData();
-        if (process.env.NODE_ENV !== 'production') {
-            app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
-        }
-    })
-    .catch(err => {
-        console.error('❌ MongoDB connection failed:', err.message);
+if (process.env.NODE_ENV !== 'production') {
+    connectDB().then(() => {
+        app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
     });
+}
 
 module.exports = app;
 
