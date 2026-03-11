@@ -46,8 +46,9 @@ app.use('/api/tables', tableRoutes);
 // Health check
 app.get('/api/health', (req, res) => res.json({ success: true, message: 'Dimsum Ratu API is running 🥟', env: process.env.NODE_ENV }));
 
-// Root handler
+// Root handlerr
 app.get('/', (req, res) => res.json({ success: true, message: 'Welcome to Dimsum Ratu Backend API! 🥟', docs: '/api/docs' }));
+app.get('/api', (req, res) => res.json({ success: true, message: 'Welcome to Dimsum Ratu Backend API! 🥟', docs: '/api/docs' }));
 
 // 404 handler — Express v5: no wildcard '*' in app.use()
 app.use((req, res) => res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` }));
