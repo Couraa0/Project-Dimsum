@@ -21,7 +21,10 @@ const app = express();
 // Middleware
 const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : 'http://localhost:3000';
 
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: false
+}));
 app.use(cors({
     origin: [frontendUrl, `${frontendUrl}/`],
     credentials: true,
