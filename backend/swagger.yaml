@@ -1,0 +1,532 @@
+openapi: 3.0.0
+info:
+  title: Dimsum Ratu API
+  version: 1.0.0
+  description: API documentation for the Dimsum Ratu backend application
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+  - url: https://api.dimsumratu.com/api
+    description: Production server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/login:
+    post:
+      summary: Admin login
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  token:
+                    type: string
+                  admin:
+                    type: object
+        "400":
+          description: Missing email or password
+        "401":
+          description: Incorrect credentials
+
+  /auth/me:
+    get:
+      summary: Get current admin info
+      tags: [Auth]
+      responses:
+        "200":
+          description: Profile retrieved
+
+  /auth/change-password:
+    patch:
+      summary: Change admin password
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentPassword
+                - newPassword
+              properties:
+                currentPassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        "200":
+          description: Password changed successfully
+
+  /categories:
+    get:
+      summary: Get all categories (Public)
+      tags: [Categories]
+      security: []
+      responses:
+        "200":
+          description: A list of categories
+    post:
+      summary: Create a new category
+      tags: [Categories]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                icon:
+                  type: string
+                order:
+                  type: number
+      responses:
+        "201":
+          description: Category created
+
+  /categories/admin:
+    get:
+      summary: Get categories for admin
+      tags: [Categories]
+      responses:
+        "200":
+          description: A list of categories
+
+  /categories/{id}:
+    patch:
+      summary: Update a category by ID
+      tags: [Categories]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                icon:
+                  type: string
+                order:
+                  type: number
+      responses:
+        "200":
+          description: Category updated
+    delete:
+      summary: Delete a category by ID
+      tags: [Categories]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Category deleted
+
+  /menu:
+    get:
+      summary: Get all menu items (Public)
+      tags: [Menu]
+      security: []
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Filter by category ID
+        - in: query
+          name: bestSeller
+          schema:
+            type: boolean
+          description: Filter by best seller
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search by name
+      responses:
+        "200":
+          description: Listed all menus
+    post:
+      summary: Create a new menu item
+      tags: [Menu]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                category:
+                  type: string
+                isBestSeller:
+                  type: boolean
+                isAvailable:
+                  type: boolean
+                stock:
+                  type: number
+                tags:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Menu item created
+
+  /menu/admin:
+    get:
+      summary: Get menu items for admin
+      tags: [Menu]
+      responses:
+        "200":
+          description: A list of menu items
+
+  /menu/{id}:
+    get:
+      summary: Get a menu item by ID
+      tags: [Menu]
+      security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Retrieve a specific menu item
+    patch:
+      summary: Update a menu item by ID
+      tags: [Menu]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                category:
+                  type: string
+                isBestSeller:
+                  type: boolean
+                isAvailable:
+                  type: boolean
+                stock:
+                  type: number
+                tags:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Menu item updated
+    delete:
+      summary: Delete a menu item by ID
+      tags: [Menu]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Menu deleted
+
+  /orders:
+    post:
+      summary: Create a new order (Public)
+      tags: [Orders]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      menuItem:
+                        type: string
+                      quantity:
+                        type: number
+                tableNumber:
+                  type: string
+                customerName:
+                  type: string
+                notes:
+                  type: string
+      responses:
+        "201":
+          description: Order created
+    get:
+      summary: Get all orders
+      tags: [Orders]
+      responses:
+        "200":
+          description: List of orders
+
+  /orders/report/daily:
+    get:
+      summary: Get daily sales report
+      tags: [Orders]
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Daily report
+
+  /orders/report/monthly:
+    get:
+      summary: Get monthly sales report
+      tags: [Orders]
+      parameters:
+        - in: query
+          name: year
+          schema:
+            type: string
+        - in: query
+          name: month
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Monthly report
+
+  /orders/track/{orderNumber}:
+    get:
+      summary: Track order by order number (Public)
+      tags: [Orders]
+      security: []
+      parameters:
+        - in: path
+          name: orderNumber
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Retrieve order status
+
+  /orders/{id}:
+    get:
+      summary: Get an order by ID
+      tags: [Orders]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Single order retrieved
+
+  /orders/{id}/status:
+    patch:
+      summary: Update order status
+      tags: [Orders]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, preparing, served, completed, cancelled]
+      responses:
+        "200":
+          description: Order status updated
+
+  /orders/{id}/payment:
+    patch:
+      summary: Update payment status
+      tags: [Orders]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentStatus:
+                  type: string
+                  enum: [unpaid, paid, refunded]
+      responses:
+        "200":
+          description: Payment status updated
+
+  /tables:
+    get:
+      summary: Get all tables
+      tags: [Tables]
+      responses:
+        "200":
+          description: List of tables
+    post:
+      summary: Create a new table
+      tags: [Tables]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number:
+                  type: string
+                capacity:
+                  type: number
+      responses:
+        "201":
+          description: Table created
+
+  /tables/{number}/info:
+    get:
+      summary: Get public table info by table number
+      tags: [Tables]
+      security: []
+      parameters:
+        - in: path
+          name: number
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Table info retrieved
+
+  /tables/{id}:
+    patch:
+      summary: Update a table
+      tags: [Tables]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number:
+                  type: string
+                capacity:
+                  type: number
+      responses:
+        "200":
+          description: Table updated
+    delete:
+      summary: Delete a table
+      tags: [Tables]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Table deleted
+
+  /tables/{id}/regenerate-qr:
+    post:
+      summary: Regenerate QR Code for table
+      tags: [Tables]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: QR Generated

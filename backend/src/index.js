@@ -6,6 +6,10 @@ const morgan = require('morgan');
 const path = require('path');
 const mongoose = require('mongoose');
 
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load(path.join(__dirname, '../swagger.yaml'));
+
 const authRoutes = require('./routes/auth');
 const categoryRoutes = require('./routes/categories');
 const menuRoutes = require('./routes/menu');
@@ -28,6 +32,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// Swagger API Documentation
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -55,12 +62,15 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(async () => {
         console.log('✅ MongoDB Connected');
         await seedData();
-        app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+        if (process.env.NODE_ENV !== 'production') {
+            app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+        }
     })
     .catch(err => {
         console.error('❌ MongoDB connection failed:', err.message);
-        process.exit(1);
     });
+
+module.exports = app;
 
 async function seedData() {
     const Admin = require('./models/Admin');
