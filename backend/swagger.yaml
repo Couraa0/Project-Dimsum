@@ -6,7 +6,7 @@ info:
 servers:
   - url: http://localhost:5000/api
     description: Local development server
-  - url: https://api.dimsumratu.com/api
+  - url: https://dimsum-backend.vercel.app/api
     description: Production server
 
 components:
