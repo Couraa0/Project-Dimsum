@@ -92,7 +92,6 @@ export default function LoginPage() {
                     <GoogleLogin
                         onSuccess={handleGoogleSuccess}
                         onError={() => toast.error('Gagal terhubung dengan Google')}
-                        useOneTap
                         shape="rectangular"
                         size="large"
                         theme="outline"
