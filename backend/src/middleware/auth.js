@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
+const User = require('../models/User');
 
 exports.protect = async (req, res, next) => {
     try {
@@ -9,11 +10,18 @@ exports.protect = async (req, res, next) => {
         }
         const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const admin = await Admin.findById(decoded.id).select('-password');
-        if (!admin || !admin.isActive) {
-            return res.status(401).json({ success: false, message: 'Unauthorized: Invalid token' });
+        
+        // Cek Admin lama atau User yang baru
+        let account = await Admin.findById(decoded.id).select('-password');
+        if (!account) account = await User.findById(decoded.id).select('-password');
+
+        if (!account || !account.isActive) {
+            return res.status(401).json({ success: false, message: 'Unauthorized: Invalid token or inactive account' });
         }
-        req.admin = admin;
+        
+        req.account = account;
+        req.admin = account; // Kompatibilitas mundur
+        req.user = account;  // Route pengguna baru
         next();
     } catch (err) {
         return res.status(401).json({ success: false, message: 'Unauthorized: Token invalid or expired' });
@@ -21,7 +29,7 @@ exports.protect = async (req, res, next) => {
 };
 
 exports.restrictTo = (...roles) => (req, res, next) => {
-    if (!roles.includes(req.admin.role)) {
+    if (!roles.includes(req.account.role)) {
         return res.status(403).json({ success: false, message: 'Forbidden: Insufficient permissions' });
     }
     next();

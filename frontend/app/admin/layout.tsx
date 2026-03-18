@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, UtensilsCrossed, ShoppingBag, QrCode, BarChart3, LogOut, Menu, X, ChevronRight, Tag, Settings } from 'lucide-react';
+import { LayoutDashboard, UtensilsCrossed, ShoppingBag, QrCode, BarChart3, LogOut, Menu, X, ChevronRight, Users } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'react-hot-toast';
 
@@ -13,26 +13,30 @@ const navItems = [
     { href: '/admin/menu', label: 'Menu', icon: UtensilsCrossed },
     { href: '/admin/tables', label: 'Meja & QR', icon: QrCode },
     { href: '/admin/reports', label: 'Laporan', icon: BarChart3 },
+    { href: '/admin/users', label: 'Pengguna', icon: Users },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const router = useRouter();
-    const { admin, isAuthenticated, logout } = useAuthStore();
+    const { user, isAuthenticated, logout } = useAuthStore();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     useEffect(() => {
         if (!isAuthenticated && pathname !== '/admin') {
-            router.replace('/admin');
+            router.replace('/login');
+        } else if (isAuthenticated && pathname === '/admin') {
+            router.replace('/admin/dashboard');
+        } else if (!isAuthenticated && pathname === '/admin') {
+            router.replace('/login');
         }
-    }, [isAuthenticated, pathname]);
+    }, [isAuthenticated, pathname, router]);
 
-    if (pathname === '/admin') return <>{children}</>;
     if (!isAuthenticated) return null;
 
     const handleLogout = () => {
         logout();
-        router.push('/admin');
+        router.push('/login');
         toast.success('Berhasil logout');
     };
 
@@ -70,11 +74,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="p-4 border-t border-gray-100">
                 <div className="flex items-center gap-3 px-2 mb-3">
                     <div className="w-9 h-9 bg-red-100 text-[#C1121F] rounded-full flex items-center justify-center font-bold text-sm">
-                        {admin?.name?.charAt(0).toUpperCase()}
+                        {user?.name?.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-gray-800 truncate">{admin?.name}</div>
-                        <div className="text-xs text-gray-400 capitalize">{admin?.role}</div>
+                        <div className="text-sm font-semibold text-gray-800 truncate">{user?.name}</div>
+                        <div className="text-xs text-gray-400 capitalize">{user?.role}</div>
                     </div>
                 </div>
                 <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-gray-500 hover:text-red-500 px-2 py-2 w-full hover:bg-red-50 rounded-xl transition-colors">

@@ -15,6 +15,7 @@ const categoryRoutes = require('./routes/categories');
 const menuRoutes = require('./routes/menu');
 const orderRoutes = require('./routes/orders');
 const tableRoutes = require('./routes/tables');
+const userRoutes = require('./routes/users');
 
 const app = express();
 
@@ -81,6 +82,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/tables', tableRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ success: true, message: 'Dimsum Ratu API is running 🥟', env: process.env.NODE_ENV }));

@@ -108,3 +108,14 @@ export interface DailyReport {
     byType: Record<string, number>;
     topItems: { _id: string; name: string; totalQty: number; totalRevenue: number }[];
 }
+
+export interface User {
+    _id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+    role: 'user' | 'admin' | 'kasir';
+    isActive: boolean;
+    lastLogin?: string;
+    createdAt: string;
+}

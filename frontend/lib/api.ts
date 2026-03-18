@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useAuthStore } from '@/store/authStore';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -8,7 +9,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') || localStorage.getItem('admin_token') : null;
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
 });
@@ -17,10 +18,11 @@ api.interceptors.response.use(
     (res) => res,
     (err) => {
         if (err.response?.status === 401 && typeof window !== 'undefined') {
-            // Hanya redirect ke admin login jika sedang di halaman admin
-            if (window.location.pathname.startsWith('/admin')) {
+            if (window.location.pathname.startsWith('/admin') || window.location.pathname.startsWith('/login')) {
+                localStorage.removeItem('token');
                 localStorage.removeItem('admin_token');
-                window.location.href = '/admin';
+                useAuthStore.getState()?.logout();
+                window.location.href = '/login';
             }
         }
         return Promise.reject(err);
@@ -69,10 +71,19 @@ export const tablesApi = {
 };
 
 // ── Auth ────────────────────────────────────────────
+// ── Auth & Users ────────────────────────────────────
 export const authApi = {
-    login: (email: string, password: string) => api.post('/auth/login', { email, password }),
-    getMe: () => api.get('/auth/me'),
+    login: (email: string, password: string) => api.post('/users/login', { email, password }),
+    register: (data: object) => api.post('/users/register', data),
+    googleLogin: (idToken: string) => api.post('/users/google', { idToken }),
+    getMe: () => api.get('/users/me'),
     changePassword: (currentPassword: string, newPassword: string) => api.patch('/auth/change-password', { currentPassword, newPassword }),
+};
+
+export const usersApi = {
+    getAll: () => api.get('/users'),
+    updateRole: (id: string, role: string) => api.patch(`/users/${id}/role`, { role }),
+    delete: (id: string) => api.delete(`/users/${id}`),
 };
 
 export default api;

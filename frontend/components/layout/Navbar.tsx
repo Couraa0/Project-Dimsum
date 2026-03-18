@@ -2,8 +2,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu, X, User as UserIcon, LogOut } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
+import { useAuthStore } from '@/store/authStore';
 import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
@@ -11,6 +12,7 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [mounted, setMounted] = useState(false);
     const count = useCartStore(s => s.getCount());
+    const { isAuthenticated, user, logout } = useAuthStore();
     const pathname = usePathname();
 
     useEffect(() => {
@@ -78,10 +80,26 @@ export default function Navbar() {
                         )}
                     </Link>
 
-                    {/* Admin Button Desktop */}
-                    <Link href="/admin" className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 bg-[#C1121F] text-white rounded-xl text-sm font-semibold hover:bg-[#a50f1a] transition-all shadow-sm shadow-red-200 hover:shadow-red-300 hover:scale-[1.02]">
-                        Admin
-                    </Link>
+                    {/* Auth Button Desktop */}
+                    {mounted && isAuthenticated && user ? (
+                        <div className="hidden md:flex items-center gap-3 ml-2 pl-3 border-l border-gray-100">
+                            <span className="text-sm font-semibold text-gray-700 truncate max-w-[100px]">{user.name}</span>
+                            {['admin', 'kasir'].includes(user.role) && (
+                                <Link href="/admin" className="px-3 py-1.5 bg-red-50 text-[#C1121F] rounded-lg text-xs font-bold hover:bg-red-100 transition-colors">
+                                    Dashboard
+                                </Link>
+                            )}
+                            <button onClick={logout} className="p-2 text-gray-400 hover:text-red-500 transition-colors" aria-label="Logout">
+                                <LogOut size={18} />
+                            </button>
+                        </div>
+                    ) : mounted ? (
+                        <Link href="/login" className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 bg-[#C1121F] text-white rounded-xl text-sm font-semibold hover:bg-[#a50f1a] transition-all shadow-sm shadow-red-200 hover:shadow-red-300 hover:scale-[1.02]">
+                            <UserIcon size={16} /> Sign In
+                        </Link>
+                    ) : (
+                        <div className="hidden md:block w-24 h-9 bg-gray-100 animate-pulse rounded-xl" />
+                    )}
 
                     {/* Hamburger */}
                     <button onClick={() => setOpen(!open)}
@@ -105,10 +123,24 @@ export default function Navbar() {
                         </Link>
                     ))}
                     <div className="border-t border-gray-100 mt-2 pt-3">
-                        <Link href="/admin"
-                            className="flex items-center justify-center px-4 py-3 bg-[#C1121F] text-white rounded-xl font-semibold text-sm hover:bg-[#a50f1a] transition-colors">
-                            Dashboard Admin
-                        </Link>
+                        {isAuthenticated && user ? (
+                            <div className="flex flex-col gap-2">
+                                <span className="px-4 py-2 text-sm font-medium text-gray-500">Hai, {user.name}</span>
+                                {['admin', 'kasir'].includes(user.role) && (
+                                    <Link href="/admin" className="flex items-center justify-center px-4 py-3 bg-red-50 text-[#C1121F] rounded-xl font-semibold text-sm hover:bg-red-100 transition-colors">
+                                        Dashboard Admin
+                                    </Link>
+                                )}
+                                <button onClick={() => { logout(); setOpen(false); }} className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 text-gray-600 rounded-xl font-semibold text-sm hover:bg-gray-100 transition-colors">
+                                    <LogOut size={16} /> Keluar
+                                </button>
+                            </div>
+                        ) : (
+                            <Link href="/login" onClick={() => setOpen(false)}
+                                className="flex items-center justify-center gap-2 px-4 py-3 bg-[#C1121F] text-white rounded-xl font-semibold text-sm hover:bg-[#a50f1a] transition-colors">
+                                <UserIcon size={18} /> Sign In
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>

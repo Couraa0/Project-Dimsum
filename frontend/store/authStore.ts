@@ -1,28 +1,28 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Admin } from '@/types';
+import type { User, Admin } from '@/types';
 
 interface AuthStore {
-    admin: Admin | null;
+    user: User | Admin | null;
     token: string | null;
     isAuthenticated: boolean;
-    setAuth: (admin: Admin, token: string) => void;
+    setAuth: (user: User | Admin, token: string) => void;
     logout: () => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
     persist(
         (set) => ({
-            admin: null,
+            user: null,
             token: null,
             isAuthenticated: false,
-            setAuth: (admin, token) => {
-                localStorage.setItem('admin_token', token);
-                set({ admin, token, isAuthenticated: true });
+            setAuth: (user, token) => {
+                localStorage.setItem('token', token);
+                set({ user, token, isAuthenticated: true });
             },
             logout: () => {
-                localStorage.removeItem('admin_token');
-                set({ admin: null, token: null, isAuthenticated: false });
+                localStorage.removeItem('token');
+                set({ user: null, token: null, isAuthenticated: false });
             },
         }),
         { name: 'dimsum-ratu-auth' }
