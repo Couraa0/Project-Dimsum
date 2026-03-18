@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Toaster } from 'react-hot-toast';
 import ClientLayout from '@/components/layout/ClientLayout';
 import './globals.css';
@@ -12,6 +12,13 @@ export const metadata: Metadata = {
     description: 'Pesan dimsum lezat favorit Anda dengan mudah!',
     type: 'website',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

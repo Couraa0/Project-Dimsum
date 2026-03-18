@@ -184,11 +184,11 @@ function TrackContent() {
                                             const done = i <= currentStep;
                                             const active = i === currentStep;
                                             return (
-                                                <div key={step.key} className="flex flex-col items-center gap-2 w-16">
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all z-10 ${done ? 'bg-[#C1121F] text-white shadow-lg shadow-red-200' : 'bg-gray-100 text-gray-400'} ${active ? 'scale-110 ring-4 ring-red-100' : ''}`}>
-                                                        <Icon size={18} />
+                                                <div key={step.key} className="flex flex-col items-center gap-2 w-12 sm:w-16 z-10 bg-white">
+                                                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${done ? 'bg-[#C1121F] text-white shadow-lg shadow-red-200' : 'bg-gray-100 text-gray-400'} ${active ? 'scale-110 ring-4 ring-red-100' : ''}`}>
+                                                        <Icon size={16} className="sm:w-[18px] sm:h-[18px]" />
                                                     </div>
-                                                    <span className={`text-[10px] text-center font-semibold leading-tight ${done ? 'text-[#C1121F]' : 'text-gray-400'}`}>
+                                                    <span className={`text-[9px] sm:text-[10px] text-center font-semibold leading-tight ${done ? 'text-[#C1121F]' : 'text-gray-400'}`}>
                                                         {step.label}
                                                     </span>
                                                 </div>

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { tablesApi } from '@/lib/api';
 import type { Table } from '@/types';
 import { toast } from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 export default function AdminTablesPage() {
     const [tables, setTables] = useState<Table[]>([]);
@@ -41,9 +42,10 @@ export default function AdminTablesPage() {
     };
 
     const handleDelete = async (id: string, number: string) => {
-        if (!confirm(`Hapus Meja ${number}?`)) return;
-        try { await tablesApi.delete(id); toast.success('Meja dihapus'); load(); }
-        catch (err: any) { toast.error(err.response?.data?.message || 'Gagal menghapus'); }
+        const res = await Swal.fire({ title: 'Hapus Meja?', text: `Yakin ingin menghapus Meja ${number}?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#C1121F', confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal' });
+        if (!res.isConfirmed) return;
+        try { await tablesApi.delete(id); Swal.fire({ title: 'Terhapus!', text: 'Meja berhasil dihapus.', icon: 'success', timer: 1500, showConfirmButton: false }); load(); }
+        catch (err: any) { Swal.fire('Gagal!', err.response?.data?.message || 'Gagal menghapus', 'error'); }
     };
 
     const downloadQR = (table: Table) => {
@@ -90,8 +92,8 @@ export default function AdminTablesPage() {
                                     <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${statusColor(table.status)}`}>{table.status}</span>
                                 </div>
                                 <p className="text-xs text-gray-400 mb-3">{table.name} · {table.capacity} orang</p>
-                                <div className="flex gap-1.5">
-                                    <button onClick={() => downloadQR(table)} className="flex-1 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-semibold hover:bg-blue-100 transition-colors flex items-center justify-center gap-1">
+                                <div className="flex flex-wrap gap-1.5">
+                                    <button onClick={() => downloadQR(table)} className="flex-1 min-w-[60px] py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-semibold hover:bg-blue-100 transition-colors flex items-center justify-center gap-1">
                                         <Download size={12} /> Unduh
                                     </button>
                                     <button onClick={() => handleRegenQR(table._id)} className="flex-1 py-2 bg-green-50 text-green-600 rounded-xl text-xs font-semibold hover:bg-green-100 transition-colors flex items-center justify-center gap-1">

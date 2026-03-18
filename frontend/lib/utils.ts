@@ -4,6 +4,7 @@ export const formatCurrency = (amount: number): string =>
 export const getImageUrl = (path: string): string => {
     if (!path) return '/images/food-placeholder.png';
     if (path.startsWith('http')) return path;
+    if (path.startsWith('data:image')) return path;
     return `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${path}`;
 };
 

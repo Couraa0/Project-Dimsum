@@ -6,6 +6,7 @@ import { menuApi, categoriesApi } from '@/lib/api';
 import type { MenuItem, Category } from '@/types';
 import { formatCurrency, getImageUrl } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface MenuForm {
     name: string; description: string; price: string; category: string;
@@ -62,24 +63,31 @@ export default function AdminMenuPage() {
     };
 
     const handleDelete = async (id: string, name: string) => {
-        if (!confirm(`Hapus "${name}"?`)) return;
+        const res = await Swal.fire({ title: 'Hapus Menu?', text: `Yakin ingin menghapus "${name}"?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#C1121F', confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal' });
+        if (!res.isConfirmed) return;
         try {
             await menuApi.delete(id);
-            toast.success('Menu dihapus');
+            Swal.fire({ title: 'Terhapus!', text: 'Menu berhasil dihapus.', icon: 'success', timer: 1500, showConfirmButton: false });
             load();
         } catch (err: any) {
-            toast.error(err.response?.data?.message || 'Gagal menghapus');
+            Swal.fire('Gagal!', err.response?.data?.message || 'Gagal menghapus menu', 'error');
         }
     };
 
     const handleToggle = async (item: MenuItem, field: 'isAvailable' | 'isBestSeller') => {
         const actionName = field === 'isAvailable' ? 'Ketersediaan' : 'Status Best Seller';
-        if (!window.confirm(`Ubah ${actionName} untuk "${item.name}"?`)) return;
+        const res = await Swal.fire({ title: 'Ganti Status?', text: `Ubah ${actionName} untuk "${item.name}"?`, icon: 'question', showCancelButton: true, confirmButtonColor: '#C1121F', confirmButtonText: 'Ya, Ubah!', cancelButtonText: 'Batal' });
+        if (!res.isConfirmed) return;
         
-        const fd = new FormData();
-        fd.append(field, String(!item[field]));
-        await menuApi.update(item._id, fd);
-        load();
+        try {
+            const fd = new FormData();
+            fd.append(field, String(!item[field]));
+            await menuApi.update(item._id, fd);
+            Swal.fire({ title: 'Diperbarui!', text: `${actionName} berhasil diubah.`, icon: 'success', timer: 1500, showConfirmButton: false });
+            load();
+        } catch (err: any) {
+            Swal.fire('Gagal!', 'Terjadi kesalahan saat menyimpan status.', 'error');
+        }
     };
 
     return (

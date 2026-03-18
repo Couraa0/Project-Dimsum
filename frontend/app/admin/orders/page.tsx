@@ -5,6 +5,7 @@ import { ordersApi } from '@/lib/api';
 import type { Order } from '@/types';
 import { formatCurrency, getStatusColor, getStatusLabel, getTypeLabel, timeAgo } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'];
 const STATUS_FLOW: Record<string, string> = { pending: 'confirmed', confirmed: 'preparing', preparing: 'ready', ready: 'delivered' };
@@ -29,22 +30,26 @@ export default function AdminOrdersPage() {
     useEffect(() => { const t = setInterval(load, 30000); return () => clearInterval(t); }, [statusFilter, typeFilter]);
 
     const updateStatus = async (id: string, status: string) => {
-        if (!window.confirm(`Ubah status pesanan menjadi ${getStatusLabel(status)}?`)) return;
+        const res = await Swal.fire({ title: 'Update Status', text: `Ubah status pesanan menjadi ${getStatusLabel(status)}?`, icon: 'question', showCancelButton: true, confirmButtonColor: '#C1121F', confirmButtonText: 'Ya, Ubah!', cancelButtonText: 'Batal' });
+        if (!res.isConfirmed) return;
         setUpdatingId(id);
         try {
             await ordersApi.updateStatus(id, status);
-            toast.success(`Status diperbarui: ${getStatusLabel(status)}`);
+            Swal.fire({ title: 'Berhasil!', text: `Status diperbarui: ${getStatusLabel(status)}`, icon: 'success', timer: 1500, showConfirmButton: false });
             load();
             if (selectedOrder?._id === id) setSelectedOrder(prev => prev ? { ...prev, status: status as any } : null);
-        } catch { toast.error('Gagal update status'); }
+        } catch { Swal.fire('Gagal!', 'Gagal update status pesanan', 'error'); }
         finally { setUpdatingId(null); }
     };
 
     const updatePayment = async (id: string, paymentStatus: string) => {
-        if (!window.confirm(`Ubah status pembayaran menjadi Lunas?`)) return;
-        await ordersApi.updatePayment(id, paymentStatus);
-        toast.success('Status pembayaran diperbarui!');
-        load();
+        const res = await Swal.fire({ title: 'Terima Pembayaran', text: `Tandai pesanan ini sebagai Lunas?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#22c55e', confirmButtonText: 'Ya, Tandai Lunas!', cancelButtonText: 'Batal' });
+        if (!res.isConfirmed) return;
+        try {
+            await ordersApi.updatePayment(id, paymentStatus);
+            Swal.fire({ title: 'Lunas!', text: 'Status pembayaran berhasil diperbarui.', icon: 'success', timer: 1500, showConfirmButton: false });
+            load();
+        } catch { Swal.fire('Gagal!', 'Gagal update status pembayaran.', 'error'); }
     };
 
     return (
