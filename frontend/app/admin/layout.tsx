@@ -3,17 +3,18 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, UtensilsCrossed, ShoppingBag, QrCode, BarChart3, LogOut, Menu, X, ChevronRight, Users } from 'lucide-react';
+import { LayoutDashboard, UtensilsCrossed, ShoppingBag, QrCode, BarChart3, LogOut, Menu, X, ChevronRight, Users, MonitorSmartphone } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'react-hot-toast';
 
 const navItems = [
-    { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/admin/orders', label: 'Pesanan', icon: ShoppingBag },
-    { href: '/admin/menu', label: 'Menu', icon: UtensilsCrossed },
-    { href: '/admin/tables', label: 'Meja & QR', icon: QrCode },
-    { href: '/admin/reports', label: 'Laporan', icon: BarChart3 },
-    { href: '/admin/users', label: 'Pengguna', icon: Users },
+    { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin'] },
+    { href: '/admin/pos', label: 'Kasir POS', icon: MonitorSmartphone, roles: ['admin', 'kasir'] },
+    { href: '/admin/orders', label: 'Pesanan', icon: ShoppingBag, roles: ['admin', 'kasir'] },
+    { href: '/admin/menu', label: 'Menu', icon: UtensilsCrossed, roles: ['admin'] },
+    { href: '/admin/tables', label: 'Meja & QR', icon: QrCode, roles: ['admin'] },
+    { href: '/admin/reports', label: 'Laporan', icon: BarChart3, roles: ['admin'] },
+    { href: '/admin/users', label: 'Pengguna', icon: Users, roles: ['admin'] },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -25,12 +26,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     useEffect(() => {
         if (!isAuthenticated && pathname !== '/admin') {
             router.replace('/login');
-        } else if (isAuthenticated && pathname === '/admin') {
-            router.replace('/admin/dashboard');
-        } else if (!isAuthenticated && pathname === '/admin') {
-            router.replace('/login');
+        } else if (isAuthenticated && user) {
+            if (pathname === '/admin') {
+                router.replace(user.role === 'kasir' ? '/admin/pos' : '/admin/dashboard');
+            } else if (user.role === 'kasir' && !pathname.startsWith('/admin/orders') && !pathname.startsWith('/admin/pos')) {
+                toast.error('Akses ditolak: Hanya untuk Admin');
+                router.replace('/admin/pos');
+            }
         }
-    }, [isAuthenticated, pathname, router]);
+    }, [isAuthenticated, pathname, router, user]);
 
     if (!isAuthenticated) return null;
 
@@ -57,7 +61,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             {/* Nav */}
             <nav className="flex-1 p-4 space-y-1">
-                {navItems.map(({ href, label, icon: Icon }) => {
+                {navItems.filter(item => user?.role && item.roles.includes(user.role)).map(({ href, label, icon: Icon }) => {
                     const active = pathname.startsWith(href);
                     return (
                         <Link key={href} href={href} onClick={() => setSidebarOpen(false)}

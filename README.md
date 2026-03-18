@@ -17,6 +17,7 @@ Website profesional full-stack untuk **Dimsum Ratu**, UMKM kuliner dimsum di Kar
 | 🛒 Pemesanan Online | Multi-step checkout (Dine-in / Take Away / Delivery) |
 | 🔐 Otentikasi Google | Login instan dengan akun Google OAuth 2.0 |
 | 👨‍💼 RBAC Multi-Role | Role Akses Pengguna (Admin, Kasir, User Default) |
+| 🖥️ Point of Sale (POS) | Layar kasir khusus untuk mencatat pesanan *Walk-In* langsung |
 | 📱 In-App QR Scanner | Scan QR meja langsung dari browser (Dine-in) |
 | 👔 Admin Dashboard | Kelola pesanan, manajemen user, tabel, dan menu base64 image |
 | 🔔 Smart Notifications | SweetAlert2 konfirmasi interaktif & Hot-Toast notifikasi |
@@ -52,7 +53,8 @@ Project Dimsum/
 │   │   ├── menu/page.tsx      # Katalog Menu
 │   │   ├── order/page.tsx     # Checkout Multi-step
 │   │   ├── dinein/page.tsx    # Menu QR Dine-In
-│   │   └── admin/             # Layout Dashboard (Terproteksi Middleware JWT)
+│   │   ├── admin/             # Layout Dashboard (Terproteksi Middleware JWT)
+│   │       ├── pos/           # Modul Point of Sale (Kasir Internal)
 │   │       ├── users/         # Manajemen Akun & Roles
 │   │       ├── orders/        # Kelola Pesanan Real-time
 │   │       ├── menu/          # CRUD Menu + Upload Gambar Otomatis (Base64)
