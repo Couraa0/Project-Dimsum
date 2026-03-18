@@ -29,6 +29,7 @@ export default function AdminOrdersPage() {
     useEffect(() => { const t = setInterval(load, 30000); return () => clearInterval(t); }, [statusFilter, typeFilter]);
 
     const updateStatus = async (id: string, status: string) => {
+        if (!window.confirm(`Ubah status pesanan menjadi ${getStatusLabel(status)}?`)) return;
         setUpdatingId(id);
         try {
             await ordersApi.updateStatus(id, status);
@@ -40,6 +41,7 @@ export default function AdminOrdersPage() {
     };
 
     const updatePayment = async (id: string, paymentStatus: string) => {
+        if (!window.confirm(`Ubah status pembayaran menjadi Lunas?`)) return;
         await ordersApi.updatePayment(id, paymentStatus);
         toast.success('Status pembayaran diperbarui!');
         load();
@@ -83,9 +85,9 @@ export default function AdminOrdersPage() {
             </div>
 
             {/* Grid Layout */}
-            <div className="flex gap-6">
+            <div className="flex flex-col lg:flex-row gap-6">
                 {/* Orders List */}
-                <div className={`${selectedOrder ? 'w-1/2' : 'w-full'} transition-all`}>
+                <div className={`${selectedOrder ? 'w-full lg:w-1/2' : 'w-full'} transition-all`}>
                     {loading ? (
                         <div className="space-y-3">{[...Array(5)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-20 animate-pulse" />)}</div>
                     ) : orders.length === 0 ? (
@@ -126,7 +128,7 @@ export default function AdminOrdersPage() {
 
                 {/* Order Detail */}
                 {selectedOrder && (
-                    <div className="w-1/2 bg-white rounded-2xl shadow-sm border border-gray-100 p-5 h-fit sticky top-6">
+                    <div className="w-full lg:w-1/2 bg-white rounded-2xl shadow-sm border border-gray-100 p-5 h-fit sticky top-6">
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <h3 className="font-bold text-gray-900">{selectedOrder.orderNumber}</h3>

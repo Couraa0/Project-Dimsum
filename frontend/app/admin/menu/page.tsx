@@ -73,6 +73,9 @@ export default function AdminMenuPage() {
     };
 
     const handleToggle = async (item: MenuItem, field: 'isAvailable' | 'isBestSeller') => {
+        const actionName = field === 'isAvailable' ? 'Ketersediaan' : 'Status Best Seller';
+        if (!window.confirm(`Ubah ${actionName} untuk "${item.name}"?`)) return;
+        
         const fd = new FormData();
         fd.append(field, String(!item[field]));
         await menuApi.update(item._id, fd);
