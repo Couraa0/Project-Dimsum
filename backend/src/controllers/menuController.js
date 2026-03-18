@@ -42,7 +42,8 @@ exports.getById = async (req, res) => {
 exports.create = async (req, res) => {
     try {
         const { name, description, price, category, isBestSeller, isAvailable, stock, tags } = req.body;
-        const image = req.file ? `/uploads/${req.file.filename}` : '';
+        // Convert memory buffer to Base64 String
+        const image = req.file ? `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}` : '';
         const item = await MenuItem.create({ name, description, price: Number(price), category, isBestSeller, isAvailable, stock: Number(stock) || 100, image, tags: tags ? tags.split(',').map(t => t.trim()) : [] });
         const populated = await item.populate('category', 'name slug icon');
         res.status(201).json({ success: true, data: populated });
@@ -55,15 +56,16 @@ exports.update = async (req, res) => {
     try {
         const item = await MenuItem.findById(req.params.id);
         if (!item) return res.status(404).json({ success: false, message: 'Menu tidak ditemukan' });
+        
         if (req.file) {
-            if (item.image && fs.existsSync(path.join(__dirname, '../../', item.image))) {
-                fs.unlinkSync(path.join(__dirname, '../../', item.image));
-            }
-            req.body.image = `/uploads/${req.file.filename}`;
+            // Re-upload image as Base64 format and just overwrite the old local path/base64
+            req.body.image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
         }
+        
         if (req.body.tags && typeof req.body.tags === 'string') {
             req.body.tags = req.body.tags.split(',').map(t => t.trim());
         }
+        
         const updated = await MenuItem.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }).populate('category', 'name slug icon');
         res.json({ success: true, data: updated });
     } catch (err) {
@@ -75,9 +77,7 @@ exports.delete = async (req, res) => {
     try {
         const item = await MenuItem.findById(req.params.id);
         if (!item) return res.status(404).json({ success: false, message: 'Menu tidak ditemukan' });
-        if (item.image && fs.existsSync(path.join(__dirname, '../../', item.image))) {
-            fs.unlinkSync(path.join(__dirname, '../../', item.image));
-        }
+        
         await item.deleteOne();
         res.json({ success: true, message: 'Menu berhasil dihapus' });
     } catch (err) {
