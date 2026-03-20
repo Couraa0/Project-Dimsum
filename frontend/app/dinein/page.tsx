@@ -62,7 +62,10 @@ function DineInContent() {
     /* filter */
     const filtered = menuItems.filter(item => {
         const matchCat = activeCategory
-            ? (typeof item.category === 'object' ? item.category?._id : item.category) === activeCategory
+            ? (Array.isArray(item.category) 
+                ? item.category.some(cat => (typeof cat === 'object' ? cat._id : cat) === activeCategory)
+                : (typeof item.category === 'object' ? (item.category as any)?._id : item.category) === activeCategory
+              )
             : true;
         const matchSearch = search.trim()
             ? item.name.toLowerCase().includes(search.toLowerCase())
