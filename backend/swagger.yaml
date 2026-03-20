@@ -19,7 +19,30 @@ components:
 security:
   - bearerAuth: []
 
+parameters:
+  pageParam:
+    in: query
+    name: page
+    schema:
+      type: integer
+      default: 1
+    description: Page number for pagination
+  limitParam:
+    in: query
+    name: limit
+    schema:
+      type: integer
+      default: 20
+    description: Number of items per page
+
 paths:
+  /health:
+    get:
+      summary: Health check
+      security: []
+      responses:
+        "200":
+          description: Service is healthy
   /auth/login:
     post:
       summary: Admin login
@@ -95,6 +118,9 @@ paths:
       summary: Get all categories (Public)
       tags: [Categories]
       security: []
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
       responses:
         "200":
           description: A list of categories
@@ -122,6 +148,9 @@ paths:
     get:
       summary: Get categories for admin
       tags: [Categories]
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
       responses:
         "200":
           description: A list of categories
@@ -186,6 +215,8 @@ paths:
           schema:
             type: string
           description: Search by name
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
       responses:
         "200":
           description: Listed all menus
@@ -226,6 +257,17 @@ paths:
     get:
       summary: Get menu items for admin
       tags: [Menu]
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+        - in: query
+          name: search
+          schema:
+            type: string
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
       responses:
         "200":
           description: A list of menu items
@@ -318,16 +360,49 @@ paths:
                         type: number
                 tableNumber:
                   type: string
-                customerName:
-                  type: string
+                customer:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    phone:
+                      type: string
+                    address:
+                      type: string
                 notes:
                   type: string
+                type:
+                  type: string
+                  enum: [dine-in, takeaway, delivery]
+                paymentMethod:
+                  type: string
+                  enum: [cash, qris, transfer]
       responses:
         "201":
           description: Order created
     get:
       summary: Get all orders
       tags: [Orders]
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: type
+          schema:
+            type: string
+        - in: query
+          name: tableNumber
+          schema:
+            type: string
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
       responses:
         "200":
           description: List of orders
@@ -411,7 +486,7 @@ paths:
               properties:
                 status:
                   type: string
-                  enum: [pending, preparing, served, completed, cancelled]
+                  enum: [pending, confirmed, preparing, ready, delivered, cancelled]
       responses:
         "200":
           description: Order status updated
@@ -435,7 +510,7 @@ paths:
               properties:
                 paymentStatus:
                   type: string
-                  enum: [unpaid, paid, refunded]
+                  enum: [unpaid, paid]
       responses:
         "200":
           description: Payment status updated
@@ -444,6 +519,9 @@ paths:
     get:
       summary: Get all tables
       tags: [Tables]
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
       responses:
         "200":
           description: List of tables
@@ -530,3 +608,131 @@ paths:
       responses:
         "200":
           description: QR Generated
+
+  /users/login:
+    post:
+      summary: User login
+      tags: [Users]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful login
+
+  /users/register:
+    post:
+      summary: User registration
+      tags: [Users]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "201":
+          description: User registered
+
+  /users/google:
+    post:
+      summary: Google social login
+      tags: [Users]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idToken
+              properties:
+                idToken:
+                  type: string
+      responses:
+        "200":
+          description: Successful login
+
+  /users/me:
+    get:
+      summary: Get current user info
+      tags: [Users]
+      responses:
+        "200":
+          description: Profile retrieved
+
+  /users:
+    get:
+      summary: Get all users (Admin)
+      tags: [Users]
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        "200":
+          description: List of users
+
+  /users/{id}/role:
+    patch:
+      summary: Update user role (Admin)
+      tags: [Users]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+              properties:
+                role:
+                  type: string
+                  enum: [user, admin, kasir]
+      responses:
+        "200":
+          description: Role updated
+
+  /users/{id}:
+    delete:
+      summary: Delete user (Admin)
+      tags: [Users]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User deleted
