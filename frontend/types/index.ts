@@ -15,7 +15,7 @@ export interface MenuItem {
     name: string;
     description: string;
     price: number;
-    category: Category | string;
+    category: (Category | string)[];
     image: string;
     isBestSeller: boolean;
     isAvailable: boolean;

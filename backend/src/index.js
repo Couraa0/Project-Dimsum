@@ -123,41 +123,15 @@ async function seedData() {
 
     const catCount = await Category.countDocuments();
     if (catCount === 0) {
-        const categories = await Category.insertMany([
+        await Category.insertMany([
             { name: 'Dimsum Kukus', slug: 'dimsum-kukus', icon: '🥟', order: 1 },
             { name: 'Dimsum Goreng', slug: 'dimsum-goreng', icon: '🍤', order: 2 },
             { name: 'Paket Mix', slug: 'paket-mix', icon: '🎁', order: 3 },
-            { name: 'Paket Hemat', slug: 'paket-hemat', icon: '💰', order: 4 },
-            { name: 'Minuman', slug: 'minuman', icon: '🍵', order: 5 },
+            { name: 'Minuman', slug: 'minuman', icon: '🍵', order: 4 },
+            { name: 'Jus', slug: 'jus', icon: '🍹', order: 5 },
+            { name: 'Coffee', slug: 'coffee', icon: '☕', order: 6 },
+            { name: 'Cemilan', slug: 'cemilan', icon: '🍟', order: 7 },
         ]);
         console.log('📂 Default categories created');
-
-        const kukus = categories.find(c => c.slug === 'dimsum-kukus');
-        const goreng = categories.find(c => c.slug === 'dimsum-goreng');
-        const paketMix = categories.find(c => c.slug === 'paket-mix');
-        const paketHemat = categories.find(c => c.slug === 'paket-hemat');
-        const minuman = categories.find(c => c.slug === 'minuman');
-
-        await MenuItem.insertMany([
-            { name: 'Har Gow (Siomay Udang)', description: 'Dimsum kukus klasik berisi udang segar pilihan, dibungkus kulit tipis transparan', price: 28000, category: kukus._id, isBestSeller: true, totalOrdered: 520 },
-            { name: 'Siu Mai', description: 'Siomay daging babi/ayam toping udang, tekstur kenyal lembut', price: 25000, category: kukus._id, isBestSeller: true, totalOrdered: 480 },
-            { name: 'Cheung Fun Udang', description: 'Loh mai gai – bungkusan daun teratai berisi nasi ketan, ayam, dan jamur', price: 30000, category: kukus._id, totalOrdered: 310 },
-            { name: 'Dimsum Ayam Jamur', description: 'Paduan daging ayam cincang dengan jamur shiitake pilihan', price: 22000, category: kukus._id, isBestSeller: false, totalOrdered: 280 },
-            { name: 'Bakpao Merah', description: 'Roti kukus lembut berisi BBQ char siu atau kacang merah manis', price: 18000, category: kukus._id, totalOrdered: 240 },
-            { name: 'Spring Roll Crispy', description: 'Lumpia goreng renyah berisi sayuran segar dan daging cincang', price: 20000, category: goreng._id, isBestSeller: true, totalOrdered: 410 },
-            { name: 'Wonton Goreng', description: 'Wonton crispy digoreng keemasan, cocok dengan saus manis asam', price: 22000, category: goreng._id, totalOrdered: 290 },
-            { name: 'Bola Wijen (Jin Deui)', description: 'Bola ketan goreng berisi pasta kacang merah, berlapis wijen harum', price: 18000, category: goreng._id, isBestSeller: true, totalOrdered: 350 },
-            { name: 'Tahu Goreng Isi', description: 'Tahu goreng krispi berisi campuran udang dan sayuran segar', price: 20000, category: goreng._id, totalOrdered: 200 },
-            { name: 'Paket Mix A – 4 Jenis', description: 'Kombinasi 4 jenis dimsum (2 kukus + 2 goreng), cocok untuk 2 orang', price: 75000, category: paketMix._id, isBestSeller: true, totalOrdered: 320 },
-            { name: 'Paket Mix B – 6 Jenis', description: 'Kombinasi 6 jenis dimsum pilihan terbaik, cocok untuk 3-4 orang', price: 120000, category: paketMix._id, totalOrdered: 210 },
-            { name: 'Paket Keluarga (10 Jenis)', description: 'Sajian lengkap 10 jenis dimsum untuk keluarga, nikmati bersama', price: 185000, category: paketMix._id, totalOrdered: 150 },
-            { name: 'Paket Hemat A', description: 'Har Gow + Siu Mai + 1 minuman gratis, hemat 15%', price: 45000, category: paketHemat._id, isBestSeller: true, totalOrdered: 380 },
-            { name: 'Paket Hemat Kantor', description: 'Paket 3 jenis dimsum + nasi + minuman, cocok untuk makan siang', price: 55000, category: paketHemat._id, totalOrdered: 260 },
-            { name: 'Teh Jasmine (Hot/Ice)', description: 'Teh melati harum segar, minuman klasik pendamping dimsum', price: 12000, category: minuman._id, isBestSeller: true, totalOrdered: 560 },
-            { name: 'Teh Oolong', description: 'Teh oolong semi-fermentasi aroma khas, cocok untuk dine-in', price: 15000, category: minuman._id, totalOrdered: 320 },
-            { name: 'Jus Jeruk Segar', description: 'Perasan jeruk segar tanpa tambahan gula', price: 18000, category: minuman._id, totalOrdered: 280 },
-            { name: 'Air Mineral', description: 'Air mineral botol 600ml', price: 8000, category: minuman._id, totalOrdered: 420 },
-        ]);
-        console.log('🍜 Default menu items created');
     }
 }

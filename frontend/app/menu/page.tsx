@@ -10,7 +10,7 @@ import { useCartStore } from '@/store/cartStore';
 export default function MenuPage() {
     const [items, setItems] = useState<MenuItem[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(true);
     const [showCart, setShowCart] = useState(false);
@@ -27,13 +27,13 @@ export default function MenuPage() {
     useEffect(() => {
         setLoading(true);
         const params: Record<string, string> = {};
-        if (selectedCategory) params.category = selectedCategory;
+        if (selectedCategories.length > 0) params.category = selectedCategories.join(',');
         if (search) params.search = search;
         menuApi.getAll(params)
             .then(res => setItems(res.data.data))
             .catch(() => { })
             .finally(() => setLoading(false));
-    }, [selectedCategory, search]);
+    }, [selectedCategories, search]);
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -68,20 +68,27 @@ export default function MenuPage() {
                 {/* Category Tabs */}
                 <div className="flex gap-2 overflow-x-auto pb-2 mb-8 scrollbar-hide">
                     <button
-                        onClick={() => setSelectedCategory('')}
-                        className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${!selectedCategory ? 'bg-[#C1121F] text-white shadow-red-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                        onClick={() => setSelectedCategories([])}
+                        className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${selectedCategories.length === 0 ? 'bg-[#C1121F] text-white shadow-red-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                     >
                         🍽️ Semua
                     </button>
-                    {categories.map(cat => (
-                        <button
-                            key={cat._id}
-                            onClick={() => setSelectedCategory(selectedCategory === cat._id ? '' : cat._id)}
-                            className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${selectedCategory === cat._id ? 'bg-[#C1121F] text-white shadow-red-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                        >
-                            {cat.icon} {cat.name}
-                        </button>
-                    ))}
+                    {categories.map(cat => {
+                        const isActive = selectedCategories.includes(cat._id);
+                        return (
+                            <button
+                                key={cat._id}
+                                onClick={() => {
+                                    setSelectedCategories(prev => 
+                                        isActive ? prev.filter(id => id !== cat._id) : [...prev, cat._id]
+                                    );
+                                }}
+                                className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${isActive ? 'bg-[#C1121F] text-white shadow-red-sm border-[#C1121F]' : 'bg-white border border-gray-100 text-gray-600 hover:border-[#C1121F]/30'}`}
+                            >
+                                {cat.icon} {cat.name}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Grid */}

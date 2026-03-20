@@ -9,10 +9,10 @@ import { toast } from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
 interface MenuForm {
-    name: string; description: string; price: string; category: string;
+    name: string; description: string; price: string; category: string[];
     isBestSeller: boolean; isAvailable: boolean; stock: string; image?: File;
 }
-const defaultForm: MenuForm = { name: '', description: '', price: '', category: '', isBestSeller: false, isAvailable: true, stock: '100' };
+const defaultForm: MenuForm = { name: '', description: '', price: '', category: [], isBestSeller: false, isAvailable: true, stock: '100' };
 
 export default function AdminMenuPage() {
     const [items, setItems] = useState<MenuItem[]>([]);
@@ -36,15 +36,26 @@ export default function AdminMenuPage() {
 
     const openCreate = () => { setForm(defaultForm); setPreview(''); setEditId(null); setShowModal(true); };
     const openEdit = (item: MenuItem) => {
-        const cat = typeof item.category === 'object' ? item.category._id : item.category;
-        setForm({ name: item.name, description: item.description, price: String(item.price), category: cat, isBestSeller: item.isBestSeller, isAvailable: item.isAvailable, stock: String(item.stock) });
+        const catIds = Array.isArray(item.category) 
+            ? item.category.map((c: any) => typeof c === 'object' ? c._id : c)
+            : [typeof item.category === 'object' ? (item.category as any)._id : item.category];
+        
+        setForm({ 
+            name: item.name, 
+            description: item.description, 
+            price: String(item.price), 
+            category: catIds, 
+            isBestSeller: item.isBestSeller, 
+            isAvailable: item.isAvailable, 
+            stock: String(item.stock) 
+        });
         setPreview(getImageUrl(item.image));
         setEditId(item._id);
         setShowModal(true);
     };
 
     const handleSave = async () => {
-        if (!form.name || !form.price || !form.category) return toast.error('Nama, harga, dan kategori wajib diisi');
+        if (!form.name || !form.price || !form.category.length) return toast.error('Nama, harga, dan kategori wajib diisi');
         setSaving(true);
         try {
             const fd = new FormData();
@@ -135,9 +146,17 @@ export default function AdminMenuPage() {
                                         </div>
                                     </td>
                                     <td className="px-4 py-3">
-                                        <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs font-medium">
-                                            {typeof item.category === 'object' ? `${item.category.icon} ${item.category.name}` : '-'}
-                                        </span>
+                                        <div className="flex flex-wrap gap-1">
+                                            {Array.isArray(item.category) ? item.category.map((cat: any) => (
+                                                <span key={typeof cat === 'object' ? cat._id : cat} className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap">
+                                                    {typeof cat === 'object' ? `${cat.icon} ${cat.name}` : '-'}
+                                                </span>
+                                            )) : (
+                                                <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[10px] font-medium">
+                                                    {typeof item.category === 'object' ? `${(item.category as any).icon} ${(item.category as any).name}` : '-'}
+                                                </span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-4 py-3 font-semibold text-[#C1121F]">{formatCurrency(item.price)}</td>
                                     <td className="px-4 py-3">
@@ -204,11 +223,30 @@ export default function AdminMenuPage() {
                             ))}
                             <div>
                                 <label className="text-sm font-medium text-gray-600 block mb-1.5">Kategori *</label>
-                                <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] text-sm bg-white">
-                                    <option value="">Pilih Kategori</option>
-                                    {categories.map(c => <option key={c._id} value={c._id}>{c.icon} {c.name}</option>)}
-                                </select>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {categories.map(c => {
+                                        const isChecked = form.category.includes(c._id);
+                                        return (
+                                            <div 
+                                                key={c._id} 
+                                                onClick={() => {
+                                                    const newCat = isChecked 
+                                                        ? form.category.filter(id => id !== c._id)
+                                                        : [...form.category, c._id];
+                                                    setForm(f => ({ ...f, category: newCat }));
+                                                }}
+                                                className={`flex items-center gap-2 px-3 py-2 border rounded-xl cursor-pointer transition-all ${
+                                                    isChecked 
+                                                    ? 'border-[#C1121F] bg-[#C1121F]/5 text-[#C1121F] font-medium' 
+                                                    : 'border-gray-100 hover:border-gray-200 text-gray-600'
+                                                }`}
+                                            >
+                                                <span className="text-lg">{c.icon}</span>
+                                                <span className="text-xs truncate">{c.name}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-gray-600 block mb-1.5">Deskripsi</label>

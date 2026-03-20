@@ -84,8 +84,9 @@ export default function PosPage() {
     const total = subtotal + tax;
 
     const filteredMenus = menus.filter(menu => {
+        const cats = Array.isArray(menu.category) ? menu.category : [menu.category];
         const matchCategory = activeCategory === 'all' || 
-            (typeof menu.category === 'object' ? menu.category._id === activeCategory : menu.category === activeCategory);
+            cats.some(cat => (typeof cat === 'object' && cat !== null ? cat._id : cat) === activeCategory);
         const matchSearch = menu.name.toLowerCase().includes(searchQuery.toLowerCase());
         return matchCategory && matchSearch;
     });

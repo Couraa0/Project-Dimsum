@@ -44,6 +44,19 @@ export default function MenuCard({ item, showAddButton = true }: MenuCardProps) 
                 )}
             </div>
             <div className="p-4">
+                <div className="flex flex-wrap gap-1 mb-2">
+                    {Array.isArray(item.category) ? item.category.map((cat: any) => (
+                        <span key={typeof cat === 'object' ? cat._id : cat} className="text-[10px] font-medium px-1.5 py-0.5 bg-gray-50 text-gray-500 rounded-md border border-gray-100">
+                            {typeof cat === 'object' ? `${cat.icon} ${cat.name}` : cat}
+                        </span>
+                    )) : (
+                        item.category && (
+                            <span className="text-[10px] font-medium px-1.5 py-0.5 bg-gray-50 text-gray-500 rounded-md border border-gray-100">
+                                {typeof item.category === 'object' ? `${(item.category as any).icon} ${(item.category as any).name}` : item.category}
+                            </span>
+                        )
+                    )}
+                </div>
                 <h3 className="font-semibold text-gray-800 mb-1 text-sm leading-snug">{item.name}</h3>
                 <p className="text-gray-400 text-xs mb-3 leading-relaxed line-clamp-2">{item.description}</p>
                 <div className="flex items-center justify-between">

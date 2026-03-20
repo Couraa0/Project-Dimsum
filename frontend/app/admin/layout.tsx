@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, UtensilsCrossed, ShoppingBag, QrCode, BarChart3, LogOut, Menu, X, ChevronRight, Users, MonitorSmartphone } from 'lucide-react';
+import { LayoutDashboard, UtensilsCrossed, ShoppingBag, QrCode, BarChart3, LogOut, Menu, X, ChevronRight, Users, MonitorSmartphone, Layers } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'react-hot-toast';
 
@@ -11,6 +11,7 @@ const navItems = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin'] },
     { href: '/admin/pos', label: 'Kasir POS', icon: MonitorSmartphone, roles: ['admin', 'kasir'] },
     { href: '/admin/orders', label: 'Pesanan', icon: ShoppingBag, roles: ['admin', 'kasir'] },
+    { href: '/admin/categories', label: 'Kategori', icon: Layers, roles: ['admin'] },
     { href: '/admin/menu', label: 'Menu', icon: UtensilsCrossed, roles: ['admin'] },
     { href: '/admin/tables', label: 'Meja & QR', icon: QrCode, roles: ['admin'] },
     { href: '/admin/reports', label: 'Laporan', icon: BarChart3, roles: ['admin'] },
