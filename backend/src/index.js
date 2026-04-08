@@ -1,3 +1,4 @@
+// Trigger nodemon restart
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -9,6 +10,14 @@ const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load(path.join(__dirname, '../swagger.yaml'));
+
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+swaggerDocument.servers = [
+    {
+        url: isProduction ? 'https://dimsum-backend.vercel.app/api' : `http://localhost:${process.env.PORT || 5000}/api`,
+        description: isProduction ? 'Production Server' : 'Local Server'
+    }
+];
 
 const authRoutes = require('./routes/auth');
 const categoryRoutes = require('./routes/categories');
