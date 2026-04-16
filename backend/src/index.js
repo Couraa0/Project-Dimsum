@@ -26,7 +26,12 @@ const orderRoutes = require('./routes/orders');
 const tableRoutes = require('./routes/tables');
 const userRoutes = require('./routes/users');
 
+const performanceMonitor = require('./middleware/performance');
+
 const app = express();
+
+// Performance Monitoring
+app.use(performanceMonitor);
 
 // Middleware
 const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : 'http://localhost:3000';

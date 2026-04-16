@@ -131,7 +131,11 @@ export default function HomePage() {
                 <span className="text-xl">🏆</span>
                 <div>
                   <div className="text-[10px] text-gray-400 font-medium">Best Seller</div>
-                  <div className="font-extrabold text-gray-800 text-sm">Har Gow 🥟</div>
+                  <div className="font-extrabold text-gray-800 text-sm">
+                    {bestSellers.length > 0 ? (
+                      bestSellers[0].name.length > 12 ? bestSellers[0].name.substring(0, 10) + '...' : bestSellers[0].name
+                    ) : 'Har Gow'} 🥟
+                  </div>
                 </div>
               </div>
               {/* Badge bottom-right */}
@@ -160,36 +164,83 @@ export default function HomePage() {
       </section>
 
       {/* ── BEST SELLERS ──────────────────────────────────── */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
-            <span className="text-[#C1121F] font-semibold text-xs tracking-widest uppercase">Rekomendasi</span>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2 tracking-tight">Best Seller Kami</h2>
-            <p className="text-gray-400 mt-3 max-w-md mx-auto text-sm leading-relaxed">Dimsum paling banyak dipesan dan disukai pelanggan setia Dimsum Ratu</p>
+      <section className="py-24 bg-white relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-1/4 -left-20 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-60" />
+        <div className="absolute bottom-1/4 -right-20 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-60" />
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-[#C1121F] text-[10px] font-bold uppercase tracking-wider mb-4 border border-red-100">
+                <Star size={12} fill="#C1121F" /> Most Popular
+              </div>
+              <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                Menu <span className="text-[#C1121F]">Best Seller</span> <br />Pilihan Pelanggan
+              </h2>
+              <p className="text-gray-500 mt-4 text-sm md:text-base leading-relaxed">
+                Varian dimsum paling favorit yang wajib Anda coba. Dibuat dengan resep rahasia dan bahan-bahan premium pilihan setiap harinya.
+              </p>
+            </div>
+            <Link href="/menu" className="hidden md:flex items-center gap-2 text-[#C1121F] font-bold hover:gap-3 transition-all group">
+              Lihat Semua Menu <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
+
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-gray-200 rounded-2xl h-64 animate-pulse" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="space-y-4">
+                  <div className="bg-gray-100 rounded-3xl aspect-[4/5] animate-pulse" />
+                  <div className="h-4 bg-gray-100 rounded-full w-2/3 animate-pulse" />
+                  <div className="h-4 bg-gray-100 rounded-full w-1/2 animate-pulse" />
+                </div>
               ))}
             </div>
           ) : bestSellers.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {bestSellers.map(item => <MenuCard key={item._id} item={item} />)}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+              {bestSellers.map((item, idx) => (
+                <div key={item._id} className="animate-slide-up" style={{ animationDelay: `${idx * 100}ms` }}>
+                  <MenuCard item={item} />
+                </div>
+              ))}
             </div>
           ) : (
-            <div className="text-center text-gray-400 py-12">
-              <div className="text-5xl mb-3">🥟</div>
-              <p>Belum ada best seller tersedia</p>
+            <div className="bg-gray-50 rounded-[2.5rem] py-20 text-center border-2 border-dashed border-gray-200">
+              <div className="text-6xl mb-6">🥟</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Belum ada Best Seller</h3>
+              <p className="text-gray-400 max-w-xs mx-auto text-sm">Oops! Sepertinya admin belum menandai menu best seller. Silakan cek menu lengkap kami.</p>
+              <Link href="/menu" className="mt-8 inline-flex items-center gap-2 px-8 py-4 bg-[#C1121F] text-white rounded-2xl font-bold hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-100">
+                Pilih Menu <ArrowRight size={18} />
+              </Link>
             </div>
           )}
-          <div className="text-center mt-10">
-            <Link href="/menu" className="inline-flex items-center gap-2 px-8 py-4 border-2 border-[#C1121F] text-[#C1121F] rounded-2xl font-bold hover:bg-[#C1121F] hover:text-white transition-all duration-200">
+
+          <div className="mt-16 md:hidden text-center">
+            <Link href="/menu" className="inline-flex items-center gap-2 text-[#C1121F] font-bold">
               Lihat Semua Menu <ArrowRight size={18} />
             </Link>
           </div>
         </div>
       </section>
+
+      {/* ── FEATURED MENUS (Secondary) ────────────────────── */}
+      {featuredMenus.length > 0 && (
+        <section className="py-24 bg-gray-50 border-y border-gray-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="text-center mb-16">
+              <span className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-4 block">Our Specialties</span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">Varian Unggulan</h2>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {featuredMenus.map(item => (
+                <MenuCard key={item._id} item={item} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── HOW TO ORDER ──────────────────────────────────── */}
       <section className="py-20 bg-white border-t border-gray-100">
