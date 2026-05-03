@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Toaster } from 'react-hot-toast';
+import { Analytics } from '@vercel/analytics/next';
 import ClientLayout from '@/components/layout/ClientLayout';
 import './globals.css';
 
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="id">
       <body>
         <ClientLayout>{children}</ClientLayout>
+        <Analytics />
         <Toaster
           position="bottom-center"
           toastOptions={{
