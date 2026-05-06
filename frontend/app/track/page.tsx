@@ -65,7 +65,7 @@ function TrackContent() {
         <div className="min-h-screen bg-gray-50">
             {/* Page Header */}
             <div className="bg-gradient-to-br from-[#C1121F] to-[#8b0e16] pt-24 pb-10">
-                <div className="max-w-2xl mx-auto px-4 sm:px-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <Link href="/" className="inline-flex items-center gap-2 text-xs text-white/70 hover:text-white transition-colors mb-5">
                         <ArrowLeft size={14} /> Kembali ke Beranda
                     </Link>
@@ -74,7 +74,7 @@ function TrackContent() {
                 </div>
             </div>
 
-            <div className="max-w-2xl mx-auto px-4 sm:px-6 -mt-6 pb-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-6 pb-16">
 
                 {/* Search Form */}
                 <form onSubmit={handleTrack} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-6">

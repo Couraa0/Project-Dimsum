@@ -32,7 +32,7 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <div className="bg-white p-8 rounded-2xl shadow-xl shadow-red-100 max-w-sm w-full border border-red-50">
+            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-xl shadow-red-100 max-w-md w-full border border-red-50">
                 <div className="flex justify-center mb-6">
                     <Link href="/" className="w-16 h-16 rounded-2xl overflow-hidden ring-4 ring-red-50 flex items-center justify-center">
                         <Image src="/logo.png" alt="Logo" width={64} height={64} className="object-cover" />

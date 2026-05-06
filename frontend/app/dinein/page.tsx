@@ -85,7 +85,7 @@ function DineInContent() {
 
             {/* ── Header ──────────────────────────────────── */}
             <div className="bg-gradient-to-b from-[#C1121F] to-[#9e0f1a] pt-12 pb-16">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     {/* Badge */}
                     <div className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur rounded-full px-3 py-1 mb-3">
                         <UtensilsCrossed size={13} className="text-white/80" />
@@ -105,7 +105,7 @@ function DineInContent() {
             </div>
 
             {/* ── Search + Category ───────────────────────── */}
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 -mt-8 relative z-10 space-y-3">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-8 relative z-10 space-y-3">
                 {/* Search */}
                 <div className="relative">
                     <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -136,7 +136,7 @@ function DineInContent() {
             </div>
 
             {/* ── Menu Grid ───────────────────────────────── */}
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-4">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-4">
                 {loading ? (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {[...Array(8)].map((_, i) => (

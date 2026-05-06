@@ -12,7 +12,7 @@ exports.getAll = async (req, res) => {
         }
         if (bestSeller === 'true') filter.isBestSeller = true;
         if (search) filter.name = { $regex: search, $options: 'i' };
-        const items = await MenuItem.find(filter).populate('category', 'name slug icon').sort({ totalOrdered: -1 });
+        const items = await MenuItem.find(filter).populate('category', 'name slug icon').sort({ totalOrdered: -1 }).lean();
         res.json({ success: true, data: items });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -28,7 +28,7 @@ exports.getAllAdmin = async (req, res) => {
             filter.category = { $in: catArray };
         }
         if (search) filter.name = { $regex: search, $options: 'i' };
-        const items = await MenuItem.find(filter).populate('category', 'name slug icon').sort({ createdAt: -1 });
+        const items = await MenuItem.find(filter).populate('category', 'name slug icon').sort({ createdAt: -1 }).lean();
         res.json({ success: true, data: items });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -37,7 +37,7 @@ exports.getAllAdmin = async (req, res) => {
 
 exports.getById = async (req, res) => {
     try {
-        const item = await MenuItem.findById(req.params.id).populate('category', 'name slug icon');
+        const item = await MenuItem.findById(req.params.id).populate('category', 'name slug icon').lean();
         if (!item) return res.status(404).json({ success: false, message: 'Menu tidak ditemukan' });
         res.json({ success: true, data: item });
     } catch (err) {

@@ -1,9 +1,5 @@
 const http = require('http');
 
-/**
- * Load Tester Script
- * Simulates different volumes of requests to the health check endpoint.
- */
 async function runTest(volume, name) {
     console.log(`\n--- Running Test: ${name} (${volume} requests) ---`);
     const startTime = Date.now();
@@ -51,7 +47,6 @@ async function main() {
     console.log('\nTesting Complete.');
 }
 
-// Check if server is running before testing
 const checkServer = http.get('http://localhost:5000/api/health', () => {
     main();
 }).on('error', () => {

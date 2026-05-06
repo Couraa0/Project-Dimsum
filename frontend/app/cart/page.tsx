@@ -38,7 +38,7 @@ export default function CartPage() {
         <div className="min-h-screen bg-gray-50 flex flex-col">
             {/* header */}
             <div className="bg-white border-b border-gray-100 pt-5 pb-6">
-                <div className="max-w-2xl mx-auto px-4 sm:px-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <Link href="/menu" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-[#C1121F] transition-colors mb-4">
                         <ArrowLeft size={15} /> Kembali ke Menu
                     </Link>
@@ -68,7 +68,7 @@ export default function CartPage() {
 
             {/* Header ─────────────────────────────────────── */}
             <div className="bg-white border-b border-gray-100 px-4 sm:px-6 py-4">
-                <div className="max-w-2xl mx-auto flex items-center gap-3">
+                <div className="max-w-7xl mx-auto flex items-center gap-3">
                     <Link href="/menu"
                         className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors text-gray-500">
                         <ArrowLeft size={18} />
@@ -80,7 +80,7 @@ export default function CartPage() {
                 </div>
             </div>
 
-            <div className="max-w-2xl mx-auto px-4 sm:px-6 py-5 pb-10 space-y-4">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 pb-10 space-y-4">
 
                 {/* ── Order Type ─────────────────────────── */}
                 <section className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">

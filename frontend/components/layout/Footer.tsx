@@ -5,7 +5,7 @@ import { MapPin, Clock, Phone, Instagram, Facebook, Mail } from 'lucide-react';
 export default function Footer() {
     return (
         <footer className="bg-gradient-to-br from-[#C1121F] to-[#8b0e16] text-white pt-8 pb-4">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pb-6 border-b border-white/15">
 
                     {/* Brand */}
@@ -71,7 +71,7 @@ export default function Footer() {
                             </li>
                             <li className="flex gap-2.5">
                                 <Phone size={14} className="text-white/80 mt-0.5 shrink-0" />
-                                <span className="text-white/90">+62 812-3456-7890</span>
+                                <span className="text-white/90">+62 878-7131-0560</span>
                             </li>
                         </ul>
                     </div>
@@ -80,7 +80,7 @@ export default function Footer() {
                 {/* Bottom bar */}
                 <div className="pt-4 flex flex-col md:flex-row items-center justify-between gap-1.5 text-[11px] text-white/40">
                     <p className="text-white/70">© 2026 Dimsum Ratu Karawang. Hak Cipta Dilindungi.</p>
-                    <p className="text-white/70">Dibuat dengan ❤️ untuk pelanggan setia kami</p>
+                    <p className="text-white/70">Dibuat dengan 🤍 untuk pelanggan setia kami</p>
                 </div>
             </div>
         </footer>

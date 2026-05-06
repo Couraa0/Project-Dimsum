@@ -52,12 +52,12 @@ export default function HomePage() {
     <div className="overflow-x-hidden">
 
       {/* ── HERO ───────────────────────────────────────────── */}
-      <section className="relative min-h-[92vh] flex items-center bg-white overflow-hidden">
+      <section className="relative pt-6 pb-12 lg:pt-10 lg:pb-20 bg-white overflow-hidden">
         {/* Background decoration */}
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-red-50 via-red-50/40 to-transparent rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-red-50 rounded-full blur-2xl opacity-60 pointer-events-none" />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-10 items-center w-full">
           {/* Left — Text */}
           <div className="animate-slide-up">
             {/* Open badge */}
@@ -66,11 +66,11 @@ export default function HomePage() {
               Buka Setiap Hari · 10.00 – 21.00 WIB
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-[1.1] mb-5 tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-[4rem] font-extrabold text-gray-900 leading-[1.1] mb-6 tracking-tight">
               Dimsum Lezat,{' '}
-              <span className="gradient-text block sm:inline">Siap Dinikmati!</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C1121F] to-[#8b0e16] block sm:inline">Siap Dinikmati!</span>
             </h1>
-            <p className="text-gray-500 text-lg leading-relaxed mb-8 max-w-lg">
+            <p className="text-gray-500 text-lg md:text-xl leading-relaxed mb-8 max-w-xl">
               Cita rasa dimsum autentik khas China Town, kini hadir di Karawang. Dine-in nyaman, take away praktis, atau delivery langsung ke pintu Anda.
             </p>
 
@@ -116,7 +116,7 @@ export default function HomePage() {
 
           {/* Right — Image */}
           <div className="relative flex justify-center lg:justify-end animate-float">
-            <div className="relative w-full max-w-[440px] aspect-square">
+            <div className="relative w-full max-w-[480px] aspect-square">
               {/* Blob bg */}
               <div className="absolute inset-0 bg-gradient-to-br from-red-100 to-red-50 rounded-[40%_60%_70%_30%/30%_50%_70%_70%] rotate-6 scale-110" />
               <Image
@@ -150,7 +150,7 @@ export default function HomePage() {
 
       {/* ── FEATURES ──────────────────────────────────────── */}
       <section className="py-14 bg-gray-50 border-y border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {features.map((f, i) => (
               <div key={i} className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 border border-gray-100 group cursor-default">
@@ -169,7 +169,7 @@ export default function HomePage() {
         <div className="absolute top-1/4 -left-20 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-60" />
         <div className="absolute bottom-1/4 -right-20 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-60" />
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div className="max-w-xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-[#C1121F] text-[10px] font-bold uppercase tracking-wider mb-4 border border-red-100">
@@ -227,7 +227,7 @@ export default function HomePage() {
       {/* ── FEATURED MENUS (Secondary) ────────────────────── */}
       {featuredMenus.length > 0 && (
         <section className="py-24 bg-gray-50 border-y border-gray-100">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-16">
               <span className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-4 block">Our Specialties</span>
               <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">Varian Unggulan</h2>
@@ -244,7 +244,7 @@ export default function HomePage() {
 
       {/* ── HOW TO ORDER ──────────────────────────────────── */}
       <section className="py-20 bg-white border-t border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
             <span className="text-[#C1121F] font-semibold text-xs tracking-widest uppercase">Cara Pemesanan</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2 tracking-tight">Mudah &amp; Cepat</h2>
@@ -323,7 +323,7 @@ export default function HomePage() {
 
       {/* ── LOCATION ──────────────────────────────────────── */}
       <section className="py-20 bg-gray-50 border-t border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
             <span className="text-[#C1121F] font-semibold text-xs tracking-widest uppercase">Lokasi Kami</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2 tracking-tight">Kunjungi Dimsum Ratu</h2>
@@ -360,7 +360,7 @@ export default function HomePage() {
                 {
                   icon: <Phone size={20} />,
                   title: 'Hubungi Kami',
-                  content: <>WhatsApp: <strong className="text-gray-800">0812-3456-7890</strong><br />Instagram: <strong className="text-gray-800">@dimsumratu</strong></>,
+                  content: <>WhatsApp: <strong className="text-gray-800">0878-7131-0560</strong><br />Instagram: <strong className="text-gray-800">@dimsumratu</strong></>,
                 },
               ].map((item, i) => (
                 <div key={i} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-start gap-4 hover:shadow-md hover:border-red-100 transition-all group">
@@ -389,7 +389,7 @@ export default function HomePage() {
               <Link href="/menu" className="px-8 py-4 bg-[#C1121F] text-white rounded-2xl font-bold hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-200 hover:scale-[1.02] inline-flex items-center gap-2 justify-center">
                 Pesan Sekarang <ArrowRight size={18} />
               </Link>
-              <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer"
+              <a href="https://wa.me/6287871310560" target="_blank" rel="noopener noreferrer"
                 className="px-8 py-4 bg-green-500 text-white rounded-2xl font-bold hover:bg-green-600 transition-all inline-flex items-center gap-2 justify-center hover:scale-[1.02]">
                 💬 WhatsApp Kami
               </a>

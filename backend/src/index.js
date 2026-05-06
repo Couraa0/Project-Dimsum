@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const compression = require('compression');
 const path = require('path');
 const mongoose = require('mongoose');
 
@@ -35,6 +36,8 @@ app.use(performanceMonitor);
 
 // Middleware
 const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : 'http://localhost:3000';
+
+app.use(compression());
 
 app.use(helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
@@ -73,7 +76,6 @@ const connectDB = async () => {
         });
         isConnected = db.connections[0].readyState === 1;
         console.log('✅ MongoDB Connected');
-        // Run seed asynchronously
         seedData().catch(err => console.error('Seed error:', err));
     } catch (err) {
         console.error('❌ MongoDB connection failed:', err.message);

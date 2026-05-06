@@ -23,7 +23,7 @@ export default function MenuCard({ item, showAddButton = true }: MenuCardProps) 
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 group hover:-translate-y-1">
+        <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100 group hover:-translate-y-1 h-full flex flex-col">
             <div className="relative h-48 bg-gray-50 overflow-hidden">
                 <Image
                     src={getImageUrl(item.image)}
@@ -43,7 +43,7 @@ export default function MenuCard({ item, showAddButton = true }: MenuCardProps) 
                     </div>
                 )}
             </div>
-            <div className="p-4">
+            <div className="p-4 flex flex-col flex-grow">
                 <div className="flex flex-wrap gap-1 mb-2">
                     {Array.isArray(item.category) ? item.category.map((cat: any) => (
                         <span key={typeof cat === 'object' ? cat._id : cat} className="text-[10px] font-medium px-1.5 py-0.5 bg-gray-50 text-gray-500 rounded-md border border-gray-100">
@@ -59,7 +59,7 @@ export default function MenuCard({ item, showAddButton = true }: MenuCardProps) 
                 </div>
                 <h3 className="font-semibold text-gray-800 mb-1 text-sm leading-snug">{item.name}</h3>
                 <p className="text-gray-400 text-xs mb-3 leading-relaxed line-clamp-2">{item.description}</p>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mt-auto pt-3">
                     <span className="font-bold text-[#C1121F] text-base">{formatCurrency(item.price)}</span>
                     {showAddButton && (
                         <button

@@ -39,14 +39,14 @@ export default function MenuPage() {
         <div className="min-h-screen bg-gray-50">
             {/* Hero Header */}
             <div className="bg-white border-b border-gray-100 pt-24 pb-8 mb-8">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <span className="text-[#C1121F] font-semibold text-xs tracking-widest uppercase">Pilihan Lengkap</span>
                     <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-1 tracking-tight">Menu Kami</h1>
                     <p className="text-gray-400 mt-1 text-sm">Pilih dari berbagai varian dimsum lezat pilihan</p>
                 </div>
             </div>
 
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
 
                 {/* Search */}
                 <div className="relative mb-5">
