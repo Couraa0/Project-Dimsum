@@ -170,21 +170,16 @@ export default function HomePage() {
         <div className="absolute bottom-1/4 -right-20 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-60" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div className="max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-[#C1121F] text-[10px] font-bold uppercase tracking-wider mb-4 border border-red-100">
-                <Star size={12} fill="#C1121F" /> Most Popular
-              </div>
-              <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">
-                Menu <span className="text-[#C1121F]">Best Seller</span> <br />Pilihan Pelanggan
-              </h2>
-              <p className="text-gray-500 mt-4 text-sm md:text-base leading-relaxed">
-                Varian dimsum paling favorit yang wajib Anda coba. Dibuat dengan resep rahasia dan bahan-bahan premium pilihan setiap harinya.
-              </p>
+          <div className="text-center mb-12 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-[#C1121F] text-[10px] font-bold uppercase tracking-wider mb-4 border border-red-100">
+              <Star size={12} fill="#C1121F" /> Most Popular
             </div>
-            <Link href="/menu" className="hidden md:flex items-center gap-2 text-[#C1121F] font-bold hover:gap-3 transition-all group">
-              Lihat Semua Menu <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">
+              Menu <span className="text-[#C1121F]">Best Seller</span> <br />Pilihan Pelanggan
+            </h2>
+            <p className="text-gray-500 mt-4 text-sm md:text-base leading-relaxed">
+              Varian dimsum paling favorit yang wajib Anda coba. Dibuat dengan resep rahasia dan bahan-bahan premium pilihan setiap harinya.
+            </p>
           </div>
 
           {loading ? (
@@ -216,31 +211,13 @@ export default function HomePage() {
             </div>
           )}
 
-          <div className="mt-16 md:hidden text-center">
-            <Link href="/menu" className="inline-flex items-center gap-2 text-[#C1121F] font-bold">
-              Lihat Semua Menu <ArrowRight size={18} />
+          <div className="mt-16 text-center">
+            <Link href="/menu" className="inline-flex items-center gap-2 text-[#C1121F] font-bold hover:gap-3 transition-all group">
+              Lihat Semua Menu <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
       </section>
-
-      {/* ── FEATURED MENUS (Secondary) ────────────────────── */}
-      {featuredMenus.length > 0 && (
-        <section className="py-24 bg-gray-50 border-y border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-16">
-              <span className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-4 block">Our Specialties</span>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">Varian Unggulan</h2>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {featuredMenus.map(item => (
-                <MenuCard key={item._id} item={item} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* ── HOW TO ORDER ──────────────────────────────────── */}
       <section className="py-20 bg-white border-t border-gray-100">
