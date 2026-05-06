@@ -45,7 +45,6 @@ export default function Footer() {
                                 { href: '/', label: 'Beranda' },
                                 { href: '/menu', label: 'Menu Kami' },
                                 { href: '/menu', label: 'Pesan Sekarang' },
-                                { href: '/admin', label: 'Dashboard Admin' },
                             ].map(l => (
                                 <li key={l.label}>
                                     <Link href={l.href}
