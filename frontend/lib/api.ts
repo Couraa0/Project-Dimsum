@@ -66,7 +66,7 @@ export const tablesApi = {
     getByNumber: (number: string) => api.get(`/tables/${number}/info`),
     create: (data: object) => api.post('/tables', data),
     update: (id: string, data: object) => api.patch(`/tables/${id}`, data),
-    regenerateQR: (id: string) => api.post(`/tables/${id}/regenerate-qr`),
+    regenerateQR: (id: string, data?: object) => api.post(`/tables/${id}/regenerate-qr`, data),
     delete: (id: string) => api.delete(`/tables/${id}`),
 };
 

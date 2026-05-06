@@ -22,7 +22,7 @@ export default function AdminTablesPage() {
         if (!form.number) return toast.error('Nomor meja wajib diisi');
         setSaving(true);
         try {
-            await tablesApi.create({ number: form.number, name: form.name || `Meja ${form.number}`, capacity: Number(form.capacity) });
+            await tablesApi.create({ number: form.number, name: form.name || `Meja ${form.number}`, capacity: Number(form.capacity), baseUrl: window.location.origin });
             toast.success('Meja berhasil dibuat + QR Code digenerate!');
             setShowModal(false);
             setForm({ number: '', name: '', capacity: '4' });
@@ -34,7 +34,7 @@ export default function AdminTablesPage() {
 
     const handleRegenQR = async (id: string) => {
         try {
-            const res = await tablesApi.regenerateQR(id);
+            const res = await tablesApi.regenerateQR(id, { baseUrl: window.location.origin });
             toast.success('QR Code berhasil digenerate ulang!');
             setTables(prev => prev.map(t => t._id === id ? res.data.data : t));
             if (selectedQR?._id === id) setSelectedQR(res.data.data);

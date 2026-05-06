@@ -29,8 +29,8 @@ exports.getTableByNumber = async (req, res) => {
 
 exports.createTable = async (req, res) => {
     try {
-        const { number, name, capacity } = req.body;
-        const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const { number, name, capacity, baseUrl: clientBaseUrl } = req.body;
+        const baseUrl = clientBaseUrl || req.headers.origin || process.env.FRONTEND_URL || 'http://localhost:3000';
         const qrCode = await generateQR(number, baseUrl);
         const table = await Table.create({ number: String(number).padStart(2, '0'), name: name || `Meja ${number}`, capacity: capacity || 4, qrCode });
         res.status(201).json({ success: true, data: table });
@@ -54,7 +54,7 @@ exports.regenerateQR = async (req, res) => {
     try {
         const table = await Table.findById(req.params.id);
         if (!table) return res.status(404).json({ success: false, message: 'Meja tidak ditemukan' });
-        const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const baseUrl = req.body.baseUrl || req.headers.origin || process.env.FRONTEND_URL || 'http://localhost:3000';
         table.qrCode = await generateQR(table.number, baseUrl);
         await table.save();
         res.json({ success: true, data: table, message: 'QR Code berhasil digenerate ulang' });
