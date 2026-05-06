@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { menuApi, categoriesApi, tablesApi, ordersApi } from '@/lib/api';
 import { MenuItem, Category } from '@/types';
-import { Search, Plus, Minus, Type, MonitorSmartphone, UtensilsCrossed, Trash2, CheckCircle2, ShoppingCart } from 'lucide-react';
+import { Search, Plus, Minus, Type, MonitorSmartphone, UtensilsCrossed, Trash2, CheckCircle2, ShoppingCart, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import Image from 'next/image';
@@ -134,7 +134,62 @@ export default function PosPage() {
     };
 
     if (loading) {
-        return <div className="p-8 flex justify-center"><div className="w-8 h-8 border-4 border-[#C1121F] border-t-transparent rounded-full animate-spin"></div></div>;
+        return (
+            <div className="flex flex-col lg:flex-row h-full">
+                {/* Kiri: Katalog */}
+                <div className="flex-1 flex flex-col bg-gray-50 p-6 overflow-hidden">
+                    <div className="mb-6">
+                        <div className="h-8 bg-gray-200 rounded w-48 mb-2 animate-pulse" />
+                        <div className="h-4 bg-gray-200 rounded w-64 animate-pulse" />
+                    </div>
+                    {/* Search Skeleton */}
+                    <div className="mb-5 h-12 bg-gray-200 rounded-2xl animate-pulse" />
+                    {/* Categories Skeleton */}
+                    <div className="flex gap-2 mb-6 overflow-hidden">
+                        {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-10 w-24 shrink-0 bg-gray-200 rounded-full animate-pulse" />)}
+                    </div>
+                    {/* Grid Skeleton */}
+                    <div className="flex-1 overflow-hidden pr-2">
+                        <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+                            {[...Array(8)].map((_, i) => (
+                                <div key={i} className="bg-white rounded-2xl p-3 border border-gray-100">
+                                    <div className="aspect-square rounded-xl bg-gray-200 animate-pulse mb-3" />
+                                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse" />
+                                    <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                {/* Kanan: Keranjang */}
+                <div className="w-full lg:w-[400px] bg-white border-l border-gray-200 flex flex-col h-full shrink-0">
+                    <div className="p-5 border-b border-gray-100">
+                        <div className="h-6 bg-gray-200 rounded w-40 mb-4 animate-pulse" />
+                        <div className="space-y-3">
+                            <div className="h-10 bg-gray-200 rounded-lg animate-pulse" />
+                            <div className="h-10 bg-gray-200 rounded-lg animate-pulse" />
+                        </div>
+                    </div>
+                    <div className="flex-1 p-5">
+                        <div className="space-y-4">
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="flex gap-3 items-center">
+                                    <div className="w-12 h-12 rounded-lg bg-gray-200 shrink-0 animate-pulse" />
+                                    <div className="flex-1 space-y-2">
+                                        <div className="h-4 bg-gray-200 rounded w-full animate-pulse" />
+                                        <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="p-5 border-t border-gray-100">
+                        <div className="h-24 bg-gray-200 rounded-xl mb-4 animate-pulse" />
+                        <div className="h-12 bg-gray-200 rounded-xl animate-pulse" />
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -150,34 +205,40 @@ export default function PosPage() {
                     </div>
                 </div>
 
-                <div className="flex gap-4 mb-6">
-                    <div className="flex-1 relative">
-                        <input
-                            type="text"
-                            placeholder="Cari menu..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl outline-none focus:border-[#C1121F] transition-all"
-                        />
-                        <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-                    </div>
-                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-                        <button
-                            onClick={() => setActiveCategory('all')}
-                            className={`px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${activeCategory === 'all' ? 'bg-[#C1121F] text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-[#C1121F]/30'}`}
-                        >
-                            Semua Menu
+                {/* Search */}
+                <div className="relative mb-5">
+                    <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Cari menu..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-11 pr-10 py-3.5 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#C1121F] focus:ring-2 focus:ring-red-100 transition-all text-sm bg-white shadow-sm"
+                    />
+                    {searchQuery && (
+                        <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <X size={16} />
                         </button>
-                        {categories.map((cat) => (
-                            <button
-                                key={cat._id}
-                                onClick={() => setActiveCategory(cat._id)}
-                                className={`px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${activeCategory === cat._id ? 'bg-[#C1121F] text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-[#C1121F]/30'}`}
-                            >
-                                {cat.name}
-                            </button>
-                        ))}
-                    </div>
+                    )}
+                </div>
+
+                {/* Category Tabs */}
+                <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-none">
+                    <button
+                        onClick={() => setActiveCategory('all')}
+                        className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${activeCategory === 'all' ? 'bg-[#C1121F] text-white shadow-red-sm' : 'bg-white border border-gray-100 text-gray-600 hover:border-[#C1121F]/30 hover:bg-gray-50'}`}
+                    >
+                        🍽️ Semua
+                    </button>
+                    {categories.map((cat) => (
+                        <button
+                            key={cat._id}
+                            onClick={() => setActiveCategory(cat._id)}
+                            className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${activeCategory === cat._id ? 'bg-[#C1121F] text-white shadow-red-sm border-[#C1121F]' : 'bg-white border border-gray-100 text-gray-600 hover:border-[#C1121F]/30 hover:bg-gray-50'}`}
+                        >
+                            {cat.icon} {cat.name}
+                        </button>
+                    ))}
                 </div>
 
                 <div className="flex-1 overflow-y-auto pr-2">
