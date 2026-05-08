@@ -131,12 +131,6 @@ async function seedData() {
     const Category = require('./models/Category');
     const MenuItem = require('./models/MenuItem');
 
-    const adminCount = await Admin.countDocuments();
-    if (adminCount === 0) {
-        await Admin.create({ name: 'Super Admin', email: 'admin@dimsumratu.com', password: 'admin123', role: 'superadmin' });
-        console.log('👤 Default admin created: admin@dimsumratu.com / admin123');
-    }
-
     const catCount = await Category.countDocuments();
     if (catCount === 0) {
         await Category.insertMany([
