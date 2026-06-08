@@ -2,6 +2,7 @@ const prisma = require('../utils/prisma');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
+const supabase = require('../utils/supabase');
 
 exports.getAll = async (req, res) => {
     try {
@@ -98,17 +99,28 @@ exports.getById = async (req, res) => {
 exports.create = async (req, res) => {
     try {
         let { name, description, price, category, isBestSeller, isAvailable, stock, tags } = req.body;
-        // Simpan file gambar ke disk jika diunggah
+        // Simpan file gambar ke Supabase Storage jika diunggah
         let image = '';
         if (req.file) {
-            const uploadsDir = path.join(__dirname, '../../uploads');
-            if (!fs.existsSync(uploadsDir)) {
-                fs.mkdirSync(uploadsDir, { recursive: true });
-            }
             const filename = `menu-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(req.file.originalname)}`;
-            const uploadPath = path.join(uploadsDir, filename);
-            await fs.promises.writeFile(uploadPath, req.file.buffer);
-            image = `/uploads/${filename}`;
+            
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('dimsum-images')
+                .upload(filename, req.file.buffer, {
+                    contentType: req.file.mimetype,
+                    upsert: false
+                });
+
+            if (uploadError) {
+                console.error('Gagal mengunggah gambar ke Supabase:', uploadError.message);
+                throw new Error('Gagal mengunggah gambar: ' + uploadError.message);
+            }
+
+            const { data: publicUrlData } = supabase.storage
+                .from('dimsum-images')
+                .getPublicUrl(filename);
+                
+            image = publicUrlData.publicUrl;
         }
         
         // Handle categories as array
@@ -162,24 +174,42 @@ exports.update = async (req, res) => {
 
         if (req.file) {
             // Hapus file gambar lama jika ada
-            if (item.image && item.image.startsWith('/uploads/')) {
-                const oldImagePath = path.join(__dirname, '../../', item.image);
-                try {
-                    await fs.promises.unlink(oldImagePath);
-                } catch (err) {
-                    console.error('Gagal menghapus file gambar lama:', err.message);
+            if (item.image) {
+                if (item.image.includes('supabase.co/storage/v1/object/public/dimsum-images/')) {
+                    const oldFilename = item.image.split('/').pop();
+                    if (oldFilename) {
+                        await supabase.storage.from('dimsum-images').remove([oldFilename]);
+                    }
+                } else if (item.image.startsWith('/uploads/')) {
+                    const oldImagePath = path.join(__dirname, '../../', item.image);
+                    try {
+                        if (fs.existsSync(oldImagePath)) await fs.promises.unlink(oldImagePath);
+                    } catch (err) {
+                        console.error('Gagal menghapus file gambar lama:', err.message);
+                    }
                 }
             }
 
-            // Simpan gambar baru ke disk
-            const uploadsDir = path.join(__dirname, '../../uploads');
-            if (!fs.existsSync(uploadsDir)) {
-                fs.mkdirSync(uploadsDir, { recursive: true });
-            }
+            // Simpan gambar baru ke Supabase Storage
             const filename = `menu-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(req.file.originalname)}`;
-            const uploadPath = path.join(uploadsDir, filename);
-            await fs.promises.writeFile(uploadPath, req.file.buffer);
-            data.image = `/uploads/${filename}`;
+            
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('dimsum-images')
+                .upload(filename, req.file.buffer, {
+                    contentType: req.file.mimetype,
+                    upsert: false
+                });
+
+            if (uploadError) {
+                console.error('Gagal mengunggah gambar ke Supabase:', uploadError.message);
+                throw new Error('Gagal mengunggah gambar: ' + uploadError.message);
+            }
+
+            const { data: publicUrlData } = supabase.storage
+                .from('dimsum-images')
+                .getPublicUrl(filename);
+                
+            data.image = publicUrlData.publicUrl;
         } else if (req.body.image !== undefined) {
             data.image = req.body.image;
         }
@@ -227,13 +257,20 @@ exports.delete = async (req, res) => {
         const item = await prisma.menuItem.findUnique({ where: { id: req.params.id } });
         if (!item) return res.status(404).json({ success: false, message: 'Menu tidak ditemukan' });
         
-        // Hapus file gambar dari disk jika ada
-        if (item.image && item.image.startsWith('/uploads/')) {
-            const imagePath = path.join(__dirname, '../../', item.image);
-            try {
-                await fs.promises.unlink(imagePath);
-            } catch (err) {
-                console.error('Gagal menghapus file gambar menu:', err.message);
+        // Hapus file gambar dari Supabase atau lokal jika ada
+        if (item.image) {
+            if (item.image.includes('supabase.co/storage/v1/object/public/dimsum-images/')) {
+                const filename = item.image.split('/').pop();
+                if (filename) {
+                    await supabase.storage.from('dimsum-images').remove([filename]);
+                }
+            } else if (item.image.startsWith('/uploads/')) {
+                const imagePath = path.join(__dirname, '../../', item.image);
+                try {
+                    if (fs.existsSync(imagePath)) await fs.promises.unlink(imagePath);
+                } catch (err) {
+                    console.error('Gagal menghapus file gambar menu:', err.message);
+                }
             }
         }
         
