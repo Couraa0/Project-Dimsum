@@ -13,9 +13,10 @@ const YAML = require('yamljs');
 const swaggerDocument = YAML.load(path.join(__dirname, '../swagger.yaml'));
 
 const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+const backendUrl = process.env.BACKEND_URL || (isProduction ? 'https://dimsum-backend.vercel.app/api' : `http://localhost:${process.env.PORT || 5000}/api`);
 swaggerDocument.servers = [
     {
-        url: isProduction ? 'https://dimsum-backend.vercel.app/api' : `http://localhost:${process.env.PORT || 5000}/api`,
+        url: backendUrl,
         description: isProduction ? 'Production Server' : 'Local Server'
     }
 ];
@@ -146,9 +147,9 @@ app.use((err, req, res, next) => {
     res.status(err.statusCode || 500).json({ success: false, message: err.message || 'Internal Server Error' });
 });
 
-// Server initialization for local development
+// Server initialization for local development and non-Vercel environments (like Azure App Service)
 const PORT = process.env.PORT || 5000;
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
     connectDB().then(() => {
         app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
     });
