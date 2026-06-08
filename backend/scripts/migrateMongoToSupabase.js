@@ -169,7 +169,9 @@ async function migrate() {
         console.log('\n🪑 Memulai migrasi Meja...');
         const mongoTables = await MongoTable.find({}).lean();
         console.log(`Menemukan ${mongoTables.length} meja di MongoDB.`);
+        const tableIds = new Set();
         for (const table of mongoTables) {
+            tableIds.add(table._id.toString());
             await prisma.table.create({
                 data: {
                     id: table._id.toString(),
@@ -219,7 +221,11 @@ async function migrate() {
             const customer = order.customer || {};
 
             // Validasi relasi ke meja
-            const tableId = order.table ? order.table.toString() : null;
+            let tableId = order.table ? order.table.toString() : null;
+            if (tableId && !tableIds.has(tableId)) {
+                console.log(`⚠️  Meja dengan ID ${tableId} untuk Order ${order.orderNumber || orderId} tidak ditemukan di database. Mengosongkan relasi meja.`);
+                tableId = null;
+            }
 
             // Proses order items
             const items = order.items || [];

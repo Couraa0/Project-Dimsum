@@ -53,6 +53,37 @@ app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Middleware Kompatibilitas Frontend (MongoDB _id)
+app.use((req, res, next) => {
+    const originalJson = res.json;
+    res.json = function (obj) {
+        const addUnderscoreId = (data) => {
+            if (data === null || data === undefined) return data;
+            if (data instanceof Date) return data;
+            if (Buffer.isBuffer(data)) return data;
+            if (Array.isArray(data)) {
+                return data.map(addUnderscoreId);
+            }
+            if (typeof data === 'object') {
+                const newObj = {};
+                for (const key in data) {
+                    newObj[key] = addUnderscoreId(data[key]);
+                }
+                if (data.id !== undefined && data._id === undefined) {
+                    newObj._id = data.id;
+                }
+                return newObj;
+            }
+            return data;
+        };
+        if (obj && typeof obj === 'object') {
+            obj = addUnderscoreId(obj);
+        }
+        return originalJson.call(this, obj);
+    };
+    next();
+});
+
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 

@@ -7,6 +7,7 @@ import { Search, Plus, Minus, Type, MonitorSmartphone, UtensilsCrossed, Trash2, 
 import { toast } from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import Image from 'next/image';
+import { getImageUrl } from '@/lib/utils';
 
 interface CartItem {
     menuItemId: string;
@@ -246,7 +247,7 @@ export default function PosPage() {
                         {filteredMenus.map(menu => (
                             <div key={menu._id} onClick={() => addToCart(menu)} className="bg-white rounded-2xl p-3 border border-gray-100 hover:shadow-lg hover:border-[#C1121F]/30 cursor-pointer transition-all group">
                                 <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 mb-3 relative">
-                                    <Image src={menu.image.startsWith('data:') ? menu.image : `/${menu.image}`} alt={menu.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                                    <Image src={getImageUrl(menu.image)} alt={menu.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                                 </div>
                                 <div className="flex justify-between items-start gap-2">
                                     <div>
@@ -316,7 +317,7 @@ export default function PosPage() {
                             {cart.map(item => (
                                 <div key={item.menuItemId} className="flex gap-3 items-center">
                                     <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-gray-100">
-                                        <Image src={item.image.startsWith('data:') ? item.image : `/${item.image}`} alt={item.name} width={48} height={48} className="w-full h-full object-cover" />
+                                        <Image src={getImageUrl(item.image)} alt={item.name} width={48} height={48} className="w-full h-full object-cover" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h4 className="font-semibold text-sm text-gray-900 truncate">{item.name}</h4>
