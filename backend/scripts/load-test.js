@@ -8,7 +8,7 @@ async function runTest(volume, name) {
     for (let i = 0; i < volume; i++) {
         requests.push(new Promise((resolve) => {
             const reqStart = Date.now();
-            http.get('http://localhost:5000/api/health', (res) => {
+            http.get('http://localhost:5000/api/menu', (res) => {
                 res.on('data', () => { }); // Consume data
                 res.on('end', () => {
                     resolve(Date.now() - reqStart);
@@ -47,7 +47,7 @@ async function main() {
     console.log('\nTesting Complete.');
 }
 
-const checkServer = http.get('http://localhost:5000/api/health', () => {
+const checkServer = http.get('http://localhost:5000/api/menu', () => {
     main();
 }).on('error', () => {
     console.error('Error: Backend server is not running on http://localhost:5000');

@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-const Admin = require('../models/Admin');
-const User = require('../models/User');
+const prisma = require('../utils/prisma');
 
 exports.protect = async (req, res, next) => {
     try {
@@ -12,8 +11,8 @@ exports.protect = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
         // Cek Admin lama atau User yang baru
-        let account = await Admin.findById(decoded.id).select('-password');
-        if (!account) account = await User.findById(decoded.id).select('-password');
+        let account = await prisma.admin.findUnique({ where: { id: decoded.id } });
+        if (!account) account = await prisma.user.findUnique({ where: { id: decoded.id } });
 
         if (!account || !account.isActive) {
             return res.status(401).json({ success: false, message: 'Unauthorized: Invalid token or inactive account' });

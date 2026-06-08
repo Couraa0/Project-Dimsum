@@ -1,0 +1,116 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Admin {
+  id        String    @id
+  name      String
+  email     String    @unique
+  password  String
+  role      String    @default("admin")
+  isActive  Boolean   @default(true)
+  lastLogin DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model User {
+  id        String    @id
+  name      String
+  email     String    @unique
+  password  String?
+  googleId  String?
+  avatar    String?
+  role      String    @default("user")
+  isActive  Boolean   @default(true)
+  lastLogin DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Category {
+  id          String     @id
+  name        String
+  slug        String     @unique
+  icon        String     @default("🥟")
+  description String     @default("")
+  order       Int        @default(0)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  menuItems   MenuItem[]
+}
+
+model MenuItem {
+  id           String      @id
+  name         String
+  description  String      @default("")
+  price        Float
+  image        String      @default("")
+  isBestSeller Boolean     @default(false)
+  isAvailable  Boolean     @default(true)
+  stock        Int         @default(100)
+  totalOrdered Int         @default(0)
+  tags         String[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  categories   Category[]
+  orderItems   OrderItem[]
+}
+
+model Table {
+  id             String   @id
+  number         String   @unique
+  name           String   @default("")
+  capacity       Int      @default(4)
+  qrCode         String   @default("")
+  isActive       Boolean  @default(true)
+  status         String   @default("available")
+  currentOrderId String?  @unique
+  currentOrder   Order?   @relation("TableCurrentOrder", fields: [currentOrderId], references: [id])
+  orders         Order[]  @relation("TableOrders")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Order {
+  id              String      @id
+  orderNumber     String?     @unique
+  type            String
+  status          String      @default("pending")
+  subtotal        Float
+  tax             Float       @default(0)
+  total           Float
+  paymentMethod   String      @default("cash")
+  paymentStatus   String      @default("unpaid")
+  tableNumber     String?
+  tableId         String?
+  table           Table?      @relation("TableOrders", fields: [tableId], references: [id])
+  customerName    String      @default("Guest")
+  customerPhone   String      @default("")
+  customerAddress String      @default("")
+  customerNotes   String      @default("")
+  estimatedTime   Int         @default(15)
+  items           OrderItem[]
+  currentForTable Table?      @relation("TableCurrentOrder")
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id         String   @id
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  name       String
+  price      Float
+  quantity   Int
+  subtotal   Float
+  notes      String   @default("")
+}

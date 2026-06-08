@@ -1,6 +1,5 @@
-const Order = require('../models/Order');
-const MenuItem = require('../models/MenuItem');
-const Table = require('../models/Table');
+const prisma = require('../utils/prisma');
+const { v4: uuidv4 } = require('uuid');
 
 exports.createOrder = async (req, res) => {
     try {
@@ -10,11 +9,11 @@ exports.createOrder = async (req, res) => {
         let subtotal = 0;
         const populatedItems = [];
         for (const item of items) {
-            const menuItem = await MenuItem.findById(item.menuItemId);
+            const menuItem = await prisma.menuItem.findUnique({ where: { id: item.menuItemId } });
             if (!menuItem || !menuItem.isAvailable) return res.status(400).json({ success: false, message: `Menu ${item.name || item.menuItemId} tidak tersedia` });
             const subtotalItem = menuItem.price * item.quantity;
             subtotal += subtotalItem;
-            populatedItems.push({ menuItem: menuItem._id, name: menuItem.name, price: menuItem.price, quantity: item.quantity, subtotal: subtotalItem, notes: item.notes || '' });
+            populatedItems.push({ menuItem: menuItem.id, name: menuItem.name, price: menuItem.price, quantity: item.quantity, subtotal: subtotalItem, notes: item.notes || '' });
         }
 
         const tax = Math.round(subtotal * 0.0);
@@ -22,17 +21,79 @@ exports.createOrder = async (req, res) => {
 
         let tableRef = null;
         if (type === 'dine-in' && tableNumber) {
-            const table = await Table.findOne({ number: tableNumber });
-            if (table) { tableRef = table._id; table.status = 'occupied'; await table.save(); }
+            const table = await prisma.table.findUnique({ where: { number: tableNumber } });
+            if (table) {
+                tableRef = table;
+                await prisma.table.update({
+                    where: { id: table.id },
+                    data: { status: 'occupied' }
+                });
+            }
         }
 
-        const order = await Order.create({ type, items: populatedItems, subtotal, tax, total, paymentMethod: paymentMethod || 'cash', tableNumber, table: tableRef, customer: customer || {} });
+        const count = await prisma.order.count();
+        const date = new Date();
+        const orderNumber = `DR${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}-${String(count + 1).padStart(4, '0')}`;
 
+        const orderId = uuidv4();
+        const order = await prisma.order.create({
+            data: {
+                id: orderId,
+                orderNumber,
+                type,
+                subtotal,
+                tax,
+                total,
+                paymentMethod: paymentMethod || 'cash',
+                tableNumber,
+                tableId: tableRef ? tableRef.id : null,
+                customerName: customer?.name || 'Guest',
+                customerPhone: customer?.phone || '',
+                customerAddress: customer?.address || '',
+                customerNotes: customer?.notes || '',
+                items: {
+                    create: populatedItems.map(item => ({
+                        id: uuidv4(),
+                        menuItemId: item.menuItem,
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                        subtotal: item.subtotal,
+                        notes: item.notes
+                    }))
+                }
+            },
+            include: {
+                items: {
+                    include: {
+                        menuItem: {
+                            select: { name: true, image: true }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Increment totalOrdered for each menu item
         for (const item of populatedItems) {
-            await MenuItem.findByIdAndUpdate(item.menuItem, { $inc: { totalOrdered: item.quantity } });
+            await prisma.menuItem.update({
+                where: { id: item.menuItem },
+                data: { totalOrdered: { increment: item.quantity } }
+            });
         }
 
-        res.status(201).json({ success: true, data: order, message: 'Pesanan berhasil dibuat!' });
+        // Return order and rename customer fields for compatibility
+        const orderResponse = {
+            ...order,
+            customer: {
+                name: order.customerName,
+                phone: order.customerPhone,
+                address: order.customerAddress,
+                notes: order.customerNotes
+            }
+        };
+
+        res.status(201).json({ success: true, data: orderResponse, message: 'Pesanan berhasil dibuat!' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -41,21 +102,48 @@ exports.createOrder = async (req, res) => {
 exports.getOrders = async (req, res) => {
     try {
         const { status, type, date, tableNumber, page = 1, limit = 20 } = req.query;
-        const filter = {};
-        if (status) filter.status = status;
-        if (type) filter.type = type;
-        if (tableNumber) filter.tableNumber = tableNumber;
+        const where = {};
+        if (status) where.status = status;
+        if (type) where.type = type;
+        if (tableNumber) where.tableNumber = tableNumber;
         if (date) {
             const start = new Date(date); start.setHours(0, 0, 0, 0);
             const end = new Date(date); end.setHours(23, 59, 59, 999);
-            filter.createdAt = { $gte: start, $lte: end };
+            where.createdAt = { gte: start, lte: end };
         }
         const skip = (Number(page) - 1) * Number(limit);
+        const take = Number(limit);
+        
         const [orders, total] = await Promise.all([
-            Order.find(filter).sort({ createdAt: -1 }).skip(skip).limit(Number(limit)),
-            Order.countDocuments(filter)
+            prisma.order.findMany({
+                where,
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take,
+                include: {
+                    items: {
+                        include: {
+                            menuItem: {
+                                select: { name: true, image: true }
+                            }
+                        }
+                    }
+                }
+            }),
+            prisma.order.count({ where })
         ]);
-        res.json({ success: true, data: orders, total, page: Number(page), totalPages: Math.ceil(total / Number(limit)) });
+
+        const formattedOrders = orders.map(order => ({
+            ...order,
+            customer: {
+                name: order.customerName,
+                phone: order.customerPhone,
+                address: order.customerAddress,
+                notes: order.customerNotes
+            }
+        }));
+
+        res.json({ success: true, data: formattedOrders, total, page: Number(page), totalPages: Math.ceil(total / Number(limit)) });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -63,9 +151,30 @@ exports.getOrders = async (req, res) => {
 
 exports.getOrderById = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id).populate('items.menuItem', 'name image');
+        const order = await prisma.order.findUnique({
+            where: { id: req.params.id },
+            include: {
+                items: {
+                    include: {
+                        menuItem: {
+                            select: { name: true, image: true }
+                        }
+                    }
+                }
+            }
+        });
         if (!order) return res.status(404).json({ success: false, message: 'Pesanan tidak ditemukan' });
-        res.json({ success: true, data: order });
+        
+        const orderResponse = {
+            ...order,
+            customer: {
+                name: order.customerName,
+                phone: order.customerPhone,
+                address: order.customerAddress,
+                notes: order.customerNotes
+            }
+        };
+        res.json({ success: true, data: orderResponse });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -73,9 +182,30 @@ exports.getOrderById = async (req, res) => {
 
 exports.getByOrderNumber = async (req, res) => {
     try {
-        const order = await Order.findOne({ orderNumber: req.params.orderNumber }).populate('items.menuItem', 'name image');
+        const order = await prisma.order.findUnique({
+            where: { orderNumber: req.params.orderNumber },
+            include: {
+                items: {
+                    include: {
+                        menuItem: {
+                            select: { name: true, image: true }
+                        }
+                    }
+                }
+            }
+        });
         if (!order) return res.status(404).json({ success: false, message: 'Pesanan tidak ditemukan. Pastikan nomor pesanan benar.' });
-        res.json({ success: true, data: order });
+        
+        const orderResponse = {
+            ...order,
+            customer: {
+                name: order.customerName,
+                phone: order.customerPhone,
+                address: order.customerAddress,
+                notes: order.customerNotes
+            }
+        };
+        res.json({ success: true, data: orderResponse });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -84,12 +214,25 @@ exports.getByOrderNumber = async (req, res) => {
 exports.updateStatus = async (req, res) => {
     try {
         const { status } = req.body;
-        const order = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true });
+        const order = await prisma.order.update({
+            where: { id: req.params.id },
+            data: { status }
+        });
         if (!order) return res.status(404).json({ success: false, message: 'Pesanan tidak ditemukan' });
 
-        if ((status === 'delivered' || status === 'cancelled') && order.table) {
-            const pendingOrders = await Order.countDocuments({ table: order.table, status: { $nin: ['delivered', 'cancelled'] } });
-            if (pendingOrders === 0) await Table.findByIdAndUpdate(order.table, { status: 'available', currentOrderId: null });
+        if ((status === 'delivered' || status === 'cancelled') && order.tableId) {
+            const pendingOrders = await prisma.order.count({
+                where: {
+                    tableId: order.tableId,
+                    status: { notIn: ['delivered', 'cancelled'] }
+                }
+            });
+            if (pendingOrders === 0) {
+                await prisma.table.update({
+                    where: { id: order.tableId },
+                    data: { status: 'available', currentOrderId: null }
+                });
+            }
         }
         res.json({ success: true, data: order, message: `Status pesanan diupdate menjadi ${status}` });
     } catch (err) {
@@ -100,8 +243,10 @@ exports.updateStatus = async (req, res) => {
 exports.updatePayment = async (req, res) => {
     try {
         const { paymentStatus } = req.body;
-        const order = await Order.findByIdAndUpdate(req.params.id, { paymentStatus }, { new: true });
-        if (!order) return res.status(404).json({ success: false, message: 'Pesanan tidak ditemukan' });
+        const order = await prisma.order.update({
+            where: { id: req.params.id },
+            data: { paymentStatus }
+        });
         res.json({ success: true, data: order });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -128,25 +273,61 @@ exports.getDailyReport = async (req, res) => {
             endUTC = new Date(`${targetDateStr}T23:59:59.999+07:00`);
         }
 
-        const [orders, totalRevenue, topItems] = await Promise.all([
-            Order.find({ createdAt: { $gte: startUTC, $lte: endUTC }, status: { $ne: 'cancelled' } }),
-            Order.aggregate([{ $match: { createdAt: { $gte: startUTC, $lte: endUTC }, status: { $ne: 'cancelled' } } }, { $group: { _id: null, total: { $sum: '$total' } } }]),
-            Order.aggregate([
-                { $match: { createdAt: { $gte: startUTC, $lte: endUTC }, status: { $ne: 'cancelled' } } },
-                { $unwind: '$items' },
-                { $group: { _id: '$items.menuItem', name: { $first: '$items.name' }, totalQty: { $sum: '$items.quantity' }, totalRevenue: { $sum: '$items.subtotal' } } },
-                { $sort: { totalQty: -1 } },
-                { $limit: 5 }
-            ])
-        ]);
+        const orders = await prisma.order.findMany({
+            where: {
+                createdAt: { gte: startUTC, lte: endUTC },
+                status: { not: 'cancelled' }
+            }
+        });
+
+        const revenueAgg = await prisma.order.aggregate({
+            where: {
+                createdAt: { gte: startUTC, lte: endUTC },
+                status: { not: 'cancelled' }
+            },
+            _sum: {
+                total: true
+            }
+        });
+
+        const itemGroups = await prisma.orderItem.groupBy({
+            by: ['menuItemId', 'name'],
+            where: {
+                order: {
+                    createdAt: { gte: startUTC, lte: endUTC },
+                    status: { not: 'cancelled' }
+                }
+            },
+            _sum: {
+                quantity: true,
+                subtotal: true
+            },
+            orderBy: {
+                _sum: {
+                    quantity: 'desc'
+                }
+            },
+            take: 5
+        });
+
+        const topItems = itemGroups.map(item => ({
+            _id: item.menuItemId,
+            name: item.name,
+            totalQty: item._sum.quantity || 0,
+            totalRevenue: item._sum.subtotal || 0
+        }));
 
         res.json({
             success: true,
             data: {
                 date: targetDateStr,
                 totalOrders: orders.length,
-                totalRevenue: totalRevenue[0]?.total || 0,
-                byType: { 'dine-in': orders.filter(o => o.type === 'dine-in').length, 'takeaway': orders.filter(o => o.type === 'takeaway').length, 'delivery': orders.filter(o => o.type === 'delivery').length },
+                totalRevenue: revenueAgg._sum.total || 0,
+                byType: {
+                    'dine-in': orders.filter(o => o.type === 'dine-in').length,
+                    'takeaway': orders.filter(o => o.type === 'takeaway').length,
+                    'delivery': orders.filter(o => o.type === 'delivery').length
+                },
                 topItems,
             }
         });
@@ -169,21 +350,42 @@ exports.getMonthlyReport = async (req, res) => {
             endDate = new Date(`${year}-12-31T23:59:59.999+07:00`);
         }
 
-        const data = await Order.aggregate([
-            { $match: { createdAt: { $gte: startDate, $lte: endDate }, status: { $ne: 'cancelled' } } },
-            {
-                $group: {
-                    _id: {
-                        year: { $year: { date: '$createdAt', timezone: 'Asia/Jakarta' } },
-                        month: { $month: { date: '$createdAt', timezone: 'Asia/Jakarta' } },
-                        day: { $dayOfMonth: { date: '$createdAt', timezone: 'Asia/Jakarta' } }
-                    },
-                    totalOrders: { $sum: 1 },
-                    totalRevenue: { $sum: '$total' }
-                }
+        const orders = await prisma.order.findMany({
+            where: {
+                createdAt: { gte: startDate, lte: endDate },
+                status: { not: 'cancelled' }
             },
-            { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 } }
-        ]);
+            select: {
+                createdAt: true,
+                total: true
+            }
+        });
+
+        const groups = {};
+        for (const order of orders) {
+            // konversi UTC ke timezone Jakarta (Asia/Jakarta = UTC+7)
+            const localDate = new Date(order.createdAt.getTime() + 7 * 60 * 60 * 1000);
+            const y = localDate.getUTCFullYear();
+            const m = localDate.getUTCMonth() + 1;
+            const d = localDate.getUTCDate();
+            const key = `${y}-${m}-${d}`;
+            if (!groups[key]) {
+                groups[key] = {
+                    _id: { year: y, month: m, day: d },
+                    totalOrders: 0,
+                    totalRevenue: 0
+                };
+            }
+            groups[key].totalOrders += 1;
+            groups[key].totalRevenue += order.total;
+        }
+
+        const data = Object.values(groups).sort((a, b) => {
+            if (a._id.year !== b._id.year) return a._id.year - b._id.year;
+            if (a._id.month !== b._id.month) return a._id.month - b._id.month;
+            return a._id.day - b._id.day;
+        });
+
         res.json({ success: true, data });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

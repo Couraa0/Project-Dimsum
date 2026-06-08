@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const path = require('path');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
@@ -67,18 +67,17 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
 }));
 
 // Database connection logic for Serverless
+const prisma = require('./utils/prisma');
 let isConnected = false;
 const connectDB = async () => {
     if (isConnected) return;
     try {
-        const db = await mongoose.connect(process.env.MONGODB_URI, {
-            serverSelectionTimeoutMS: 5000,
-        });
-        isConnected = db.connections[0].readyState === 1;
-        console.log('✅ MongoDB Connected');
+        await prisma.$connect();
+        isConnected = true;
+        console.log('✅ Supabase Connected');
         seedData().catch(err => console.error('Seed error:', err));
     } catch (err) {
-        console.error('❌ MongoDB connection failed:', err.message);
+        console.error('❌ Supabase connection failed:', err.message);
         throw err;
     }
 };
@@ -127,21 +126,26 @@ if (process.env.NODE_ENV !== 'production') {
 module.exports = app;
 
 async function seedData() {
-    const Admin = require('./models/Admin');
-    const Category = require('./models/Category');
-    const MenuItem = require('./models/MenuItem');
+    const prisma = require('./utils/prisma');
+    const { v4: uuidv4 } = require('uuid');
 
-    const catCount = await Category.countDocuments();
-    if (catCount === 0) {
-        await Category.insertMany([
-            { name: 'Dimsum Kukus', slug: 'dimsum-kukus', icon: '🥟', order: 1 },
-            { name: 'Dimsum Goreng', slug: 'dimsum-goreng', icon: '🍤', order: 2 },
-            { name: 'Paket Mix', slug: 'paket-mix', icon: '🎁', order: 3 },
-            { name: 'Minuman', slug: 'minuman', icon: '🍵', order: 4 },
-            { name: 'Jus', slug: 'jus', icon: '🍹', order: 5 },
-            { name: 'Coffee', slug: 'coffee', icon: '☕', order: 6 },
-            { name: 'Cemilan', slug: 'cemilan', icon: '🍟', order: 7 },
-        ]);
-        console.log('📂 Default categories created');
+    try {
+        const catCount = await prisma.category.count();
+        if (catCount === 0) {
+            await prisma.category.createMany({
+                data: [
+                    { id: uuidv4(), name: 'Dimsum Kukus', slug: 'dimsum-kukus', icon: '🥟', order: 1 },
+                    { id: uuidv4(), name: 'Dimsum Goreng', slug: 'dimsum-goreng', icon: '🍤', order: 2 },
+                    { id: uuidv4(), name: 'Paket Mix', slug: 'paket-mix', icon: '🎁', order: 3 },
+                    { id: uuidv4(), name: 'Minuman', slug: 'minuman', icon: '🍵', order: 4 },
+                    { id: uuidv4(), name: 'Jus', slug: 'jus', icon: '🍹', order: 5 },
+                    { id: uuidv4(), name: 'Coffee', slug: 'coffee', icon: '☕', order: 6 },
+                    { id: uuidv4(), name: 'Cemilan', slug: 'cemilan', icon: '🍟', order: 7 },
+                ]
+            });
+            console.log('📂 Default categories created');
+        }
+    } catch (err) {
+        console.error('Seed error:', err);
     }
 }
