@@ -21,7 +21,7 @@ const YAML = require('yamljs');
 const swaggerDocument = YAML.load(path.join(__dirname, '../swagger.yaml'));
 
 const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
-const backendUrl = process.env.BACKEND_URL || (isProduction ? 'https://dimsum-backend.vercel.app/api' : `http://localhost:${process.env.PORT || 5000}/api`);
+const backendUrl = process.env.BACKEND_URL || (isProduction ? 'https://dimsum-ratu-backend-h5dmd4gwf4dsd6a9.indonesiacentral-01.azurewebsites.net/api' : `http://localhost:${process.env.PORT || 5000}/api`);
 swaggerDocument.servers = [
     {
         url: backendUrl,
