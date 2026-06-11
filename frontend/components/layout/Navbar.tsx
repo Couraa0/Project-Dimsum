@@ -5,7 +5,9 @@ import { useState, useEffect } from 'react';
 import { ShoppingCart, Menu, X, User as UserIcon, LogOut } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
+import { useSettingsStore } from '@/store/settingsStore';
 import { usePathname } from 'next/navigation';
+
 
 export default function Navbar() {
     const [open, setOpen] = useState(false);
@@ -13,7 +15,25 @@ export default function Navbar() {
     const [mounted, setMounted] = useState(false);
     const count = useCartStore(s => s.getCount());
     const { isAuthenticated, user, logout } = useAuthStore();
+    const settings = useSettingsStore(s => s.settings);
     const pathname = usePathname();
+
+    const logoUrl = (mounted && settings?.logo) ? settings.logo : '/logo.png';
+    const storeName = (mounted && settings?.storeName) ? settings.storeName : 'Dimsum Ratu';
+
+    const renderBrandName = () => {
+        if (!storeName) return null;
+        const parts = storeName.split(' ');
+        if (parts.length > 1) {
+            return (
+                <>
+                    <span className="font-extrabold text-[#C1121F] text-lg tracking-tight">{parts[0]}</span>
+                    <span className="font-bold text-gray-600 text-lg tracking-wide uppercase ml-1">{parts.slice(1).join(' ')}</span>
+                </>
+            );
+        }
+        return <span className="font-extrabold text-[#C1121F] text-lg tracking-tight">{storeName}</span>;
+    };
 
     useEffect(() => {
         setMounted(true);
@@ -44,11 +64,10 @@ export default function Navbar() {
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2.5 group">
                     <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-sm ring-2 ring-red-100 group-hover:ring-red-300 transition-all">
-                        <Image src="/logo.png" alt="Dimsum Ratu Logo" width={36} height={36} className="object-cover" />
+                        <Image src={logoUrl} alt={`${storeName} Logo`} width={36} height={36} className="object-cover" />
                     </div>
                     <div className="flex items-center gap-1">
-                        <span className="font-extrabold text-[#C1121F] text-lg tracking-tight">Dimsum</span>
-                        <span className="font-bold text-gray-600 text-lg tracking-wide uppercase">Ratu</span>
+                        {renderBrandName()}
                     </div>
                 </Link>
 

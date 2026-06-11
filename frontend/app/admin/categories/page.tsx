@@ -29,12 +29,12 @@ export default function AdminCategoriesPage() {
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        load();
+        load(true);
     }, []);
 
-    const load = async () => {
+    const load = async (showSkeleton = false) => {
         try {
-            setLoading(true);
+            if (showSkeleton) setLoading(true);
             const res = await categoriesApi.getAllAdmin();
             setCategories(res.data.data);
         } catch (err: any) {

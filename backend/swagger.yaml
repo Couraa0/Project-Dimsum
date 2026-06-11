@@ -736,3 +736,37 @@ paths:
       responses:
         "200":
           description: User deleted
+
+  /settings:
+    get:
+      summary: Get store settings (Public)
+      tags: [Settings]
+      security: []
+      responses:
+        "200":
+          description: Store settings retrieved
+    patch:
+      summary: Update store settings (Admin)
+      tags: [Settings]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                storeName:
+                  type: string
+                address:
+                  type: string
+                operatingHours:
+                  type: string
+                contact:
+                  type: string
+                logo:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Settings updated
+

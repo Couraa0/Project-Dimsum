@@ -4,6 +4,8 @@ import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSettingsStore } from '@/store/settingsStore';
+
 import {
     Plus, Minus, ShoppingCart, X, CheckCircle,
     UtensilsCrossed, Star, ChevronRight, Users,
@@ -21,6 +23,7 @@ function DineInContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const tableNum = searchParams.get('meja') || '';
+    const settings = useSettingsStore(s => s.settings);
 
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -30,6 +33,8 @@ function DineInContent() {
     const [tableInfo, setTableInfo] = useState<any>(null);
     const [showCart, setShowCart] = useState(false);
     const [mounted, setMounted] = useState(false);
+
+    const storeName = (mounted && settings?.storeName) ? settings.storeName : 'Dimsum Ratu';
 
     const {
         items: cartItems, addItem, updateQuantity,
@@ -80,6 +85,17 @@ function DineInContent() {
     };
 
     /* ── MAIN ─────────────────────────────────────────────── */
+    if (!mounted) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-gray-200 border-t-[#C1121F] rounded-full animate-spin" />
+                    <p className="text-sm text-gray-400 font-medium">Memuat menu...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 pb-32">
 
@@ -93,7 +109,7 @@ function DineInContent() {
                     </div>
                     {/* Title */}
                     <h1 className="text-2xl font-extrabold text-white leading-tight">
-                        {tableNum ? `Meja ${tableNum}` : 'Dimsum Ratu'}
+                        {tableNum ? `Meja ${tableNum}` : storeName}
                     </h1>
                     {tableInfo && (
                         <div className="flex items-center gap-2 mt-1.5">

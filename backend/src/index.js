@@ -35,8 +35,11 @@ const menuRoutes = require('./routes/menu');
 const orderRoutes = require('./routes/orders');
 const tableRoutes = require('./routes/tables');
 const userRoutes = require('./routes/users');
+const settingsRoutes = require('./routes/settings');
+const testimonialRoutes = require('./routes/testimonials');
 
 const performanceMonitor = require('./middleware/performance');
+
 
 const app = express();
 
@@ -138,6 +141,9 @@ app.use('/api/menu', menuRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/tables', tableRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/testimonials', testimonialRoutes);
+
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ success: true, message: 'Dimsum Ratu API is running 🥟', env: process.env.NODE_ENV }));
@@ -184,6 +190,39 @@ async function seedData() {
                 ]
             });
             console.log('📂 Default categories created');
+        }
+
+        const settingsCount = await prisma.storeSettings.count();
+        if (settingsCount === 0) {
+            await prisma.storeSettings.create({
+                data: {
+                    id: 'default',
+                    storeName: 'Dimsum Ratu',
+                    logo: '/logo.png',
+                    address: 'Jl. Raya Karawang No. 88, Karawang Barat, Jawa Barat',
+                    operatingHours: 'Setiap Hari: 10.00 – 21.00 WIB',
+                    contact: '0878-7131-0560',
+                    instagram: '@dimsumratu',
+                    mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63447.39099520374!2d107.27120727889587!3d-6.334154474228071!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6977baaaffcbfd%3A0x6d3a08c27370d633!2sDimsum%20Ratu%20Oishii!5e0!3m2!1sid!2sid!4v1772400307613!5m2!1sid!2sid',
+                    facebookUrl: '#',
+                    instagramUrl: '#',
+                    tiktokUrl: '#'
+                }
+            });
+            console.log('⚙️ Default store settings created');
+        }
+
+        const testimonialCount = await prisma.testimonial.count();
+        if (testimonialCount === 0) {
+            await prisma.testimonial.createMany({
+                data: [
+                    { id: uuidv4(), name: 'Siti Rahayu', role: 'Pelanggan Setia', text: 'Dimsum-nya enak banget! Har gow-nya lembut dan isian udaranya terasa segar. Sudah 3x order delivery, selalu on time dan panas!', rating: 5, avatar: '👩' },
+                    { id: uuidv4(), name: 'Budi Santoso', role: 'Food Blogger', text: 'Kualitas rasa setara restoran, tapi harga sangat terjangkau. Paket mix-nya worth it banget untuk keluarga. Highly recommended!', rating: 5, avatar: '👨' },
+                    { id: uuidv4(), name: 'Maya Putri', role: 'Ibu Rumah Tangga', text: 'QR code di meja keren banget, anak-anak senang pesan sendiri! Sistemnya mudah dan pesanan cepat datang. Pasti balik lagi!', rating: 5, avatar: '👩‍👧' },
+                    { id: uuidv4(), name: 'Rudi Hermawan', role: 'Karyawan Swasta', text: 'Paket hemat kantor jadi andalan saya setiap hari Jumat. Porsinya pas, enak, dan pengirimannya cepat sampai kantor.', rating: 5, avatar: '👨' }
+                ]
+            });
+            console.log('💬 Default testimonials seeded');
         }
     } catch (err) {
         console.error('Seed error:', err);

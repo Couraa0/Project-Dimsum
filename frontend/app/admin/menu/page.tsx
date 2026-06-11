@@ -26,13 +26,15 @@ export default function AdminMenuPage() {
     const [preview, setPreview] = useState('');
     const fileRef = useRef<HTMLInputElement>(null);
 
-    const load = () => {
-        setLoading(true);
+    const load = (showSkeleton = false) => {
+        if (showSkeleton) setLoading(true);
         Promise.all([menuApi.getAllAdmin({ search }), categoriesApi.getAllAdmin()])
             .then(([menuRes, catRes]) => { setItems(menuRes.data.data); setCategories(catRes.data.data); })
             .finally(() => setLoading(false));
     };
-    useEffect(load, [search]);
+    useEffect(() => {
+        load(true);
+    }, [search]);
 
     const openCreate = () => { setForm(defaultForm); setPreview(''); setEditId(null); setShowModal(true); };
     const openEdit = (item: MenuItem) => {

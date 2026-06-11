@@ -86,4 +86,17 @@ export const usersApi = {
     delete: (id: string) => api.delete(`/users/${id}`),
 };
 
+export const settingsApi = {
+    getAll: () => api.get('/settings'),
+    update: (formData: FormData) => api.patch('/settings', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+};
+
+export const testimonialsApi = {
+    getAll: () => api.get('/testimonials'),
+    create: (data: object) => api.post('/testimonials', data),
+    update: (id: string, data: object) => api.patch(`/testimonials/${id}`, data),
+    delete: (id: string) => api.delete(`/testimonials/${id}`),
+};
+
 export default api;
+

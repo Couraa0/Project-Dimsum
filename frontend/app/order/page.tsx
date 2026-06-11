@@ -1,8 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useSettingsStore } from '@/store/settingsStore';
+
 import {
     ArrowLeft, CheckCircle, ChevronRight,
     Banknote, Smartphone, CreditCard,
@@ -31,11 +33,9 @@ const ORDER_TYPE_LABEL: Record<string, string> = {
 
 export default function OrderPage() {
     const router = useRouter();
-    const {
-        items, orderType, paymentMethod, customer, tableNumber,
-        setPaymentMethod, setCustomer, clearCart,
-        getTotal, getCount,
-    } = useCartStore();
+    const [mounted, setMounted] = useState(false);
+    const settings = useSettingsStore(s => s.settings);
+    const storeName = (mounted && settings?.storeName) ? settings.storeName : 'Dimsum Ratu';
 
     const [step, setStep] = useState<Step>('info');
     const [loading, setLoading] = useState(false);
@@ -48,6 +48,27 @@ export default function OrderPage() {
         total: number;
         createdAt: string;
     } | null>(null);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const {
+        items, orderType, paymentMethod, customer, tableNumber,
+        setPaymentMethod, setCustomer, clearCart,
+        getTotal, getCount,
+    } = useCartStore();
+
+    if (!mounted) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-gray-200 border-t-[#C1121F] rounded-full animate-spin" />
+                    <p className="text-sm text-gray-400 font-medium">Memuat halaman...</p>
+                </div>
+            </div>
+        );
+    }
 
     const total = getTotal();
     const count = getCount();
@@ -141,7 +162,7 @@ export default function OrderPage() {
 
                     {/* Receipt header */}
                     <div className="text-center px-6 pt-6 pb-4 border-b border-dashed border-gray-200">
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Dimsum Ratu</p>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">{storeName}</p>
                         <p className="text-[10px] text-gray-400">{orderSnapshot?.createdAt ?? new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' })}</p>
                         <p className="text-xs text-gray-400 mt-1">Nomor Pesanan</p>
                         {/* Order number + copy button */}

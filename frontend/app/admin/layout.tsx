@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, UtensilsCrossed, ShoppingBag, QrCode, BarChart3, LogOut, Menu, X, ChevronRight, ChevronLeft, Users, MonitorSmartphone, Layers } from 'lucide-react';
+import { LayoutDashboard, UtensilsCrossed, ShoppingBag, QrCode, BarChart3, LogOut, Menu, X, ChevronRight, ChevronLeft, Users, MonitorSmartphone, Layers, Settings, MessageSquare } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import { useSettingsStore } from '@/store/settingsStore';
 import { toast } from 'react-hot-toast';
 
 const navItems = [
@@ -16,7 +17,10 @@ const navItems = [
     { href: '/admin/tables', label: 'Meja & QR', icon: QrCode, roles: ['admin'] },
     { href: '/admin/reports', label: 'Laporan', icon: BarChart3, roles: ['admin'] },
     { href: '/admin/users', label: 'Pengguna', icon: Users, roles: ['admin'] },
+    { href: '/admin/testimonials', label: 'Testimoni', icon: MessageSquare, roles: ['admin'] },
+    { href: '/admin/settings', label: 'Pengaturan', icon: Settings, roles: ['admin'] },
 ];
+
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -24,6 +28,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const { user, isAuthenticated, logout } = useAuthStore();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    const settings = useSettingsStore(s => s.settings);
+    const fetchSettings = useSettingsStore(s => s.fetchSettings);
+
+    useEffect(() => {
+        setMounted(true);
+        if (!settings) {
+            fetchSettings();
+        }
+    }, [settings, fetchSettings]);
+
+    const logoUrl = (mounted && settings?.logo) ? settings.logo : '/logo.png';
+    const storeName = (mounted && settings?.storeName) ? settings.storeName : 'Dimsum Ratu';
 
     useEffect(() => {
         if (!isAuthenticated && pathname !== '/admin') {
@@ -38,7 +56,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }
     }, [isAuthenticated, pathname, router, user]);
 
-    if (!isAuthenticated) return null;
+    if (!mounted || !isAuthenticated) return null;
 
     const handleLogout = () => {
         logout();
@@ -52,11 +70,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className={`border-b border-gray-100 flex ${isMinimized ? 'flex-col items-center justify-center py-4 gap-3' : 'items-center justify-between p-6'}`}>
                 <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
-                        <Image src="/logo.png" alt="Logo" width={48} height={48} className="object-cover" />
+                        <Image src={logoUrl} alt="Logo" width={48} height={48} className="object-cover" />
                     </div>
                     {!isMinimized && (
                         <div>
-                            <div className="font-bold text-gray-900 leading-none">Dimsum Ratu</div>
+                            <div className="font-bold text-gray-900 leading-none">{storeName}</div>
                             <div className="text-xs text-gray-400 mt-1">Admin Panel</div>
                         </div>
                     )}
@@ -138,9 +156,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <header className="md:hidden flex items-center justify-between px-4 h-14 bg-white border-b border-gray-100">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
-                            <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-cover" />
+                            <Image src={logoUrl} alt="Logo" width={32} height={32} className="object-cover" />
                         </div>
-                        <span className="font-bold text-gray-800 text-sm">Dimsum Ratu Admin</span>
+                        <span className="font-bold text-gray-800 text-sm">{storeName} Admin</span>
                     </div>
                     <button onClick={() => setSidebarOpen(true)} className="p-2 hover:bg-gray-100 rounded-xl">
                         <Menu size={20} />
