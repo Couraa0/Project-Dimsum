@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useCartStore } from '@/store/cartStore';
@@ -24,16 +24,16 @@ export default function CartSidebar({ onClose }: { onClose?: () => void }) {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold text-gray-800 truncate">{menuItem.name}</p>
-                                <p className="text-[#C1121F] font-bold text-sm mt-1">{formatCurrency(menuItem.price)}</p>
+                                <p className="text-[var(--color-primary)] font-bold text-sm mt-1">{formatCurrency(menuItem.price)}</p>
                                 <div className="flex items-center gap-2 mt-2">
-                                    <button onClick={() => updateQuantity(menuItem._id, quantity - 1)} className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center hover:bg-red-100 transition-colors">
+                                    <button onClick={() => updateQuantity(menuItem._id, quantity - 1)} className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center hover:bg-[var(--color-100)] transition-colors">
                                         <Minus size={12} />
                                     </button>
                                     <span className="w-5 text-center text-sm font-semibold">{quantity}</span>
-                                    <button onClick={() => updateQuantity(menuItem._id, quantity + 1)} className="w-6 h-6 rounded-full bg-[#C1121F] text-white flex items-center justify-center hover:bg-[#a50f1a] transition-colors">
+                                    <button onClick={() => updateQuantity(menuItem._id, quantity + 1)} className="w-6 h-6 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center hover:bg-[var(--color-hover)] transition-colors">
                                         <Plus size={12} />
                                     </button>
-                                    <button onClick={() => removeItem(menuItem._id)} className="ml-auto text-gray-400 hover:text-red-500 transition-colors">
+                                    <button onClick={() => removeItem(menuItem._id)} className="ml-auto text-gray-400 hover:text-[var(--color-primary)] transition-colors">
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
@@ -46,9 +46,9 @@ export default function CartSidebar({ onClose }: { onClose?: () => void }) {
                 <div className="p-4 border-t border-gray-100">
                     <div className="flex justify-between mb-4">
                         <span className="text-gray-600 font-medium">Total</span>
-                        <span className="font-bold text-[#C1121F] text-lg">{formatCurrency(getTotal())}</span>
+                        <span className="font-bold text-[var(--color-primary)] text-lg">{formatCurrency(getTotal())}</span>
                     </div>
-                    <a href="/cart" className="block w-full py-3 bg-[#C1121F] text-white text-center rounded-xl font-semibold hover:bg-[#a50f1a] transition-colors shadow-md shadow-red-200">
+                    <a href="/cart" className="block w-full py-3 bg-[var(--color-primary)] text-white text-center rounded-xl font-semibold hover:bg-[var(--color-hover)] transition-colors shadow-md shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)]">
                         Lanjut ke Keranjang →
                     </a>
                 </div>

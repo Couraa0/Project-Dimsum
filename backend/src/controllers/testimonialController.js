@@ -1,5 +1,5 @@
 const prisma = require('../utils/prisma');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 exports.getAllTestimonials = async (req, res) => {
     try {
@@ -21,7 +21,7 @@ exports.createTestimonial = async (req, res) => {
 
         const testimonial = await prisma.testimonial.create({
             data: {
-                id: uuidv4(),
+                id: randomUUID(),
                 name,
                 role,
                 text,

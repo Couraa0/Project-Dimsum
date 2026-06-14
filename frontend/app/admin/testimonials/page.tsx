@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect } from 'react';
 import { testimonialsApi } from '@/lib/api';
 import { toast } from 'react-hot-toast';
@@ -137,7 +137,7 @@ export default function AdminTestimonialsPage() {
                         <p className="text-gray-400 text-sm mt-0.5">Atur ulasan dari pelanggan setia yang tampil di beranda utama</p>
                     </div>
                 </div>
-                <button onClick={handleOpenAdd} className="px-5 py-3 bg-[#C1121F] text-white rounded-xl font-bold text-sm hover:bg-[#a50f1a] transition-all hover:scale-[1.02] flex items-center justify-center gap-2 shadow-md shadow-red-100">
+                <button onClick={handleOpenAdd} className="px-5 py-3 bg-[var(--color-primary)] text-white rounded-xl font-bold text-sm hover:bg-[var(--color-hover)] transition-all hover:scale-[1.02] flex items-center justify-center gap-2 shadow-md shadow-[0_4px_12px_rgba(var(--color-rgb),0.1)]">
                     <Plus size={16} /> Tambah Testimoni
                 </button>
             </div>
@@ -149,19 +149,19 @@ export default function AdminTestimonialsPage() {
                     placeholder="Cari testimoni berdasarkan nama atau isi ulasan..." 
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C1121F] focus:ring-2 focus:ring-red-100 transition-all"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-100)] transition-all"
                 />
             </div>
 
             {/* List */}
             {loading ? (
                 <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
-                    <div className="w-10 h-10 border-4 border-red-200 border-t-[#C1121F] rounded-full animate-spin mb-4" />
+                    <div className="w-10 h-10 border-4 border-[var(--color-200)] border-t-[var(--color-primary)] rounded-full animate-spin mb-4" />
                     <p className="text-gray-400 text-sm">Memuat testimoni...</p>
                 </div>
             ) : filtered.length === 0 ? (
                 <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
-                    <div className="w-16 h-16 bg-red-50 text-[#C1121F] rounded-2xl flex items-center justify-center mb-4">
+                    <div className="w-16 h-16 bg-[var(--color-50)] text-[var(--color-primary)] rounded-2xl flex items-center justify-center mb-4">
                         <MessageSquare size={28} />
                     </div>
                     <h3 className="text-lg font-bold text-gray-800 mb-1">Belum ada testimoni</h3>
@@ -183,7 +183,7 @@ export default function AdminTestimonialsPage() {
 
                             <div className="flex items-center justify-between border-t border-gray-50 pt-4 mt-auto">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center text-xl ring-2 ring-red-100">
+                                    <div className="w-10 h-10 bg-[var(--color-50)] rounded-full flex items-center justify-center text-xl ring-2 ring-[var(--color-100)]">
                                         {item.avatar}
                                     </div>
                                     <div>
@@ -193,10 +193,10 @@ export default function AdminTestimonialsPage() {
                                 </div>
                                 
                                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => handleOpenEdit(item)} className="p-2 bg-gray-50 hover:bg-red-50 text-gray-500 hover:text-[#C1121F] rounded-xl transition-all" title="Edit">
+                                    <button onClick={() => handleOpenEdit(item)} className="p-2 bg-gray-50 hover:bg-[var(--color-50)] text-gray-500 hover:text-[var(--color-primary)] rounded-xl transition-all" title="Edit">
                                         <Edit2 size={14} />
                                     </button>
-                                    <button onClick={() => handleDelete(item.id)} className="p-2 bg-gray-50 hover:bg-red-50 text-gray-500 hover:text-red-600 rounded-xl transition-all" title="Hapus">
+                                    <button onClick={() => handleDelete(item.id)} className="p-2 bg-gray-50 hover:bg-[var(--color-50)] text-gray-500 hover:text-[var(--color-hover)] rounded-xl transition-all" title="Hapus">
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
@@ -231,7 +231,7 @@ export default function AdminTestimonialsPage() {
                                         placeholder="Contoh: Siti Rahayu"
                                         value={name}
                                         onChange={e => setName(e.target.value)}
-                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all"
+                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
                                         required
                                     />
                                 </div>
@@ -242,7 +242,7 @@ export default function AdminTestimonialsPage() {
                                         placeholder="Contoh: Pelanggan Setia"
                                         value={role}
                                         onChange={e => setRole(e.target.value)}
-                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all"
+                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
                                         required
                                     />
                                 </div>
@@ -254,7 +254,7 @@ export default function AdminTestimonialsPage() {
                                     <select 
                                         value={rating}
                                         onChange={e => setRating(parseInt(e.target.value))}
-                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all bg-white"
+                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all bg-white"
                                     >
                                         <option value={5}>⭐⭐⭐⭐⭐ (5 Bintang)</option>
                                         <option value={4}>⭐⭐⭐⭐ (4 Bintang)</option>
@@ -270,7 +270,7 @@ export default function AdminTestimonialsPage() {
                                         placeholder="Contoh: 👩 atau 👨"
                                         value={avatar}
                                         onChange={e => setAvatar(e.target.value)}
-                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all text-center text-lg"
+                                        className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all text-center text-lg"
                                         maxLength={3}
                                         required
                                     />
@@ -284,7 +284,7 @@ export default function AdminTestimonialsPage() {
                                     placeholder="Masukkan ulasan pelanggan..."
                                     value={text}
                                     onChange={e => setText(e.target.value)}
-                                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all resize-none"
+                                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all resize-none"
                                     required
                                 />
                             </div>
@@ -294,7 +294,7 @@ export default function AdminTestimonialsPage() {
                                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl font-bold text-xs transition-all">
                                     Batal
                                 </button>
-                                <button type="submit" disabled={saving} className="px-5 py-2.5 bg-[#C1121F] text-white rounded-xl font-bold text-xs hover:bg-[#a50f1a] transition-all hover:scale-[1.01] flex items-center justify-center gap-1.5 disabled:opacity-60">
+                                <button type="submit" disabled={saving} className="px-5 py-2.5 bg-[var(--color-primary)] text-white rounded-xl font-bold text-xs hover:bg-[var(--color-hover)] transition-all hover:scale-[1.01] flex items-center justify-center gap-1.5 disabled:opacity-60">
                                     <Save size={13} /> {saving ? 'Menyimpan...' : 'Simpan'}
                                 </button>
                             </div>

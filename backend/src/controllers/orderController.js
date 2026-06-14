@@ -1,5 +1,5 @@
 const prisma = require('../utils/prisma');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 exports.createOrder = async (req, res) => {
     try {
@@ -35,7 +35,7 @@ exports.createOrder = async (req, res) => {
         const date = new Date();
         const orderNumber = `DR${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}-${String(count + 1).padStart(4, '0')}`;
 
-        const orderId = uuidv4();
+        const orderId = randomUUID();
         const order = await prisma.order.create({
             data: {
                 id: orderId,
@@ -53,7 +53,7 @@ exports.createOrder = async (req, res) => {
                 customerNotes: customer?.notes || '',
                 items: {
                     create: populatedItems.map(item => ({
-                        id: uuidv4(),
+                        id: randomUUID(),
                         menuItemId: item.menuItem,
                         name: item.name,
                         price: item.price,

@@ -89,7 +89,7 @@ function DineInContent() {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-gray-200 border-t-[#C1121F] rounded-full animate-spin" />
+                    <div className="w-12 h-12 border-4 border-gray-200 border-t-[var(--color-primary)] rounded-full animate-spin" />
                     <p className="text-sm text-gray-400 font-medium">Memuat menu...</p>
                 </div>
             </div>
@@ -100,7 +100,7 @@ function DineInContent() {
         <div className="min-h-screen bg-gray-50 pb-32">
 
             {/* ── Header ──────────────────────────────────── */}
-            <div className="bg-gradient-to-b from-[#C1121F] to-[#9e0f1a] pt-12 pb-16">
+            <div className="bg-gradient-to-b from-[var(--color-primary)] to-[var(--color-hover)] pt-12 pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     {/* Badge */}
                     <div className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur rounded-full px-3 py-1 mb-3">
@@ -130,7 +130,7 @@ function DineInContent() {
                         placeholder="Cari menu..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-white rounded-2xl border border-gray-100 shadow-sm text-sm focus:outline-none focus:border-[#C1121F] focus:ring-2 focus:ring-red-100 transition-all"
+                        className="w-full pl-10 pr-4 py-3 bg-white rounded-2xl border border-gray-100 shadow-sm text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-100)] transition-all"
                     />
                 </div>
 
@@ -138,13 +138,13 @@ function DineInContent() {
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                     <button
                         onClick={() => setActiveCategory('')}
-                        className={`shrink-0 px-4 py-2 rounded-2xl text-xs font-bold transition-all ${!activeCategory ? 'bg-[#C1121F] text-white shadow-md shadow-red-200' : 'bg-white text-gray-500 hover:bg-gray-50 shadow-sm'}`}>
+                        className={`shrink-0 px-4 py-2 rounded-2xl text-xs font-bold transition-all ${!activeCategory ? 'bg-[var(--color-primary)] text-white shadow-md shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)]' : 'bg-white text-gray-500 hover:bg-gray-50 shadow-sm'}`}>
                         Semua
                     </button>
                     {categories.map(cat => (
                         <button key={cat._id}
                             onClick={() => setActiveCategory(activeCategory === cat._id ? '' : cat._id)}
-                            className={`shrink-0 px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap ${activeCategory === cat._id ? 'bg-[#C1121F] text-white shadow-md shadow-red-200' : 'bg-white text-gray-500 hover:bg-gray-50 shadow-sm'}`}>
+                            className={`shrink-0 px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap ${activeCategory === cat._id ? 'bg-[var(--color-primary)] text-white shadow-md shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)]' : 'bg-white text-gray-500 hover:bg-gray-50 shadow-sm'}`}>
                             {cat.name}
                         </button>
                     ))}
@@ -192,7 +192,7 @@ function DineInContent() {
                                             </div>
                                         )}
                                         {item.isBestSeller && item.isAvailable && (
-                                            <div className="absolute top-2 left-2 bg-[#C1121F] text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                                            <div className="absolute top-2 left-2 bg-[var(--color-primary)] text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg">
                                                 <Star size={10} fill="white" /> Best Seller
                                             </div>
                                         )}
@@ -203,19 +203,19 @@ function DineInContent() {
                                         <h3 className="font-semibold text-gray-800 mb-1 text-sm leading-snug">{item.name}</h3>
                                         <p className="text-gray-400 text-xs mb-3 leading-relaxed line-clamp-2">{item.description}</p>
                                         <div className="flex items-center justify-between">
-                                            <span className="font-bold text-[#C1121F] text-base">{formatCurrency(item.price)}</span>
+                                            <span className="font-bold text-[var(--color-primary)] text-base">{formatCurrency(item.price)}</span>
                                             {/* Qty controls or Add button */}
                                             {cartItem ? (
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         onClick={() => updateQuantity(item._id, cartItem.quantity - 1)}
-                                                        className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-red-50 text-gray-600 transition-colors">
+                                                        className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-[var(--color-50)] text-gray-600 transition-colors">
                                                         <Minus size={13} />
                                                     </button>
                                                     <span className="font-bold text-sm text-gray-800 flex-1 text-center">{cartItem.quantity}</span>
                                                     <button
                                                         onClick={() => updateQuantity(item._id, cartItem.quantity + 1)}
-                                                        className="w-8 h-8 rounded-full bg-[#C1121F] text-white flex items-center justify-center hover:bg-[#a50f1a] transition-colors">
+                                                        className="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center hover:bg-[var(--color-hover)] transition-colors">
                                                         <Plus size={13} />
                                                     </button>
                                                 </div>
@@ -227,7 +227,7 @@ function DineInContent() {
                                                         toast.success(`${item.name} ditambahkan!`, { icon: '🥟', duration: 1500 });
                                                     }}
                                                     disabled={!item.isAvailable}
-                                                    className="w-8 h-8 bg-[#C1121F] text-white rounded-full flex items-center justify-center hover:bg-[#a50f1a] disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-110 shadow-md shadow-red-100">
+                                                    className="w-8 h-8 bg-[var(--color-primary)] text-white rounded-full flex items-center justify-center hover:bg-[var(--color-hover)] disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-110 shadow-md shadow-[0_4px_12px_rgba(var(--color-rgb),0.1)]">
                                                     <Plus size={16} />
                                                 </button>
                                             )}
@@ -244,15 +244,14 @@ function DineInContent() {
             {mounted && count > 0 && !showCart && (
                 <button
                     onClick={() => setShowCart(true)}
-                    className="fixed bottom-6 right-6 bg-[#C1121F] text-white rounded-2xl px-6 py-4 shadow-xl shadow-red-300/50 flex items-center gap-3 hover:bg-[#a50f1a] transition-all hover:scale-105 z-40">
+                    className="fixed bottom-6 right-6 bg-[var(--color-primary)] text-white rounded-2xl px-6 py-4 shadow-xl shadow-[0_8px_24px_rgba(var(--color-rgb),0.3)] flex items-center gap-3 hover:bg-[var(--color-hover)] transition-all hover:scale-105 z-40">
                     <div className="relative shrink-0">
                         <ShoppingCart size={20} />
-                        <span className="absolute -top-2 -right-2 bg-white text-[#C1121F] text-[10px] font-extrabold w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="absolute -top-2 -right-2 bg-white text-[var(--color-primary)] text-[10px] font-extrabold w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
                             {count}
                         </span>
                     </div>
                     <div className="text-left">
-                        <div className="text-xs text-white/80 leading-snug">{count} item</div>
                         <div className="font-extrabold text-sm leading-tight">{formatCurrency(total)}</div>
                     </div>
                     <ChevronRight size={16} className="text-white/60 ml-2" />
@@ -292,12 +291,12 @@ function DineInContent() {
                                     </div>
                                     <div className="flex items-center gap-1.5 shrink-0">
                                         <button onClick={() => updateQuantity(menuItem._id, quantity - 1)}
-                                            className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center hover:bg-red-50 transition-colors">
+                                            className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center hover:bg-[var(--color-50)] transition-colors">
                                             <Minus size={11} className="text-gray-600" />
                                         </button>
                                         <span className="w-6 text-center font-bold text-sm text-gray-800">{quantity}</span>
                                         <button onClick={() => updateQuantity(menuItem._id, quantity + 1)}
-                                            className="w-7 h-7 rounded-full bg-[#C1121F] text-white flex items-center justify-center hover:bg-[#a50f1a] transition-colors">
+                                            className="w-7 h-7 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center hover:bg-[var(--color-hover)] transition-colors">
                                             <Plus size={11} />
                                         </button>
                                     </div>
@@ -313,13 +312,13 @@ function DineInContent() {
                             {/* total */}
                             <div className="flex justify-between items-center">
                                 <span className="text-sm text-gray-500">Total Pembayaran</span>
-                                <span className="text-xl font-extrabold text-[#C1121F]">{formatCurrency(total)}</span>
+                                <span className="text-xl font-extrabold text-[var(--color-primary)]">{formatCurrency(total)}</span>
                             </div>
 
                             {/* checkout button */}
                             <button
                                 onClick={handleCheckout}
-                                className="w-full py-4 bg-[#C1121F] text-white rounded-2xl font-bold hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-200 flex items-center justify-center gap-2 hover:scale-[1.01]">
+                                className="w-full py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] flex items-center justify-center gap-2 hover:scale-[1.01]">
                                 <CheckCircle size={18} /> Lanjut ke Checkout
                             </button>
                             <p className="text-center text-xs text-gray-400">Pilih metode bayar di halaman berikutnya</p>
@@ -339,7 +338,7 @@ export default function DineInPage() {
         <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-gray-200 border-t-[#C1121F] rounded-full animate-spin" />
+                    <div className="w-12 h-12 border-4 border-gray-200 border-t-[var(--color-primary)] rounded-full animate-spin" />
                     <p className="text-sm text-gray-400 font-medium">Memuat menu...</p>
                 </div>
             </div>

@@ -76,7 +76,7 @@ export default function AdminMenuPage() {
     };
 
     const handleDelete = async (id: string, name: string) => {
-        const res = await Swal.fire({ title: 'Hapus Menu?', text: `Yakin ingin menghapus "${name}"?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#C1121F', confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal' });
+        const res = await Swal.fire({ title: 'Hapus Menu?', text: `Yakin ingin menghapus "${name}"?`, icon: 'warning', showCancelButton: true, confirmButtonColor: 'var(--color-primary)', confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal' });
         if (!res.isConfirmed) return;
         try {
             await menuApi.delete(id);
@@ -89,7 +89,7 @@ export default function AdminMenuPage() {
 
     const handleToggle = async (item: MenuItem, field: 'isAvailable' | 'isBestSeller') => {
         const actionName = field === 'isAvailable' ? 'Ketersediaan' : 'Status Best Seller';
-        const res = await Swal.fire({ title: 'Ganti Status?', text: `Ubah ${actionName} untuk "${item.name}"?`, icon: 'question', showCancelButton: true, confirmButtonColor: '#C1121F', confirmButtonText: 'Ya, Ubah!', cancelButtonText: 'Batal' });
+        const res = await Swal.fire({ title: 'Ganti Status?', text: `Ubah ${actionName} untuk "${item.name}"?`, icon: 'question', showCancelButton: true, confirmButtonColor: 'var(--color-primary)', confirmButtonText: 'Ya, Ubah!', cancelButtonText: 'Batal' });
         if (!res.isConfirmed) return;
         
         try {
@@ -110,7 +110,7 @@ export default function AdminMenuPage() {
                     <h1 className="text-2xl font-bold text-gray-900">Kelola Menu</h1>
                     <p className="text-gray-400 text-sm mt-1">{items.length} item menu</p>
                 </div>
-                <button onClick={openCreate} className="flex items-center gap-2 px-5 py-2.5 bg-[#C1121F] text-white rounded-xl font-semibold hover:bg-[#a50f1a] transition-colors shadow-red-sm text-sm">
+                <button onClick={openCreate} className="flex items-center gap-2 px-5 py-2.5 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-hover)] transition-colors shadow-red-sm text-sm">
                     <Plus size={16} /> Tambah Menu
                 </button>
             </div>
@@ -119,7 +119,7 @@ export default function AdminMenuPage() {
             <div className="relative mb-6">
                 <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="text" placeholder="Cari menu..." value={search} onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] text-sm bg-gray-50" />
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] text-sm bg-gray-50" />
             </div>
 
             {/* Table */}
@@ -160,10 +160,10 @@ export default function AdminMenuPage() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-4 py-3 font-semibold text-[#C1121F]">{formatCurrency(item.price)}</td>
+                                    <td className="px-4 py-3 font-semibold text-[var(--color-primary)]">{formatCurrency(item.price)}</td>
                                     <td className="px-4 py-3">
                                         <button onClick={() => handleToggle(item, 'isBestSeller')}>
-                                            {item.isBestSeller ? <ToggleRight size={24} className="text-[#C1121F]" /> : <ToggleLeft size={24} className="text-gray-300" />}
+                                            {item.isBestSeller ? <ToggleRight size={24} className="text-[var(--color-primary)]" /> : <ToggleLeft size={24} className="text-gray-300" />}
                                         </button>
                                     </td>
                                     <td className="px-4 py-3">
@@ -174,7 +174,7 @@ export default function AdminMenuPage() {
                                     <td className="px-4 py-3">
                                         <div className="flex gap-2">
                                             <button onClick={() => openEdit(item)} className="p-2 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors"><Edit2 size={15} /></button>
-                                            <button onClick={() => handleDelete(item._id, item.name)} className="p-2 hover:bg-red-50 text-red-500 rounded-lg transition-colors"><Trash2 size={15} /></button>
+                                            <button onClick={() => handleDelete(item._id, item.name)} className="p-2 hover:bg-[var(--color-50)] text-[var(--color-primary)] rounded-lg transition-colors"><Trash2 size={15} /></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -202,7 +202,7 @@ export default function AdminMenuPage() {
                             {/* Image Upload */}
                             <div>
                                 <label className="text-sm font-medium text-gray-600 block mb-2">Foto Menu</label>
-                                <div onClick={() => fileRef.current?.click()} className="border-2 border-dashed border-gray-200 rounded-xl h-36 flex items-center justify-center cursor-pointer hover:border-[#C1121F] transition-colors overflow-hidden relative">
+                                <div onClick={() => fileRef.current?.click()} className="border-2 border-dashed border-gray-200 rounded-xl h-36 flex items-center justify-center cursor-pointer hover:border-[var(--color-primary)] transition-colors overflow-hidden relative">
                                     {preview ? <Image src={preview} alt="preview" fill className="object-cover rounded-xl" /> :
                                         <div className="text-center text-gray-400"><Upload size={24} className="mx-auto mb-2" /><p className="text-sm">Klik untuk upload foto</p></div>}
                                 </div>
@@ -220,7 +220,7 @@ export default function AdminMenuPage() {
                                 <div key={key}>
                                     <label className="text-sm font-medium text-gray-600 block mb-1.5">{label}</label>
                                     <input type={type} placeholder={placeholder} value={(form as any)[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] text-sm" />
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] text-sm" />
                                 </div>
                             ))}
                             <div>
@@ -239,7 +239,7 @@ export default function AdminMenuPage() {
                                                 }}
                                                 className={`flex items-center gap-2 px-3 py-2 border rounded-xl cursor-pointer transition-all ${
                                                     isChecked 
-                                                    ? 'border-[#C1121F] bg-[#C1121F]/5 text-[#C1121F] font-medium' 
+                                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)] font-medium' 
                                                     : 'border-gray-100 hover:border-gray-200 text-gray-600'
                                                 }`}
                                             >
@@ -253,20 +253,20 @@ export default function AdminMenuPage() {
                             <div>
                                 <label className="text-sm font-medium text-gray-600 block mb-1.5">Deskripsi</label>
                                 <textarea rows={3} placeholder="Deskripsi singkat menu..." value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] text-sm resize-none" />
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] text-sm resize-none" />
                             </div>
                             <div className="flex gap-6">
                                 <label className="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" checked={form.isBestSeller} onChange={e => setForm(f => ({ ...f, isBestSeller: e.target.checked }))} className="accent-[#C1121F]" />
+                                    <input type="checkbox" checked={form.isBestSeller} onChange={e => setForm(f => ({ ...f, isBestSeller: e.target.checked }))} className="accent-[var(--color-primary)]" />
                                     <span className="text-sm font-medium text-gray-600">⭐ Best Seller</span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" checked={form.isAvailable} onChange={e => setForm(f => ({ ...f, isAvailable: e.target.checked }))} className="accent-[#C1121F]" />
+                                    <input type="checkbox" checked={form.isAvailable} onChange={e => setForm(f => ({ ...f, isAvailable: e.target.checked }))} className="accent-[var(--color-primary)]" />
                                     <span className="text-sm font-medium text-gray-600">✅ Tersedia</span>
                                 </label>
                             </div>
                             <button onClick={handleSave} disabled={saving}
-                                className="w-full py-3.5 bg-[#C1121F] text-white rounded-xl font-semibold hover:bg-[#a50f1a] disabled:opacity-60 transition-colors flex items-center justify-center gap-2">
+                                className="w-full py-3.5 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-hover)] disabled:opacity-60 transition-colors flex items-center justify-center gap-2">
                                 {saving ? <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : editId ? '💾 Simpan Perubahan' : '➕ Tambah Menu'}
                             </button>
                         </div>

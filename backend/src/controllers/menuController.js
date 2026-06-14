@@ -1,7 +1,7 @@
 const prisma = require('../utils/prisma');
 const path = require('path');
 const fs = require('fs');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 const supabase = require('../utils/supabase');
 
 exports.getAll = async (req, res) => {
@@ -131,7 +131,7 @@ exports.create = async (req, res) => {
 
         const item = await prisma.menuItem.create({ 
             data: {
-                id: uuidv4(),
+                id: randomUUID(),
                 name, 
                 description: description || '', 
                 price: Number(price), 

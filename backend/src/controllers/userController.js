@@ -2,7 +2,7 @@ const prisma = require('../utils/prisma');
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -24,7 +24,7 @@ exports.register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 12);
         const user = await prisma.user.create({
             data: {
-                id: uuidv4(),
+                id: randomUUID(),
                 name,
                 email,
                 password: hashedPassword,
@@ -107,7 +107,7 @@ exports.googleLogin = async (req, res) => {
         if (!user) {
             user = await prisma.user.create({
                 data: {
-                    id: uuidv4(),
+                    id: randomUUID(),
                     name,
                     email,
                     googleId: sub,

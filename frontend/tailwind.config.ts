@@ -9,10 +9,20 @@ export default {
     theme: {
         extend: {
             colors: {
+                brand: {
+                    primary: 'var(--color-primary)',
+                    hover: 'var(--color-hover)',
+                    light: 'var(--color-light)',
+                    50: 'var(--color-50)',
+                    100: 'var(--color-100)',
+                    200: 'var(--color-200)',
+                    300: 'var(--color-300)',
+                },
+                // Keep red alias for backward compatibility during migration
                 red: {
-                    primary: '#C1121F',
-                    hover: '#a50f1a',
-                    light: '#fff0f1',
+                    primary: 'var(--color-primary)',
+                    hover: 'var(--color-hover)',
+                    light: 'var(--color-light)',
                 }
             },
             fontFamily: {
@@ -23,8 +33,10 @@ export default {
                 '3xl': '24px',
             },
             boxShadow: {
-                red: '0 8px 24px rgba(193, 18, 31, 0.2)',
-                'red-sm': '0 4px 12px rgba(193, 18, 31, 0.15)',
+                brand: '0 8px 24px rgba(var(--color-rgb), 0.2)',
+                'brand-sm': '0 4px 12px rgba(var(--color-rgb), 0.15)',
+                red: '0 8px 24px rgba(var(--color-rgb), 0.2)',
+                'red-sm': '0 4px 12px rgba(var(--color-rgb), 0.15)',
             },
             animation: {
                 float: 'float 3s ease-in-out infinite',

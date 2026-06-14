@@ -4,8 +4,9 @@ import { useSettingsStore } from '@/store/settingsStore';
 import { getImageUrl } from '@/lib/utils';
 import { settingsApi } from '@/lib/api';
 import { toast } from 'react-hot-toast';
-import { Save, Upload, Store, MapPin, Clock, Phone, ArrowLeft, Image as ImageIcon, Instagram, Globe, BarChart3, CheckCircle, Layers, Zap } from 'lucide-react';
+import { Save, Upload, Store, MapPin, Clock, Phone, ArrowLeft, Image as ImageIcon, Instagram, Globe, BarChart3, CheckCircle, Layers, Zap, Palette, Check } from 'lucide-react';
 import Link from 'next/link';
+import { useThemeStore, THEME_OPTIONS, type ThemeName } from '@/store/themeStore';
 
 export default function AdminSettingsPage() {
     const { settings, loading, fetchSettings, updateSettingsState } = useSettingsStore();
@@ -54,10 +55,12 @@ export default function AdminSettingsPage() {
 
     const [ctaTitle, setCtaTitle] = useState('');
     const [ctaDesc, setCtaDesc] = useState('');
+    const [colorTheme, setColorTheme] = useState<ThemeName>('red');
     
     const [saving, setSaving] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const heroImageInputRef = useRef<HTMLInputElement>(null);
+    const { applyTheme } = useThemeStore();
 
     // Sync state dengan data store
     useEffect(() => {
@@ -107,6 +110,9 @@ export default function AdminSettingsPage() {
             // CTA Banner
             setCtaTitle(settings.ctaTitle || '');
             setCtaDesc(settings.ctaDesc || '');
+
+            // Color Theme
+            setColorTheme((settings.colorTheme as ThemeName) || 'red');
 
             // Logo Preview
             if (settings.logo) {
@@ -209,6 +215,7 @@ export default function AdminSettingsPage() {
 
             formData.append('ctaTitle', ctaTitle);
             formData.append('ctaDesc', ctaDesc);
+            formData.append('colorTheme', colorTheme);
 
             if (logoFile) {
                 formData.append('logo', logoFile);
@@ -252,131 +259,169 @@ export default function AdminSettingsPage() {
 
             {loading && !settings ? (
                 <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
-                    <div className="w-10 h-10 border-4 border-red-200 border-t-[#C1121F] rounded-full animate-spin mb-4" />
+                    <div className="w-10 h-10 border-4 border-[var(--color-200)] border-t-[var(--color-primary)] rounded-full animate-spin mb-4" />
                     <p className="text-gray-400 text-sm">Memuat pengaturan toko...</p>
                 </div>
             ) : (
-                <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <form onSubmit={handleSave} className="w-full space-y-8">
                     
-                    {/* Left Column — Images Settings */}
-                    <div className="lg:col-span-1 space-y-6">
-                        
-                        {/* Logo Upload Card */}
-                        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col items-center text-center">
-                            <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-[#C1121F] mb-4">
-                                <ImageIcon size={22} />
-                            </div>
-                            <h2 className="font-bold text-gray-800 text-base mb-1">Logo Toko</h2>
-                            <p className="text-gray-400 text-xs mb-6 max-w-[200px] leading-relaxed">Gunakan gambar berformat PNG transparan atau persegi rasio 1:1.</p>
-
-                            {/* Logo Upload Box */}
-                            <div 
-                                onClick={() => fileInputRef.current?.click()}
-                                className="w-44 h-44 rounded-3xl border-2 border-dashed border-gray-200 hover:border-[#C1121F] bg-gray-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all hover:bg-gray-100/50 group relative shadow-sm mb-6"
-                            >
-                                {logoPreview ? (
-                                    <>
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={logoPreview} alt="Logo Preview" className="object-contain w-full h-full p-4 bg-white transition-transform group-hover:scale-[1.02]" />
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs font-semibold transition-all">
-                                            <Upload size={18} className="mb-1 animate-pulse" />
-                                            Ganti Logo
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div className="text-center text-gray-400 p-4">
-                                        <Upload size={24} className="mx-auto mb-2 text-gray-300" />
-                                        <span className="text-xs font-medium block">Pilih Gambar</span>
-                                    </div>
-                                )}
+                    <div className="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm space-y-10">
+                            
+                            {/* Color Theme Section */}
+                            <div>
+                                <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5 mb-4">
+                                    <Palette size={14} /> Tema Warna
+                                </h3>
+                                <p className="text-gray-400 text-xs mb-4">Pilih warna utama website</p>
+                                <div className="grid grid-cols-5 gap-3">
+                                    {THEME_OPTIONS.map((theme) => (
+                                        <button
+                                            key={theme.name}
+                                            type="button"
+                                            onClick={() => {
+                                                setColorTheme(theme.name);
+                                                applyTheme(theme.name);
+                                            }}
+                                            className={`group flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all hover:scale-105 ${
+                                                colorTheme === theme.name
+                                                    ? 'border-gray-800 bg-gray-50 shadow-md'
+                                                    : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+                                            }`}
+                                            title={theme.label}
+                                        >
+                                            <div className="relative">
+                                                <div
+                                                    className="w-10 h-10 rounded-full shadow-sm transition-transform group-hover:scale-110"
+                                                    style={{ backgroundColor: theme.color }}
+                                                />
+                                                {colorTheme === theme.name && (
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <Check size={18} className="text-white drop-shadow-md" strokeWidth={3} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span className={`text-[10px] font-bold transition-colors ${
+                                                colorTheme === theme.name ? 'text-gray-800' : 'text-gray-400'
+                                            }`}>
+                                                {theme.label}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                             
-                            <input 
-                                ref={fileInputRef}
-                                type="file" 
-                                accept="image/*" 
-                                className="hidden" 
-                                onChange={handleFileChange} 
-                            />
+                            {/* Logo Upload Section */}
+                            <div>
+                                <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5 mb-2">
+                                    <ImageIcon size={14} /> Logo Toko
+                                </h3>
+                                <p className="text-gray-400 text-xs mb-4 leading-relaxed max-w-md">
+                                    Format: <b>PNG (Transparan), JPG, JPEG</b>. Rekomendasi rasio <b>1:1 (Persegi)</b> dengan ukuran min. 200x200px. Maksimal ukuran file <b>2MB</b>.
+                                </p>
 
-                            <button 
-                                type="button" 
-                                onClick={() => fileInputRef.current?.click()}
-                                className="w-full py-2.5 px-4 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-2xl font-bold text-xs transition-all active:scale-[0.98] shadow-sm"
-                            >
-                                Pilih File Logo
-                            </button>
-                        </div>
-
-                        {/* Hero Image Upload Card */}
-                        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col items-center text-center">
-                            <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-[#C1121F] mb-4">
-                                <ImageIcon size={22} />
-                            </div>
-                            <h2 className="font-bold text-gray-800 text-base mb-1">Gambar Hero Beranda</h2>
-                            <p className="text-gray-400 text-xs mb-6 max-w-[200px] leading-relaxed">Gunakan gambar menu andalan beresolusi tinggi (rekomendasi landscape 4:3).</p>
-
-                            {/* Hero Image Upload Box */}
-                            <div 
-                                onClick={() => heroImageInputRef.current?.click()}
-                                className="w-full h-40 rounded-3xl border-2 border-dashed border-gray-200 hover:border-[#C1121F] bg-gray-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all hover:bg-gray-100/50 group relative shadow-sm mb-6"
-                            >
-                                {heroImagePreview ? (
-                                    <>
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img src={heroImagePreview} alt="Hero Preview" className="object-cover w-full h-full bg-white transition-transform group-hover:scale-[1.02]" />
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs font-semibold transition-all">
-                                            <Upload size={18} className="mb-1 animate-pulse" />
-                                            Ganti Gambar Hero
+                                <div 
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="w-32 h-32 mx-auto rounded-3xl border-2 border-dashed border-gray-200 hover:border-[var(--color-primary)] bg-gray-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all hover:bg-gray-100/50 group relative shadow-sm mb-4"
+                                >
+                                    {logoPreview ? (
+                                        <>
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={logoPreview} alt="Logo Preview" className="object-contain w-full h-full p-3 bg-white transition-transform group-hover:scale-[1.02]" />
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs font-semibold transition-all">
+                                                <Upload size={18} className="mb-1 animate-pulse" />
+                                                Ganti Logo
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="text-center text-gray-400 p-4">
+                                            <Upload size={24} className="mx-auto mb-2 text-gray-300" />
+                                            <span className="text-[10px] font-medium block">Pilih Gambar</span>
                                         </div>
-                                    </>
-                                ) : (
-                                    <div className="text-center text-gray-400 p-4">
-                                        <Upload size={24} className="mx-auto mb-2 text-gray-300" />
-                                        <span className="text-xs font-medium block">Pilih Gambar</span>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
+                                
+                                <input 
+                                    ref={fileInputRef}
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={handleFileChange} 
+                                />
+
+                                <button 
+                                    type="button" 
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="w-full py-2.5 px-4 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-2xl font-bold text-xs transition-all active:scale-[0.98] shadow-sm"
+                                >
+                                    Pilih File Logo
+                                </button>
                             </div>
-                            
-                            <input 
-                                ref={heroImageInputRef}
-                                type="file" 
-                                accept="image/*" 
-                                className="hidden" 
-                                onChange={handleHeroFileChange} 
-                            />
 
-                            <button 
-                                type="button" 
-                                onClick={() => heroImageInputRef.current?.click()}
-                                className="w-full py-2.5 px-4 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-2xl font-bold text-xs transition-all active:scale-[0.98] shadow-sm"
-                            >
-                                Pilih Gambar Hero
-                            </button>
-                        </div>
+                            {/* Hero Image Section */}
+                            <div>
+                                <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5 mb-2">
+                                    <ImageIcon size={14} /> Gambar Banner Beranda
+                                </h3>
+                                <p className="text-gray-400 text-xs mb-4 leading-relaxed max-w-md">
+                                    Format: <b>JPG, JPEG, PNG, WEBP</b>. Rekomendasi dimensi <b>Landscape (16:9)</b> dengan resolusi tinggi (min. 1280x720px) agar tidak pecah di layar besar. Maksimal ukuran file <b>5MB</b>.
+                                </p>
 
-                    </div>
+                                <div 
+                                    onClick={() => heroImageInputRef.current?.click()}
+                                    className="w-full h-36 rounded-3xl border-2 border-dashed border-gray-200 hover:border-[var(--color-primary)] bg-gray-50 flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all hover:bg-gray-100/50 group relative shadow-sm mb-4"
+                                >
+                                    {heroImagePreview ? (
+                                        <>
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={heroImagePreview} alt="Hero Preview" className="object-cover w-full h-full bg-white transition-transform group-hover:scale-[1.02]" />
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-xs font-semibold transition-all">
+                                                <Upload size={18} className="mb-1 animate-pulse" />
+                                                Ganti Banner
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="text-center text-gray-400 p-4">
+                                            <Upload size={24} className="mx-auto mb-2 text-gray-300" />
+                                            <span className="text-[10px] font-medium block">Pilih Gambar</span>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <input 
+                                    ref={heroImageInputRef}
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={handleHeroFileChange} 
+                                />
 
-                    {/* Right Column — Store Details & Homepage Content */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm space-y-8">
+                                <button 
+                                    type="button" 
+                                    onClick={() => heroImageInputRef.current?.click()}
+                                    className="w-full py-2.5 px-4 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-2xl font-bold text-xs transition-all active:scale-[0.98] shadow-sm"
+                                >
+                                    Pilih Gambar Banner
+                                </button>
+                            </div>
+
+                            {/* ---------------------------------------------------------------------- */}
                             
                             {/* Section 1: Profil Utama */}
                             <div className="space-y-4">
-                                <h3 className="text-xs font-extrabold text-[#C1121F] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
+                                <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
                                     <Store size={14} /> Profil Utama Toko
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="text-xs font-bold text-gray-500 block mb-1.5">
-                                            Nama Toko / Brand <span className="text-red-500">*</span>
+                                            Nama Toko / Brand <span className="text-[var(--color-primary)]">*</span>
                                         </label>
                                         <input 
                                             type="text" 
                                             placeholder="Contoh: Dimsum Ratu"
                                             value={storeName}
                                             onChange={(e) => setStoreName(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all"
+                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
                                             required
                                         />
                                     </div>
@@ -389,7 +434,7 @@ export default function AdminSettingsPage() {
                                             placeholder="Contoh: Setiap Hari: 10.00 – 21.00 WIB"
                                             value={operatingHours}
                                             onChange={(e) => setOperatingHours(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all"
+                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
                                         />
                                     </div>
                                 </div>
@@ -397,7 +442,7 @@ export default function AdminSettingsPage() {
 
                             {/* Section 2: Kontak & Media Sosial */}
                             <div className="space-y-4">
-                                <h3 className="text-xs font-extrabold text-[#C1121F] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
+                                <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
                                     <Phone size={14} /> Kontak & Media Sosial
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -410,7 +455,7 @@ export default function AdminSettingsPage() {
                                             placeholder="Contoh: 0878-7131-0560"
                                             value={contact}
                                             onChange={(e) => setContact(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all"
+                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
                                         />
                                     </div>
                                     <div>
@@ -422,7 +467,7 @@ export default function AdminSettingsPage() {
                                             placeholder="Contoh: @dimsumratu"
                                             value={instagram}
                                             onChange={(e) => setInstagram(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all"
+                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
                                         />
                                     </div>
                                 </div>
@@ -437,7 +482,7 @@ export default function AdminSettingsPage() {
                                             placeholder="Contoh: https://facebook.com/..."
                                             value={facebookUrl}
                                             onChange={(e) => setFacebookUrl(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all"
+                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
                                         />
                                     </div>
                                     <div>
@@ -449,7 +494,7 @@ export default function AdminSettingsPage() {
                                             placeholder="Contoh: https://instagram.com/..."
                                             value={instagramUrl}
                                             onChange={(e) => setInstagramUrl(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all"
+                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
                                         />
                                     </div>
                                     <div>
@@ -461,7 +506,7 @@ export default function AdminSettingsPage() {
                                             placeholder="Contoh: https://tiktok.com/@..."
                                             value={tiktokUrl}
                                             onChange={(e) => setTiktokUrl(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all"
+                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
                                         />
                                     </div>
                                 </div>
@@ -469,7 +514,7 @@ export default function AdminSettingsPage() {
 
                             {/* Section 3: Informasi Lokasi & Peta */}
                             <div className="space-y-4">
-                                <h3 className="text-xs font-extrabold text-[#C1121F] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
+                                <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
                                     <MapPin size={14} /> Informasi Lokasi & Peta
                                 </h3>
                                 <div className="space-y-4">
@@ -482,7 +527,7 @@ export default function AdminSettingsPage() {
                                             placeholder="Contoh: Jl. Raya Karawang No. 88, Karawang Barat, Jawa Barat"
                                             value={address}
                                             onChange={(e) => setAddress(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all resize-none"
+                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all resize-none"
                                         />
                                     </div>
                                     <div>
@@ -494,7 +539,7 @@ export default function AdminSettingsPage() {
                                             placeholder="Tempel tautan src dari iframe Google Maps share (https://www.google.com/maps/embed?...)"
                                             value={mapUrl}
                                             onChange={(e) => setMapUrl(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all resize-none font-mono text-xs"
+                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all resize-none font-mono text-xs"
                                         />
                                     </div>
                                 </div>
@@ -502,7 +547,7 @@ export default function AdminSettingsPage() {
 
                             {/* Section 4: Konten Hero Beranda */}
                             <div className="space-y-4">
-                                <h3 className="text-xs font-extrabold text-[#C1121F] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
+                                <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
                                     <ImageIcon size={14} /> Konten Hero (Halaman Atas)
                                 </h3>
                                 <div className="space-y-4">
@@ -515,7 +560,7 @@ export default function AdminSettingsPage() {
                                             placeholder="Contoh: Dimsum Lezat, Siap Dinikmati!"
                                             value={heroTitle}
                                             onChange={(e) => setHeroTitle(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all"
+                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
                                         />
                                     </div>
                                     <div>
@@ -527,7 +572,7 @@ export default function AdminSettingsPage() {
                                             placeholder="Masukkan deskripsi penawaran utama toko Anda..."
                                             value={heroDesc}
                                             onChange={(e) => setHeroDesc(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all resize-none"
+                                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all resize-none"
                                         />
                                     </div>
                                 </div>
@@ -535,7 +580,7 @@ export default function AdminSettingsPage() {
 
                             {/* Section 5: Nilai Statistik */}
                             <div className="space-y-4">
-                                <h3 className="text-xs font-extrabold text-[#C1121F] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
+                                <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
                                     <BarChart3 size={14} /> Angka Statistik Toko
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -559,7 +604,7 @@ export default function AdminSettingsPage() {
 
                             {/* Section 6: Keunggulan Layanan */}
                             <div className="space-y-4">
-                                <h3 className="text-xs font-extrabold text-[#C1121F] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
+                                <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
                                     <CheckCircle size={14} /> Keunggulan Layanan (4 Poin)
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -588,7 +633,7 @@ export default function AdminSettingsPage() {
 
                             {/* Section 7: Langkah Pemesanan */}
                             <div className="space-y-4">
-                                <h3 className="text-xs font-extrabold text-[#C1121F] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
+                                <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
                                     <Layers size={14} /> Langkah Pemesanan (3 Langkah)
                                 </h3>
                                 <div className="space-y-4">
@@ -612,17 +657,17 @@ export default function AdminSettingsPage() {
 
                             {/* Section 8: Banner CTA Bawah */}
                             <div className="space-y-4">
-                                <h3 className="text-xs font-extrabold text-[#C1121F] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
+                                <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5">
                                     <Zap size={14} /> Banner CTA Bawah
                                 </h3>
                                 <div className="space-y-3">
                                     <div>
                                         <label className="text-xs font-bold text-gray-500 block mb-1.5">Judul Banner CTA</label>
-                                        <input type="text" placeholder="Contoh: Siap Menikmati Dimsum Terbaik?" value={ctaTitle} onChange={e => setCtaTitle(e.target.value)} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all" />
+                                        <input type="text" placeholder="Contoh: Siap Menikmati Dimsum Terbaik?" value={ctaTitle} onChange={e => setCtaTitle(e.target.value)} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all" />
                                     </div>
                                     <div>
                                         <label className="text-xs font-bold text-gray-500 block mb-1.5">Deskripsi Banner CTA</label>
-                                        <textarea rows={2} placeholder="Masukkan deskripsi banner..." value={ctaDesc} onChange={e => setCtaDesc(e.target.value)} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-[#C1121F] text-sm hover:border-gray-300 transition-all resize-none" />
+                                        <textarea rows={2} placeholder="Masukkan deskripsi banner..." value={ctaDesc} onChange={e => setCtaDesc(e.target.value)} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all resize-none" />
                                     </div>
                                 </div>
                             </div>
@@ -632,7 +677,7 @@ export default function AdminSettingsPage() {
                                 <button
                                     type="submit"
                                     disabled={saving}
-                                    className="px-8 py-4 bg-[#C1121F] text-white rounded-2xl font-bold text-base hover:bg-[#a50f1a] transition-all hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-red-200 hover:shadow-red-300 flex items-center justify-center gap-2 disabled:opacity-60 disabled:pointer-events-none"
+                                    className="px-8 py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold text-base hover:bg-[var(--color-hover)] transition-all hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] hover:shadow-[0_8px_24px_rgba(var(--color-rgb),0.25)] flex items-center justify-center gap-2 disabled:opacity-60 disabled:pointer-events-none"
                                 >
                                     {saving ? (
                                         <>
@@ -648,7 +693,6 @@ export default function AdminSettingsPage() {
                                 </button>
                             </div>
 
-                        </div>
                     </div>
                 </form>
             )}

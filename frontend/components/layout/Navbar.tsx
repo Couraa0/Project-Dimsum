@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
@@ -27,12 +27,12 @@ export default function Navbar() {
         if (parts.length > 1) {
             return (
                 <>
-                    <span className="font-extrabold text-[#C1121F] text-lg tracking-tight">{parts[0]}</span>
+                    <span className="font-extrabold text-[var(--color-primary)] text-lg tracking-tight">{parts[0]}</span>
                     <span className="font-bold text-gray-600 text-lg tracking-wide uppercase ml-1">{parts.slice(1).join(' ')}</span>
                 </>
             );
         }
-        return <span className="font-extrabold text-[#C1121F] text-lg tracking-tight">{storeName}</span>;
+        return <span className="font-extrabold text-[var(--color-primary)] text-lg tracking-tight">{storeName}</span>;
     };
 
     useEffect(() => {
@@ -63,7 +63,7 @@ export default function Navbar() {
 
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2.5 group">
-                    <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-sm ring-2 ring-red-100 group-hover:ring-red-300 transition-all">
+                    <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-sm ring-2 ring-[var(--color-100)] group-hover:ring-red-300 transition-all">
                         <Image src={logoUrl} alt={`${storeName} Logo`} width={36} height={36} className="object-cover" />
                     </div>
                     <div className="flex items-center gap-1">
@@ -76,12 +76,12 @@ export default function Navbar() {
                     {navLinks.map(link => (
                         <Link key={link.href} href={link.href}
                             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 relative ${isActive(link.href)
-                                ? 'text-[#C1121F] bg-red-50'
-                                : 'text-gray-600 hover:text-[#C1121F] hover:bg-red-50/60'
+                                ? 'text-[var(--color-primary)] bg-[var(--color-50)]'
+                                : 'text-gray-600 hover:text-[var(--color-primary)] hover:bg-[var(--color-50)]/60'
                                 }`}>
                             {link.label}
                             {isActive(link.href) && (
-                                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-[#C1121F] rounded-full" />
+                                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-[var(--color-primary)] rounded-full" />
                             )}
                         </Link>
                     ))}
@@ -90,10 +90,10 @@ export default function Navbar() {
                 {/* Right Actions */}
                 <div className="flex items-center gap-2">
                     {/* Cart Button */}
-                    <Link href="/cart" className="relative p-2.5 hover:bg-red-50 rounded-xl transition-colors group">
-                        <ShoppingCart size={20} className="text-gray-500 group-hover:text-[#C1121F] transition-colors" />
+                    <Link href="/cart" className="relative p-2.5 hover:bg-[var(--color-50)] rounded-xl transition-colors group">
+                        <ShoppingCart size={20} className="text-gray-500 group-hover:text-[var(--color-primary)] transition-colors" />
                         {mounted && count > 0 && (
-                            <span className="absolute -top-0.5 -right-0.5 bg-[#C1121F] text-white text-[10px] w-4.5 h-4.5 min-w-[18px] min-h-[18px] rounded-full flex items-center justify-center font-bold shadow-sm">
+                            <span className="absolute -top-0.5 -right-0.5 bg-[var(--color-primary)] text-white text-[10px] w-4.5 h-4.5 min-w-[18px] min-h-[18px] rounded-full flex items-center justify-center font-bold shadow-sm">
                                 {count > 9 ? '9+' : count}
                             </span>
                         )}
@@ -104,16 +104,16 @@ export default function Navbar() {
                         <div className="hidden md:flex items-center gap-3 ml-2 pl-3 border-l border-gray-100">
                             <span className="text-sm font-semibold text-gray-700 truncate max-w-[100px]">{user.name}</span>
                             {['admin', 'kasir'].includes(user.role) && (
-                                <Link href="/admin" className="px-3 py-1.5 bg-red-50 text-[#C1121F] rounded-lg text-xs font-bold hover:bg-red-100 transition-colors">
+                                <Link href="/admin" className="px-3 py-1.5 bg-[var(--color-50)] text-[var(--color-primary)] rounded-lg text-xs font-bold hover:bg-[var(--color-100)] transition-colors">
                                     Dashboard
                                 </Link>
                             )}
-                            <button onClick={logout} className="p-2 text-gray-400 hover:text-red-500 transition-colors" aria-label="Logout">
+                            <button onClick={logout} className="p-2 text-gray-400 hover:text-[var(--color-primary)] transition-colors" aria-label="Logout">
                                 <LogOut size={18} />
                             </button>
                         </div>
                     ) : mounted ? (
-                        <Link href="/login" className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 bg-[#C1121F] text-white rounded-xl text-sm font-semibold hover:bg-[#a50f1a] transition-all shadow-sm shadow-red-200 hover:shadow-red-300 hover:scale-[1.02]">
+                        <Link href="/login" className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--color-primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--color-hover)] transition-all shadow-sm shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] hover:shadow-[0_8px_24px_rgba(var(--color-rgb),0.25)] hover:scale-[1.02]">
                             <UserIcon size={16} /> Sign In
                         </Link>
                     ) : (
@@ -122,7 +122,7 @@ export default function Navbar() {
 
                     {/* Hamburger */}
                     <button onClick={() => setOpen(!open)}
-                        className="md:hidden p-2.5 hover:bg-red-50 rounded-xl transition-colors text-gray-600"
+                        className="md:hidden p-2.5 hover:bg-[var(--color-50)] rounded-xl transition-colors text-gray-600"
                         aria-label="Toggle menu">
                         {open ? <X size={20} /> : <Menu size={20} />}
                     </button>
@@ -135,8 +135,8 @@ export default function Navbar() {
                     {navLinks.map(link => (
                         <Link key={link.href} href={link.href}
                             className={`flex items-center px-4 py-3 rounded-xl text-sm font-semibold transition-all ${isActive(link.href)
-                                ? 'bg-red-50 text-[#C1121F]'
-                                : 'text-gray-700 hover:bg-gray-50 hover:text-[#C1121F]'
+                                ? 'bg-[var(--color-50)] text-[var(--color-primary)]'
+                                : 'text-gray-700 hover:bg-gray-50 hover:text-[var(--color-primary)]'
                                 }`}>
                             {link.label}
                         </Link>
@@ -146,7 +146,7 @@ export default function Navbar() {
                             <div className="flex flex-col gap-2">
                                 <span className="px-4 py-2 text-sm font-medium text-gray-500">Hai, {user.name}</span>
                                 {['admin', 'kasir'].includes(user.role) && (
-                                    <Link href="/admin" className="flex items-center justify-center px-4 py-3 bg-red-50 text-[#C1121F] rounded-xl font-semibold text-sm hover:bg-red-100 transition-colors">
+                                    <Link href="/admin" className="flex items-center justify-center px-4 py-3 bg-[var(--color-50)] text-[var(--color-primary)] rounded-xl font-semibold text-sm hover:bg-[var(--color-100)] transition-colors">
                                         Dashboard Admin
                                     </Link>
                                 )}
@@ -156,7 +156,7 @@ export default function Navbar() {
                             </div>
                         ) : (
                             <Link href="/login" onClick={() => setOpen(false)}
-                                className="flex items-center justify-center gap-2 px-4 py-3 bg-[#C1121F] text-white rounded-xl font-semibold text-sm hover:bg-[#a50f1a] transition-colors">
+                                className="flex items-center justify-center gap-2 px-4 py-3 bg-[var(--color-primary)] text-white rounded-xl font-semibold text-sm hover:bg-[var(--color-hover)] transition-colors">
                                 <UserIcon size={18} /> Sign In
                             </Link>
                         )}

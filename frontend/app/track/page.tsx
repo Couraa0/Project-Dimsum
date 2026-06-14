@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Search, Package, Clock, CheckCircle, XCircle, ChefHat, Truck, ArrowLeft, Receipt } from 'lucide-react';
@@ -64,7 +64,7 @@ function TrackContent() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Page Header */}
-            <div className="bg-gradient-to-br from-[#C1121F] to-[#8b0e16] pt-24 pb-10">
+            <div className="bg-gradient-to-br from-[var(--color-primary)] to-[#8b0e16] pt-24 pb-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <Link href="/" className="inline-flex items-center gap-2 text-xs text-white/70 hover:text-white transition-colors mb-5">
                         <ArrowLeft size={14} /> Kembali ke Beranda
@@ -85,10 +85,10 @@ function TrackContent() {
                             placeholder="Contoh: DR202503020001"
                             value={orderNumber}
                             onChange={e => setOrderNumber(e.target.value.toUpperCase())}
-                            className="flex-1 px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] focus:ring-2 focus:ring-red-100 text-sm font-mono tracking-wider bg-gray-50"
+                            className="flex-1 px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-100)] text-sm font-mono tracking-wider bg-gray-50"
                         />
                         <button type="submit" disabled={loading || !orderNumber.trim()}
-                            className="px-6 py-3.5 bg-[#C1121F] text-white rounded-xl font-bold hover:bg-[#a50f1a] disabled:opacity-50 transition-all flex items-center gap-2 shadow-md shadow-red-200 hover:scale-[1.02]">
+                            className="px-6 py-3.5 bg-[var(--color-primary)] text-white rounded-xl font-bold hover:bg-[var(--color-hover)] disabled:opacity-50 transition-all flex items-center gap-2 shadow-md shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] hover:scale-[1.02]">
                             {loading
                                 ? <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                                 : <Search size={18} />
@@ -101,17 +101,17 @@ function TrackContent() {
 
                 {/* Error State */}
                 {searched && !loading && error && (
-                    <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+                    <div className="bg-[var(--color-50)] border border-[var(--color-200)] rounded-2xl p-6 text-center">
                         <XCircle size={40} className="text-red-400 mx-auto mb-3" />
                         <h3 className="font-bold text-red-800 mb-1">Pesanan Tidak Ditemukan</h3>
-                        <p className="text-red-600 text-sm">{error}</p>
+                        <p className="text-[var(--color-hover)] text-sm">{error}</p>
                     </div>
                 )}
 
                 {/* Empty state (belum search) */}
                 {!searched && !order && (
                     <div className="bg-white rounded-2xl p-8 border border-gray-100 text-center">
-                        <div className="w-16 h-16 bg-red-50 text-[#C1121F] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <div className="w-16 h-16 bg-[var(--color-50)] text-[var(--color-primary)] rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <Receipt size={28} />
                         </div>
                         <h3 className="font-bold text-gray-800 mb-1">Belum ada pencarian</h3>
@@ -135,7 +135,7 @@ function TrackContent() {
                             <div className="flex items-start justify-between mb-4">
                                 <div>
                                     <p className="text-xs text-gray-400 font-medium mb-1">Nomor Pesanan</p>
-                                    <h2 className="text-2xl font-extrabold text-[#C1121F] font-mono tracking-wider">{order.orderNumber}</h2>
+                                    <h2 className="text-2xl font-extrabold text-[var(--color-primary)] font-mono tracking-wider">{order.orderNumber}</h2>
                                 </div>
                                 <span className={`px-3 py-1.5 rounded-xl text-xs font-bold ${getStatusColor(order.status)}`}>
                                     {getStatusLabel(order.status)}
@@ -155,7 +155,7 @@ function TrackContent() {
                                 </div>
                                 <div>
                                     <p className="text-gray-400 text-xs mb-0.5">Total Pembayaran</p>
-                                    <p className="font-bold text-[#C1121F]">{formatCurrency(order.total)}</p>
+                                    <p className="font-bold text-[var(--color-primary)]">{formatCurrency(order.total)}</p>
                                 </div>
                                 <div>
                                     <p className="text-gray-400 text-xs mb-0.5">Status Bayar</p>
@@ -174,7 +174,7 @@ function TrackContent() {
                                     {/* Line */}
                                     <div className="absolute top-5 left-5 right-5 h-0.5 bg-gray-100">
                                         <div
-                                            className="h-full bg-[#C1121F] transition-all duration-700"
+                                            className="h-full bg-[var(--color-primary)] transition-all duration-700"
                                             style={{ width: currentStep >= 0 ? `${(currentStep / (STATUS_STEPS.length - 1)) * 100}%` : '0%' }}
                                         />
                                     </div>
@@ -185,10 +185,10 @@ function TrackContent() {
                                             const active = i === currentStep;
                                             return (
                                                 <div key={step.key} className="flex flex-col items-center gap-2 w-12 sm:w-16 z-10 bg-white">
-                                                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${done ? 'bg-[#C1121F] text-white shadow-lg shadow-red-200' : 'bg-gray-100 text-gray-400'} ${active ? 'scale-110 ring-4 ring-red-100' : ''}`}>
+                                                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${done ? 'bg-[var(--color-primary)] text-white shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)]' : 'bg-gray-100 text-gray-400'} ${active ? 'scale-110 ring-4 ring-[var(--color-100)]' : ''}`}>
                                                         <Icon size={16} className="sm:w-[18px] sm:h-[18px]" />
                                                     </div>
-                                                    <span className={`text-[9px] sm:text-[10px] text-center font-semibold leading-tight ${done ? 'text-[#C1121F]' : 'text-gray-400'}`}>
+                                                    <span className={`text-[9px] sm:text-[10px] text-center font-semibold leading-tight ${done ? 'text-[var(--color-primary)]' : 'text-gray-400'}`}>
                                                         {step.label}
                                                     </span>
                                                 </div>
@@ -197,15 +197,15 @@ function TrackContent() {
                                     </div>
                                 </div>
                                 {order.estimatedTime && order.status === 'preparing' && (
-                                    <div className="mt-5 bg-red-50 rounded-xl px-4 py-3 flex items-center gap-2">
-                                        <Clock size={16} className="text-[#C1121F] shrink-0" />
-                                        <p className="text-sm text-[#C1121F] font-medium">Estimasi siap dalam ~{order.estimatedTime} menit</p>
+                                    <div className="mt-5 bg-[var(--color-50)] rounded-xl px-4 py-3 flex items-center gap-2">
+                                        <Clock size={16} className="text-[var(--color-primary)] shrink-0" />
+                                        <p className="text-sm text-[var(--color-primary)] font-medium">Estimasi siap dalam ~{order.estimatedTime} menit</p>
                                     </div>
                                 )}
                             </div>
                         ) : (
-                            <div className="bg-red-50 border border-red-200 rounded-2xl p-5 flex items-center gap-3">
-                                <XCircle size={24} className="text-red-500 shrink-0" />
+                            <div className="bg-[var(--color-50)] border border-[var(--color-200)] rounded-2xl p-5 flex items-center gap-3">
+                                <XCircle size={24} className="text-[var(--color-primary)] shrink-0" />
                                 <p className="text-red-700 font-semibold text-sm">Pesanan ini telah dibatalkan.</p>
                             </div>
                         )}
@@ -233,13 +233,13 @@ function TrackContent() {
                             </div>
                             <div className="border-t border-gray-100 mt-4 pt-4 flex justify-between font-bold text-gray-900">
                                 <span>Total</span>
-                                <span className="text-[#C1121F]">{formatCurrency(order.total)}</span>
+                                <span className="text-[var(--color-primary)]">{formatCurrency(order.total)}</span>
                             </div>
                         </div>
 
                         {/* Back to order */}
                         <div className="text-center">
-                            <Link href="/menu" className="inline-flex items-center gap-2 px-8 py-4 bg-[#C1121F] text-white rounded-2xl font-bold hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-200 hover:scale-[1.02]">
+                            <Link href="/menu" className="inline-flex items-center gap-2 px-8 py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] hover:scale-[1.02]">
                                 Pesan Lagi
                             </Link>
                         </div>
@@ -252,7 +252,7 @@ function TrackContent() {
 
 export default function TrackOrderPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-[#C1121F] border-t-transparent rounded-full animate-spin" /></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" /></div>}>
             <TrackContent />
         </Suspense>
     );

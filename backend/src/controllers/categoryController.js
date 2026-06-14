@@ -1,5 +1,5 @@
 const prisma = require('../utils/prisma');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 exports.getAll = async (req, res) => {
     try {
@@ -33,7 +33,7 @@ exports.create = async (req, res) => {
         
         const category = await prisma.category.create({
             data: {
-                id: uuidv4(),
+                id: randomUUID(),
                 name,
                 slug,
                 icon: icon || '🥟',

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect } from 'react';
 import { usersApi } from '@/lib/api';
 import type { User } from '@/types';
@@ -32,7 +32,7 @@ export default function AdminUsersPage() {
             text: `Ubah peran "${name}" menjadi ${role.toUpperCase()}?`, 
             icon: 'question', 
             showCancelButton: true, 
-            confirmButtonColor: '#C1121F', 
+            confirmButtonColor: 'var(--color-primary)', 
             confirmButtonText: 'Ya, Ubah!', 
             cancelButtonText: 'Batal' 
         });
@@ -53,7 +53,7 @@ export default function AdminUsersPage() {
             text: `Yakin ingin menghapus pengguna "${name}"?`, 
             icon: 'warning', 
             showCancelButton: true, 
-            confirmButtonColor: '#C1121F', 
+            confirmButtonColor: 'var(--color-primary)', 
             confirmButtonText: 'Ya, Hapus!', 
             cancelButtonText: 'Batal' 
         });
@@ -94,7 +94,7 @@ export default function AdminUsersPage() {
                                 <tr key={user._id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-red-100 text-[#C1121F] flex items-center justify-center font-bold overflow-hidden shrink-0">
+                                            <div className="w-10 h-10 rounded-full bg-[var(--color-100)] text-[var(--color-primary)] flex items-center justify-center font-bold overflow-hidden shrink-0">
                                                 {user.avatar ? (
                                                     <Image src={user.avatar} alt={user.name} width={40} height={40} className="object-cover w-full h-full" />
                                                 ) : (
@@ -114,7 +114,7 @@ export default function AdminUsersPage() {
                                         <select 
                                             value={user.role} 
                                             onChange={(e) => handleRoleChange(user._id, user.name, e.target.value)}
-                                            className="px-2 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 outline-none focus:ring-2 ring-red-100"
+                                            className="px-2 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 outline-none focus:ring-2 ring-[var(--color-100)]"
                                         >
                                             <option value="user">User</option>
                                             <option value="kasir">Kasir</option>
@@ -122,7 +122,7 @@ export default function AdminUsersPage() {
                                         </select>
                                     </td>
                                     <td className="px-4 py-3">
-                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase ${user.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase ${user.isActive ? 'bg-green-100 text-green-700' : 'bg-[var(--color-100)] text-red-700'}`}>
                                             {user.isActive ? 'Aktif' : 'Nonaktif'}
                                         </span>
                                     </td>
@@ -130,7 +130,7 @@ export default function AdminUsersPage() {
                                         {user.lastLogin ? timeAgo(user.lastLogin) : '-'}
                                     </td>
                                     <td className="px-4 py-3">
-                                        <button onClick={() => handleDelete(user._id, user.name)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+                                        <button onClick={() => handleDelete(user._id, user.name)} className="p-2 text-gray-400 hover:text-[var(--color-hover)] hover:bg-[var(--color-50)] rounded-xl transition-colors">
                                             <Trash2 size={18} />
                                         </button>
                                     </td>

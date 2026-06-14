@@ -25,7 +25,7 @@ export default function Footer() {
     const contact = (mounted && settings?.contact) ? settings.contact : '0878-7131-0560';
 
     return (
-        <footer className="bg-gradient-to-br from-[#C1121F] to-[#8b0e16] text-white pt-8 pb-4">
+        <footer className="bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-hover)] text-white pt-8 pb-4">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pb-6 border-b border-white/15">
 

@@ -46,8 +46,23 @@ exports.getSettings = async (req, res) => {
                 step3Title: 'Konfirmasi & Bayar',
                 step3Desc: 'Pilih metode bayar, pesanan langsung kami proses secepatnya',
                 ctaTitle: 'Siap Menikmati Dimsum Terbaik?',
-                ctaDesc: 'Kunjungi kami atau pesan delivery sekarang. Kami melayani dengan sepenuh hati!'
+                ctaDesc: 'Kunjungi kami atau pesan delivery sekarang. Kami melayani dengan sepenuh hati!',
+                colorTheme: 'red'
             };
+        }
+        
+        // If Prisma client doesn't know about colorTheme yet, fetch it via raw SQL
+        if (settings && settings.colorTheme === undefined) {
+            try {
+                const raw = await prisma.$queryRawUnsafe(
+                    `SELECT "colorTheme" FROM "StoreSettings" WHERE id = 'default'`
+                );
+                if (raw && raw.length > 0) {
+                    settings.colorTheme = raw[0].colorTheme || 'red';
+                }
+            } catch (e) {
+                settings.colorTheme = 'red';
+            }
         }
         
         res.json({ success: true, data: settings });
@@ -62,6 +77,7 @@ exports.updateSettings = async (req, res) => {
             storeName, address, operatingHours, contact, instagram, mapUrl, facebookUrl, instagramUrl, tiktokUrl,
             heroTitle, heroDesc, stat1Val, stat1Label, stat2Val, stat2Label, stat3Val, stat3Label,
             feat1Title, feat1Desc, feat2Title, feat2Desc, feat3Title, feat3Desc, feat4Title, feat4Desc,
+            colorTheme,
             step1Title, step1Desc, step2Title, step2Desc, step3Title, step3Desc, ctaTitle, ctaDesc
         } = req.body;
         
@@ -71,7 +87,8 @@ exports.updateSettings = async (req, res) => {
             'storeName', 'address', 'operatingHours', 'contact', 'instagram', 'mapUrl', 'facebookUrl', 'instagramUrl', 'tiktokUrl',
             'heroTitle', 'heroDesc', 'stat1Val', 'stat1Label', 'stat2Val', 'stat2Label', 'stat3Val', 'stat3Label',
             'feat1Title', 'feat1Desc', 'feat2Title', 'feat2Desc', 'feat3Title', 'feat3Desc', 'feat4Title', 'feat4Desc',
-            'step1Title', 'step1Desc', 'step2Title', 'step2Desc', 'step3Title', 'step3Desc', 'ctaTitle', 'ctaDesc'
+            'step1Title', 'step1Desc', 'step2Title', 'step2Desc', 'step3Title', 'step3Desc', 'ctaTitle', 'ctaDesc',
+            'colorTheme'
         ];
         
         updateFields.forEach(field => {
@@ -127,6 +144,10 @@ exports.updateSettings = async (req, res) => {
             updateData.heroImage = publicUrlData.publicUrl;
         }
 
+        // Handle colorTheme separately via raw SQL (resilient to stale Prisma client)
+        const colorThemeValue = updateData.colorTheme;
+        delete updateData.colorTheme;
+
         const settings = await prisma.storeSettings.upsert({
             where: { id: 'default' },
             update: updateData,
@@ -166,9 +187,20 @@ exports.updateSettings = async (req, res) => {
                 step3Title: step3Title || 'Konfirmasi & Bayar',
                 step3Desc: step3Desc || 'Pilih metode bayar, pesanan langsung kami proses secepatnya',
                 ctaTitle: ctaTitle || 'Siap Menikmati Dimsum Terbaik?',
-                ctaDesc: ctaDesc || 'Kunjungi kami atau pesan delivery sekarang. Kami melayani dengan sepenuh hati!'
+                ctaDesc: ctaDesc || 'Kunjungi kami atau pesan delivery sekarang. Kami melayani dengan sepenuh hati!',
             }
         });
+
+        // Update colorTheme via raw SQL (bypasses Prisma client's field validation)
+        if (colorThemeValue) {
+            const validThemes = ['red', 'green', 'blue', 'yellow', 'orange'];
+            const theme = validThemes.includes(colorThemeValue) ? colorThemeValue : 'red';
+            await prisma.$executeRawUnsafe(
+                `UPDATE "StoreSettings" SET "colorTheme" = $1 WHERE id = 'default'`,
+                theme
+            );
+            settings.colorTheme = theme;
+        }
 
         res.json({ success: true, message: 'Pengaturan toko berhasil diperbarui', data: settings });
     } catch (err) {

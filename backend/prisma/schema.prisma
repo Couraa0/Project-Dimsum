@@ -152,6 +152,7 @@ model StoreSettings {
   step3Desc      String   @default("Pilih metode bayar, pesanan langsung kami proses secepatnya")
   ctaTitle       String   @default("Siap Menikmati Dimsum Terbaik?")
   ctaDesc        String   @default("Kunjungi kami atau pesan delivery sekarang. Kami melayani dengan sepenuh hati!")
+  colorTheme     String   @default("red")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

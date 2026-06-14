@@ -1,6 +1,6 @@
 const prisma = require('../utils/prisma');
 const QRCode = require('qrcode');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 const generateQR = async (tableNumber, baseUrl) => {
     const url = `${baseUrl}/dinein?meja=${String(tableNumber).padStart(2, '0')}`;
@@ -43,7 +43,7 @@ exports.createTable = async (req, res) => {
         const formattedNumber = String(number).padStart(2, '0');
         const table = await prisma.table.create({
             data: {
-                id: uuidv4(),
+                id: randomUUID(),
                 number: formattedNumber,
                 name: name || `Meja ${number}`,
                 capacity: capacity ? Number(capacity) : 4,

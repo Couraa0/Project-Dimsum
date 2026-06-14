@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect } from 'react';
 import { RefreshCw, Filter, Eye, ChevronDown } from 'lucide-react';
 import { ordersApi } from '@/lib/api';
@@ -30,7 +30,7 @@ export default function AdminOrdersPage() {
     useEffect(() => { const t = setInterval(load, 30000); return () => clearInterval(t); }, [statusFilter, typeFilter]);
 
     const updateStatus = async (id: string, status: string) => {
-        const res = await Swal.fire({ title: 'Update Status', text: `Ubah status pesanan menjadi ${getStatusLabel(status)}?`, icon: 'question', showCancelButton: true, confirmButtonColor: '#C1121F', confirmButtonText: 'Ya, Ubah!', cancelButtonText: 'Batal' });
+        const res = await Swal.fire({ title: 'Update Status', text: `Ubah status pesanan menjadi ${getStatusLabel(status)}?`, icon: 'question', showCancelButton: true, confirmButtonColor: 'var(--color-primary)', confirmButtonText: 'Ya, Ubah!', cancelButtonText: 'Batal' });
         if (!res.isConfirmed) return;
         setUpdatingId(id);
         try {
@@ -65,12 +65,12 @@ export default function AdminOrdersPage() {
             {/* Filters */}
             <div className="flex flex-wrap gap-3 mb-6">
                 <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-                    className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C1121F] bg-white">
+                    className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[var(--color-primary)] bg-white">
                     <option value="">Semua Status</option>
                     {STATUS_OPTIONS.map(s => <option key={s} value={s}>{getStatusLabel(s)}</option>)}
                 </select>
                 <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-                    className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C1121F] bg-white">
+                    className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[var(--color-primary)] bg-white">
                     <option value="">Semua Tipe</option>
                     <option value="dine-in">Dine In</option>
                     <option value="takeaway">Take Away</option>
@@ -103,7 +103,7 @@ export default function AdminOrdersPage() {
                         <div className="space-y-3">
                             {orders.map(order => (
                                 <div key={order._id} onClick={() => setSelectedOrder(order)}
-                                    className={`bg-white rounded-2xl p-4 shadow-sm border cursor-pointer hover:shadow-md transition-all ${selectedOrder?._id === order._id ? 'border-[#C1121F] ring-2 ring-red-100' : 'border-gray-100'}`}>
+                                    className={`bg-white rounded-2xl p-4 shadow-sm border cursor-pointer hover:shadow-md transition-all ${selectedOrder?._id === order._id ? 'border-[var(--color-primary)] ring-2 ring-[var(--color-100)]' : 'border-gray-100'}`}>
                                     <div className="flex items-center justify-between mb-2">
                                         <div>
                                             <span className="font-bold text-gray-800 text-sm">{order.orderNumber}</span>
@@ -115,13 +115,13 @@ export default function AdminOrdersPage() {
                                         <div className="text-xs text-gray-500">
                                             {order.customer.name} · {getTypeLabel(order.type)} {order.tableNumber ? `· Meja ${order.tableNumber}` : ''}
                                         </div>
-                                        <div className="font-bold text-[#C1121F] text-sm">{formatCurrency(order.total)}</div>
+                                        <div className="font-bold text-[var(--color-primary)] text-sm">{formatCurrency(order.total)}</div>
                                     </div>
                                     {/* Quick action */}
                                     {STATUS_FLOW[order.status] && (
                                         <button onClick={e => { e.stopPropagation(); updateStatus(order._id, STATUS_FLOW[order.status]); }}
                                             disabled={updatingId === order._id}
-                                            className="mt-3 w-full py-2 bg-[#C1121F] text-white rounded-xl text-xs font-semibold hover:bg-[#a50f1a] transition-colors disabled:opacity-50">
+                                            className="mt-3 w-full py-2 bg-[var(--color-primary)] text-white rounded-xl text-xs font-semibold hover:bg-[var(--color-hover)] transition-colors disabled:opacity-50">
                                             {updatingId === order._id ? '...' : `→ ${getStatusLabel(STATUS_FLOW[order.status])}`}
                                         </button>
                                     )}
@@ -174,13 +174,13 @@ export default function AdminOrdersPage() {
                                 ))}
                             </div>
                             <div className="border-t border-gray-100 mt-2 pt-2 flex justify-between font-bold">
-                                <span>Total</span><span className="text-[#C1121F]">{formatCurrency(selectedOrder.total)}</span>
+                                <span>Total</span><span className="text-[var(--color-primary)]">{formatCurrency(selectedOrder.total)}</span>
                             </div>
                         </div>
                         {/* Status Controls */}
                         <div className="space-y-2">
                             <select value={selectedOrder.status} onChange={e => updateStatus(selectedOrder._id, e.target.value)}
-                                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C1121F]">
+                                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[var(--color-primary)]">
                                 {STATUS_OPTIONS.map(s => <option key={s} value={s}>{getStatusLabel(s)}</option>)}
                             </select>
                             <div className="flex gap-2">
@@ -189,7 +189,7 @@ export default function AdminOrdersPage() {
                                     ✅ Tandai Lunas
                                 </button>
                                 <button onClick={() => updateStatus(selectedOrder._id, 'cancelled')}
-                                    className="flex-1 py-2.5 bg-red-50 text-red-500 rounded-xl text-sm font-semibold hover:bg-red-100 transition-colors">
+                                    className="flex-1 py-2.5 bg-[var(--color-50)] text-[var(--color-primary)] rounded-xl text-sm font-semibold hover:bg-[var(--color-100)] transition-colors">
                                     ❌ Batalkan
                                 </button>
                             </div>

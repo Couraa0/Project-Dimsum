@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect } from 'react';
 import { ShoppingBag, TrendingUp, UtensilsCrossed, Clock, CheckCircle, XCircle, BarChart2, Users } from 'lucide-react';
 import { ordersApi } from '@/lib/api';
@@ -65,13 +65,13 @@ export default function AdminDashboard() {
                 <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="font-bold text-gray-900">Pesanan Terbaru</h2>
-                        <Link href="/admin/orders" className="text-sm text-[#C1121F] font-medium hover:underline">Lihat Semua →</Link>
+                        <Link href="/admin/orders" className="text-sm text-[var(--color-primary)] font-medium hover:underline">Lihat Semua →</Link>
                     </div>
                     <div className="space-y-3">
                         {recentOrders.slice(0, 3).map(order => (
                             <div key={order._id} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors">
-                                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
-                                    <ShoppingBag size={16} className="text-[#C1121F]" />
+                                <div className="w-10 h-10 bg-[var(--color-50)] rounded-xl flex items-center justify-center">
+                                    <ShoppingBag size={16} className="text-[var(--color-primary)]" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="font-semibold text-sm text-gray-800">{order.orderNumber}</div>
@@ -107,14 +107,14 @@ export default function AdminDashboard() {
                                     <div className="text-sm font-medium text-gray-800 truncate">{item.name}</div>
                                     <div className="text-xs text-gray-400">{item.totalQty} terjual</div>
                                 </div>
-                                <div className="text-sm font-semibold text-[#C1121F]">{formatCurrency(item.totalRevenue)}</div>
+                                <div className="text-sm font-semibold text-[var(--color-primary)]">{formatCurrency(item.totalRevenue)}</div>
                             </div>
                         ))}
                         {(!report?.topItems || report.topItems.length === 0) && (
                             <div className="text-center text-gray-400 py-4 text-sm">Belum ada data</div>
                         )}
                     </div>
-                    <Link href="/admin/reports" className="block mt-6 text-center text-sm text-[#C1121F] font-medium hover:underline">
+                    <Link href="/admin/reports" className="block mt-6 text-center text-sm text-[var(--color-primary)] font-medium hover:underline">
                         Laporan Lengkap →
                     </Link>
                 </div>

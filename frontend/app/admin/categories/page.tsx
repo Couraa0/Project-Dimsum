@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X, AlertCircle } from 'lucide-react';
 import { categoriesApi } from '@/lib/api';
@@ -87,7 +87,7 @@ export default function AdminCategoriesPage() {
             text: `Yakin ingin menghapus "${name}"? Kategori dengan menu tidak bisa dihapus.`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#C1121F',
+            confirmButtonColor: 'var(--color-primary)',
             confirmButtonText: 'Ya, Hapus!',
             cancelButtonText: 'Batal'
         });
@@ -112,7 +112,7 @@ export default function AdminCategoriesPage() {
                 </div>
                 <button 
                     onClick={openCreate}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-[#C1121F] text-white rounded-xl font-semibold hover:bg-[#a50f1a] transition-all shadow-red-sm text-sm"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-hover)] transition-all shadow-red-sm text-sm"
                 >
                     <Plus size={16} /> Tambah Kategori
                 </button>
@@ -144,7 +144,7 @@ export default function AdminCategoriesPage() {
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-2">
                                             <button onClick={() => openEdit(cat)} className="p-2 hover:bg-blue-50 text-blue-500 rounded-lg transition-colors"><Edit2 size={16} /></button>
-                                            <button onClick={() => handleDelete(cat._id, cat.name)} className="p-2 hover:bg-red-50 text-red-500 rounded-lg transition-colors"><Trash2 size={16} /></button>
+                                            <button onClick={() => handleDelete(cat._id, cat.name)} className="p-2 hover:bg-[var(--color-50)] text-[var(--color-primary)] rounded-lg transition-colors"><Trash2 size={16} /></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -178,7 +178,7 @@ export default function AdminCategoriesPage() {
                                     type="text" 
                                     value={form.name} 
                                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] focus:ring-2 focus:ring-red-100 transition-all"
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-100)] transition-all"
                                     placeholder="cth: Dimsum Kukus"
                                 />
                             </div>
@@ -189,7 +189,7 @@ export default function AdminCategoriesPage() {
                                         type="text" 
                                         value={form.icon} 
                                         onChange={e => setForm(f => ({ ...f, icon: e.target.value }))}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] text-center text-2xl"
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] text-center text-2xl"
                                         placeholder="🥟"
                                     />
                                 </div>
@@ -199,7 +199,7 @@ export default function AdminCategoriesPage() {
                                         type="number" 
                                         value={form.order} 
                                         onChange={e => setForm(f => ({ ...f, order: parseInt(e.target.value) || 0 }))}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F]"
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)]"
                                         placeholder="0"
                                     />
                                 </div>
@@ -210,14 +210,14 @@ export default function AdminCategoriesPage() {
                                     rows={3}
                                     value={form.description} 
                                     onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] resize-none"
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] resize-none"
                                     placeholder="Penjelasan singkat kategori..."
                                 />
                             </div>
                             <button 
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="w-full py-4 bg-[#C1121F] text-white rounded-xl font-bold hover:bg-[#a50f1a] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="w-full py-4 bg-[var(--color-primary)] text-white rounded-xl font-bold hover:bg-[var(--color-hover)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {saving ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Simpan Kategori'}
                             </button>

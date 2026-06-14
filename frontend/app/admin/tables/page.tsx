@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect } from 'react';
 import { Plus, X, Download, RefreshCw, Trash2 } from 'lucide-react';
 import Image from 'next/image';
@@ -42,7 +42,7 @@ export default function AdminTablesPage() {
     };
 
     const handleDelete = async (id: string, number: string) => {
-        const res = await Swal.fire({ title: 'Hapus Meja?', text: `Yakin ingin menghapus Meja ${number}?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#C1121F', confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal' });
+        const res = await Swal.fire({ title: 'Hapus Meja?', text: `Yakin ingin menghapus Meja ${number}?`, icon: 'warning', showCancelButton: true, confirmButtonColor: 'var(--color-primary)', confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal' });
         if (!res.isConfirmed) return;
         try { await tablesApi.delete(id); Swal.fire({ title: 'Terhapus!', text: 'Meja berhasil dihapus.', icon: 'success', timer: 1500, showConfirmButton: false }); load(); }
         catch (err: any) { Swal.fire('Gagal!', err.response?.data?.message || 'Gagal menghapus', 'error'); }
@@ -55,7 +55,7 @@ export default function AdminTablesPage() {
         link.click();
     };
 
-    const statusColor = (s: string) => ({ available: 'bg-green-100 text-green-700', occupied: 'bg-red-100 text-red-600', reserved: 'bg-yellow-100 text-yellow-700' }[s] || 'bg-gray-100');
+    const statusColor = (s: string) => ({ available: 'bg-green-100 text-green-700', occupied: 'bg-[var(--color-100)] text-[var(--color-hover)]', reserved: 'bg-yellow-100 text-yellow-700' }[s] || 'bg-gray-100');
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
@@ -64,7 +64,7 @@ export default function AdminTablesPage() {
                     <h1 className="text-2xl font-bold text-gray-900">Meja & QR Code</h1>
                     <p className="text-gray-400 text-sm mt-1">{tables.length} meja terdaftar</p>
                 </div>
-                <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-5 py-2.5 bg-[#C1121F] text-white rounded-xl font-semibold hover:bg-[#a50f1a] transition-colors shadow-red-sm text-sm">
+                <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-5 py-2.5 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-hover)] transition-colors shadow-red-sm text-sm">
                     <Plus size={16} /> Tambah Meja
                 </button>
             </div>
@@ -77,7 +77,7 @@ export default function AdminTablesPage() {
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {tables.map(table => (
-                        <div key={table._id} className={`bg-white rounded-2xl border-2 shadow-sm overflow-hidden ${table.status === 'occupied' ? 'border-red-200' : 'border-gray-100'}`}>
+                        <div key={table._id} className={`bg-white rounded-2xl border-2 shadow-sm overflow-hidden ${table.status === 'occupied' ? 'border-[var(--color-200)]' : 'border-gray-100'}`}>
                             {/* QR Preview */}
                             <div className="bg-gray-50 p-4 flex justify-center cursor-pointer" onClick={() => setSelectedQR(table)}>
                                 {table.qrCode ? (
@@ -99,7 +99,7 @@ export default function AdminTablesPage() {
                                     <button onClick={() => handleRegenQR(table._id)} className="flex-1 py-2 bg-green-50 text-green-600 rounded-xl text-xs font-semibold hover:bg-green-100 transition-colors flex items-center justify-center gap-1">
                                         <RefreshCw size={12} /> Regen
                                     </button>
-                                    <button onClick={() => handleDelete(table._id, table.number)} className="py-2 px-2 bg-red-50 text-red-500 rounded-xl text-xs hover:bg-red-100 transition-colors">
+                                    <button onClick={() => handleDelete(table._id, table.number)} className="py-2 px-2 bg-[var(--color-50)] text-[var(--color-primary)] rounded-xl text-xs hover:bg-[var(--color-100)] transition-colors">
                                         <Trash2 size={12} />
                                     </button>
                                 </div>
@@ -130,7 +130,7 @@ export default function AdminTablesPage() {
                             {process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dinein?meja={selectedQR.number}
                         </p>
                         <p className="text-sm text-gray-500 mb-5">{selectedQR.name} · {selectedQR.capacity} orang</p>
-                        <button onClick={() => downloadQR(selectedQR)} className="w-full py-3 bg-[#C1121F] text-white rounded-xl font-semibold hover:bg-[#a50f1a] transition-colors flex items-center justify-center gap-2">
+                        <button onClick={() => downloadQR(selectedQR)} className="w-full py-3 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-hover)] transition-colors flex items-center justify-center gap-2">
                             <Download size={18} /> Download QR Code
                         </button>
                     </div>
@@ -154,14 +154,14 @@ export default function AdminTablesPage() {
                                 <div key={key}>
                                     <label className="text-sm font-medium text-gray-600 block mb-1.5">{label}</label>
                                     <input type={type} placeholder={placeholder} value={(form as any)[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-[#C1121F] text-sm" />
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] text-sm" />
                                 </div>
                             ))}
                             <div className="bg-blue-50 rounded-xl p-3 text-xs text-blue-600">
                                 📱 QR Code akan otomatis digenerate untuk URL: <strong>/dinein?meja={form.number || 'XX'}</strong>
                             </div>
                             <button onClick={handleCreate} disabled={saving}
-                                className="w-full py-3.5 bg-[#C1121F] text-white rounded-xl font-semibold hover:bg-[#a50f1a] disabled:opacity-60 transition-colors flex items-center justify-center gap-2">
+                                className="w-full py-3.5 bg-[var(--color-primary)] text-white rounded-xl font-semibold hover:bg-[var(--color-hover)] disabled:opacity-60 transition-colors flex items-center justify-center gap-2">
                                 {saving ? <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : '📱 Generate Meja + QR'}
                             </button>
                         </div>

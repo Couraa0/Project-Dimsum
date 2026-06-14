@@ -68,7 +68,7 @@ export default function HomePage() {
     if (parts.length > 1) {
       return (
         <>
-          {parts[0]}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C1121F] to-[#8b0e16] block sm:inline">{parts.slice(1).join(',')}</span>
+          {parts[0]}, <span className="gradient-text block sm:inline">{parts.slice(1).join(',')}</span>
         </>
       );
     }
@@ -123,8 +123,8 @@ export default function HomePage() {
       {/* ── HERO ───────────────────────────────────────────── */}
       <section className="relative pt-6 pb-12 lg:pt-10 lg:pb-20 bg-white overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-red-50 via-red-50/40 to-transparent rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-red-50 rounded-full blur-2xl opacity-60 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-[var(--color-50)] via-[var(--color-50)]/40 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-[var(--color-50)] rounded-full blur-2xl opacity-60 pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-10 items-center w-full">
           {/* Left — Text */}
@@ -151,7 +151,7 @@ export default function HomePage() {
                 { icon: <QrCode size={13} />, label: 'QR Meja' },
               ].map(b => (
                 <div key={b.label} className="inline-flex items-center gap-1.5 text-sm text-gray-600 bg-gray-50 border border-gray-100 px-3.5 py-1.5 rounded-full font-medium">
-                  <span className="text-[#C1121F]">{b.icon}</span>
+                  <span className="text-[var(--color-primary)]">{b.icon}</span>
                   {b.label}
                 </div>
               ))}
@@ -159,10 +159,10 @@ export default function HomePage() {
 
             {/* CTA */}
             <div className="flex flex-col sm:flex-row gap-3 mb-10">
-              <Link href="/menu" className="px-8 py-4 bg-[#C1121F] text-white rounded-2xl font-bold text-base hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-200 hover:shadow-red-300 hover:scale-[1.02] flex items-center justify-center gap-2">
+              <Link href="/menu" className="px-8 py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold text-base hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.2)] hover:shadow-[0_8px_24px_rgba(var(--color-rgb),0.3)] hover:scale-[1.02] flex items-center justify-center gap-2">
                 Pesan Sekarang <ArrowRight size={18} />
               </Link>
-              <Link href="/menu" className="px-8 py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-2xl font-bold text-base hover:border-[#C1121F] hover:text-[#C1121F] transition-all flex items-center justify-center gap-2">
+              <Link href="/menu" className="px-8 py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-2xl font-bold text-base hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all flex items-center justify-center gap-2">
                 Lihat Menu
               </Link>
             </div>
@@ -175,7 +175,7 @@ export default function HomePage() {
                 { value: stat3Val, label: stat3Label },
               ].map(stat => (
                 <div key={stat.label} className="text-center">
-                  <div className="text-2xl font-extrabold text-[#C1121F]">{stat.value}</div>
+                  <div className="text-2xl font-extrabold text-[var(--color-primary)]">{stat.value}</div>
                   <div className="text-xs text-gray-400 mt-0.5 font-medium">{stat.label}</div>
                 </div>
               ))}
@@ -186,7 +186,7 @@ export default function HomePage() {
           <div className="relative flex justify-center lg:justify-end animate-float">
             <div className="relative w-full max-w-[480px] aspect-square">
               {/* Blob bg */}
-              <div className="absolute inset-0 bg-gradient-to-br from-red-100 to-red-50 rounded-[40%_60%_70%_30%/30%_50%_70%_70%] rotate-6 scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-100)] to-[var(--color-50)] rounded-[40%_60%_70%_30%/30%_50%_70%_70%] rotate-6 scale-110" />
               <Image
                 src={getImageUrl(heroImage)}
                 alt={`${storeName} Signature`}
@@ -195,7 +195,7 @@ export default function HomePage() {
                 priority
               />
               {/* Badge top-left */}
-              <div className="absolute top-4 -left-4 z-20 bg-white rounded-2xl shadow-xl px-4 py-3 border border-red-50 flex items-center gap-2">
+              <div className="absolute top-4 -left-4 z-20 bg-white rounded-2xl shadow-xl px-4 py-3 border border-[var(--color-50)] flex items-center gap-2">
                 <span className="text-xl">🏆</span>
                 <div>
                   <div className="text-[10px] text-gray-400 font-medium">Best Seller</div>
@@ -207,7 +207,7 @@ export default function HomePage() {
                 </div>
               </div>
               {/* Badge bottom-right */}
-              <div className="absolute bottom-4 -right-4 z-20 bg-[#C1121F] text-white rounded-2xl shadow-xl px-4 py-3">
+              <div className="absolute bottom-4 -right-4 z-20 bg-[var(--color-primary)] text-white rounded-2xl shadow-xl px-4 py-3">
                 <div className="text-xs opacity-80 font-medium">Mulai dari</div>
                 <div className="font-extrabold text-lg">Rp 18.000</div>
               </div>
@@ -234,16 +234,16 @@ export default function HomePage() {
       {/* ── BEST SELLERS ──────────────────────────────────── */}
       <section className="py-24 bg-white relative overflow-hidden">
         {/* Decorative elements */}
-        <div className="absolute top-1/4 -left-20 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-60" />
-        <div className="absolute bottom-1/4 -right-20 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-60" />
+        <div className="absolute top-1/4 -left-20 w-64 h-64 bg-[var(--color-50)] rounded-full blur-3xl opacity-60" />
+        <div className="absolute bottom-1/4 -right-20 w-64 h-64 bg-[var(--color-50)] rounded-full blur-3xl opacity-60" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center mb-12 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-[#C1121F] text-[10px] font-bold uppercase tracking-wider mb-4 border border-red-100">
-              <Star size={12} fill="#C1121F" /> Most Popular
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-50)] text-[var(--color-primary)] text-[10px] font-bold uppercase tracking-wider mb-4 border border-[var(--color-100)]">
+              <Star size={12} fill="var(--color-primary)" /> Most Popular
             </div>
             <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight">
-              Menu <span className="text-[#C1121F]">Best Seller</span> <br />Pilihan Pelanggan
+              Menu <span className="text-[var(--color-primary)]">Best Seller</span> <br />Pilihan Pelanggan
             </h2>
             <p className="text-gray-500 mt-4 text-sm md:text-base leading-relaxed">
               Varian dimsum paling favorit yang wajib Anda coba. Dibuat dengan resep rahasia dan bahan-bahan premium pilihan setiap harinya.
@@ -273,14 +273,14 @@ export default function HomePage() {
               <div className="text-6xl mb-6">🥟</div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Belum ada Best Seller</h3>
               <p className="text-gray-400 max-w-xs mx-auto text-sm">Oops! Sepertinya admin belum menandai menu best seller. Silakan cek menu lengkap kami.</p>
-              <Link href="/menu" className="mt-8 inline-flex items-center gap-2 px-8 py-4 bg-[#C1121F] text-white rounded-2xl font-bold hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-100">
+              <Link href="/menu" className="mt-8 inline-flex items-center gap-2 px-8 py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_4px_12px_rgba(var(--color-rgb),0.15)]">
                 Pilih Menu <ArrowRight size={18} />
               </Link>
             </div>
           )}
 
           <div className="mt-16 text-center">
-            <Link href="/menu" className="inline-flex items-center gap-2 text-[#C1121F] font-bold hover:gap-3 transition-all group">
+            <Link href="/menu" className="inline-flex items-center gap-2 text-[var(--color-primary)] font-bold hover:gap-3 transition-all group">
               Lihat Semua Menu <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -291,7 +291,7 @@ export default function HomePage() {
       <section className="py-20 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-14">
-            <span className="text-[#C1121F] font-semibold text-xs tracking-widest uppercase">Cara Pemesanan</span>
+            <span className="text-[var(--color-primary)] font-semibold text-xs tracking-widest uppercase">Cara Pemesanan</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2 tracking-tight">Mudah &amp; Cepat</h2>
             <p className="text-gray-400 mt-3 text-sm">Pesan dimsum favoritmu dalam 3 langkah mudah</p>
           </div>
@@ -301,13 +301,13 @@ export default function HomePage() {
               { step: '02', icon: <Package size={26} />, title: step2Title, desc: step2Desc },
               { step: '03', icon: <CheckCircle size={26} />, title: step3Title, desc: step3Desc },
             ].map((s, i) => (
-              <div key={i} className="relative bg-gray-50 rounded-2xl p-7 border border-gray-100 hover:border-[#C1121F]/20 hover:shadow-lg transition-all group overflow-hidden">
+              <div key={i} className="relative bg-gray-50 rounded-2xl p-7 border border-gray-100 hover:border-[var(--color-primary)]/20 hover:shadow-lg transition-all group overflow-hidden">
                 {/* Step number — kontras, jelas terbaca */}
-                <div className="absolute top-5 right-5 w-10 h-10 bg-[#C1121F] rounded-xl flex items-center justify-center">
+                <div className="absolute top-5 right-5 w-10 h-10 bg-[var(--color-primary)] rounded-xl flex items-center justify-center">
                   <span className="text-white font-extrabold text-sm">{s.step}</span>
                 </div>
                 {/* Icon */}
-                <div className="w-14 h-14 bg-red-50 text-[#C1121F] rounded-2xl flex items-center justify-center mb-5 group-hover:bg-[#C1121F] group-hover:text-white transition-colors">
+                <div className="w-14 h-14 bg-[var(--color-50)] text-[var(--color-primary)] rounded-2xl flex items-center justify-center mb-5 group-hover:bg-[var(--color-primary)] group-hover:text-white transition-colors">
                   {s.icon}
                 </div>
                 <h3 className="font-extrabold text-gray-900 text-lg mb-2">{s.title}</h3>
@@ -316,7 +316,7 @@ export default function HomePage() {
             ))}
           </div>
           <div className="text-center">
-            <Link href="/menu" className="px-10 py-4 bg-[#C1121F] text-white rounded-2xl font-extrabold text-base hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-200 inline-flex items-center gap-2 hover:scale-[1.02]">
+            <Link href="/menu" className="px-10 py-4 bg-[var(--color-primary)] text-white rounded-2xl font-extrabold text-base hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.2)] inline-flex items-center gap-2 hover:scale-[1.02]">
               Mulai Pesan Sekarang <ArrowRight size={18} />
             </Link>
           </div>
@@ -328,7 +328,7 @@ export default function HomePage() {
         <section className="py-20 bg-white">
           <div className="max-w-3xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-12">
-              <span className="text-[#C1121F] font-semibold text-xs uppercase tracking-widest">Testimoni</span>
+              <span className="text-[var(--color-primary)] font-semibold text-xs uppercase tracking-widest">Testimoni</span>
               <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2 tracking-tight">Kata Pelanggan Kami</h2>
             </div>
 
@@ -348,7 +348,7 @@ export default function HomePage() {
                       "{testimonials[testimonialIndex].text}"
                     </p>
                     <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 bg-red-50 rounded-full flex items-center justify-center text-2xl ring-2 ring-red-100">
+                      <div className="w-11 h-11 bg-[var(--color-50)] rounded-full flex items-center justify-center text-2xl ring-2 ring-[var(--color-100)]">
                         {testimonials[testimonialIndex].avatar}
                       </div>
                       <div>
@@ -364,7 +364,7 @@ export default function HomePage() {
               <div className="flex justify-center gap-2 mt-6">
                 {testimonials.map((_, i) => (
                   <button key={i} onClick={() => setTestimonialIndex(i)}
-                    className={`h-2 rounded-full transition-all duration-300 ${i === testimonialIndex ? 'bg-[#C1121F] w-7' : 'bg-gray-200 w-2 hover:bg-gray-300'}`} />
+                    className={`h-2 rounded-full transition-all duration-300 ${i === testimonialIndex ? 'bg-[var(--color-primary)] w-7' : 'bg-gray-200 w-2 hover:bg-gray-300'}`} />
                 ))}
               </div>
             </div>
@@ -376,7 +376,7 @@ export default function HomePage() {
       <section className="py-20 bg-gray-50 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="text-[#C1121F] font-semibold text-xs tracking-widest uppercase">Lokasi Kami</span>
+            <span className="text-[var(--color-primary)] font-semibold text-xs tracking-widest uppercase">Lokasi Kami</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2 tracking-tight">Kunjungi {storeName}</h2>
             <p className="text-gray-500 mt-3 max-w-md mx-auto text-sm leading-relaxed">
               Nikmati suasana yang nyaman untuk dine-in bersama keluarga dan sahabat.
@@ -414,8 +414,8 @@ export default function HomePage() {
                   content: <>WhatsApp: <strong className="text-gray-800">{contact}</strong><br />Instagram: <strong className="text-gray-800">{instagram}</strong></>,
                 },
               ].map((item, i) => (
-                <div key={i} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-start gap-4 hover:shadow-md hover:border-red-100 transition-all group">
-                  <div className="bg-red-50 text-[#C1121F] p-3 rounded-xl shrink-0 group-hover:bg-[#C1121F] group-hover:text-white transition-colors">
+                <div key={i} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-start gap-4 hover:shadow-md hover:border-[var(--color-100)] transition-all group">
+                  <div className="bg-[var(--color-50)] text-[var(--color-primary)] p-3 rounded-xl shrink-0 group-hover:bg-[var(--color-primary)] group-hover:text-white transition-colors">
                     {item.icon}
                   </div>
                   <div>
@@ -432,12 +432,12 @@ export default function HomePage() {
       {/* ── CTA ───────────────────────────────────────────── */}
       <section className="py-16 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <div className="bg-gradient-to-br from-red-50 to-white border border-red-100 rounded-3xl py-14 px-8 shadow-sm">
+          <div className="bg-gradient-to-br from-[var(--color-50)] to-white border border-[var(--color-100)] rounded-3xl py-14 px-8 shadow-sm">
             <div className="text-4xl mb-4">🥟</div>
             <h2 className="text-3xl font-extrabold text-gray-900 mb-3 tracking-tight">{ctaTitle}</h2>
             <p className="text-gray-400 mb-8 max-w-md mx-auto text-sm leading-relaxed">{ctaDesc}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/menu" className="px-8 py-4 bg-[#C1121F] text-white rounded-2xl font-bold hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-200 hover:scale-[1.02] inline-flex items-center gap-2 justify-center">
+              <Link href="/menu" className="px-8 py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.2)] hover:scale-[1.02] inline-flex items-center gap-2 justify-center">
                 Pesan Sekarang <ArrowRight size={18} />
               </Link>
               <a href={`https://wa.me/${getCleanPhoneForWhatsApp(contact)}`} target="_blank" rel="noopener noreferrer"

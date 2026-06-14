@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect } from 'react';
 import { Download, TrendingUp, ShoppingBag, BarChart2 } from 'lucide-react';
 import { ordersApi } from '@/lib/api';
@@ -64,7 +64,7 @@ export default function AdminReportsPage() {
                 <div className="flex items-center justify-between mb-5">
                     <h2 className="font-bold text-gray-900">Laporan Harian</h2>
                     <input type="date" value={date} onChange={e => setDate(e.target.value)}
-                        className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C1121F]" />
+                        className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[var(--color-primary)]" />
                 </div>
                 {loading ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -101,10 +101,10 @@ export default function AdminReportsPage() {
                                         <div key={i} className="flex items-center gap-3">
                                             <span className="text-xs font-bold text-gray-400 w-4">{i + 1}</span>
                                             <div className="flex-1 bg-gray-100 rounded-full h-2">
-                                                <div className="bg-[#C1121F] h-2 rounded-full" style={{ width: `${Math.min(100, (item.totalQty / (dailyReport.topItems[0]?.totalQty || 1)) * 100)}%` }} />
+                                                <div className="bg-[var(--color-primary)] h-2 rounded-full" style={{ width: `${Math.min(100, (item.totalQty / (dailyReport.topItems[0]?.totalQty || 1)) * 100)}%` }} />
                                             </div>
                                             <span className="text-sm font-medium text-gray-700 w-40 truncate">{item.name}</span>
-                                            <span className="text-sm font-bold text-[#C1121F] w-20 text-right">{item.totalQty} porsi</span>
+                                            <span className="text-sm font-bold text-[var(--color-primary)] w-20 text-right">{item.totalQty} porsi</span>
                                         </div>
                                     ))}
                                 </div>
@@ -119,7 +119,7 @@ export default function AdminReportsPage() {
                 <div className="flex items-center justify-between mb-5">
                     <h2 className="font-bold text-gray-900">Grafik Bulanan - {selectedYear}</h2>
                     <select value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))}
-                        className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C1121F] bg-white">
+                        className="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[var(--color-primary)] bg-white">
                         {months.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
                     </select>
                 </div>
@@ -133,7 +133,7 @@ export default function AdminReportsPage() {
                                     <XAxis dataKey="day" tick={{ fontSize: 11 }} />
                                     <YAxis tick={{ fontSize: 11 }} />
                                     <Tooltip formatter={(val: any) => [val, 'Pesanan']} />
-                                    <Bar dataKey="orders" fill="#C1121F" radius={[4, 4, 0, 0]} />
+                                    <Bar dataKey="orders" fill="var(--color-primary)" radius={[4, 4, 0, 0]} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -145,7 +145,7 @@ export default function AdminReportsPage() {
                                     <XAxis dataKey="day" tick={{ fontSize: 11 }} />
                                     <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `${(v / 1000).toFixed(0)}k`} />
                                     <Tooltip formatter={(val: any) => [formatCurrency(val), 'Revenue']} />
-                                    <Line type="monotone" dataKey="revenue" stroke="#C1121F" strokeWidth={2} dot={{ fill: '#C1121F', r: 3 }} />
+                                    <Line type="monotone" dataKey="revenue" stroke="var(--color-primary)" strokeWidth={2} dot={{ fill: 'var(--color-primary)', r: 3 }} />
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>

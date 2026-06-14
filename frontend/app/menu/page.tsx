@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect } from 'react';
 import { Search, Filter, ShoppingCart, X } from 'lucide-react';
 import { menuApi, categoriesApi } from '@/lib/api';
@@ -40,7 +40,7 @@ export default function MenuPage() {
             {/* Hero Header */}
             <div className="bg-white border-b border-gray-100 pt-6 pb-8 mb-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                    <span className="text-[#C1121F] font-semibold text-xs tracking-widest uppercase">Pilihan Lengkap</span>
+                    <span className="text-[var(--color-primary)] font-semibold text-xs tracking-widest uppercase">Pilihan Lengkap</span>
                     <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-1 tracking-tight">Menu Kami</h1>
                     <p className="text-gray-400 mt-1 text-sm">Pilih dari berbagai varian dimsum lezat pilihan</p>
                 </div>
@@ -56,7 +56,7 @@ export default function MenuPage() {
                         placeholder="Cari menu..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#C1121F] focus:ring-2 focus:ring-red-100 transition-all text-sm bg-white shadow-sm"
+                        className="w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-2xl focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-100)] transition-all text-sm bg-white shadow-sm"
                     />
                     {search && (
                         <button onClick={() => setSearch('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -69,7 +69,7 @@ export default function MenuPage() {
                 <div className="flex gap-2 overflow-x-auto pb-2 mb-8 scrollbar-hide">
                     <button
                         onClick={() => setSelectedCategories([])}
-                        className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${selectedCategories.length === 0 ? 'bg-[#C1121F] text-white shadow-red-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                        className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${selectedCategories.length === 0 ? 'bg-[var(--color-primary)] text-white shadow-red-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                     >
                         🍽️ Semua
                     </button>
@@ -83,7 +83,7 @@ export default function MenuPage() {
                                         isActive ? prev.filter(id => id !== cat._id) : [...prev, cat._id]
                                     );
                                 }}
-                                className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${isActive ? 'bg-[#C1121F] text-white shadow-red-sm border-[#C1121F]' : 'bg-white border border-gray-100 text-gray-600 hover:border-[#C1121F]/30'}`}
+                                className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${isActive ? 'bg-[var(--color-primary)] text-white shadow-red-sm border-[var(--color-primary)]' : 'bg-white border border-gray-100 text-gray-600 hover:border-[var(--color-primary)]/30'}`}
                             >
                                 {cat.icon} {cat.name}
                             </button>
@@ -112,11 +112,11 @@ export default function MenuPage() {
                 {mounted && count > 0 && (
                     <button
                         onClick={() => setShowCart(true)}
-                        className="fixed bottom-6 right-6 bg-[#C1121F] text-white rounded-2xl px-6 py-4 shadow-red flex items-center gap-3 hover:bg-[#a50f1a] transition-all hover:scale-105 z-40"
+                        className="fixed bottom-6 right-6 bg-[var(--color-primary)] text-white rounded-2xl px-6 py-4 shadow-red flex items-center gap-3 hover:bg-[var(--color-hover)] transition-all hover:scale-105 z-40"
                     >
                         <div className="relative">
                             <ShoppingCart size={20} />
-                            <span className="absolute -top-2 -right-2 bg-white text-[#C1121F] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">{count}</span>
+                            <span className="absolute -top-2 -right-2 bg-white text-[var(--color-primary)] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">{count}</span>
                         </div>
                         <div>
                             <div className="text-xs opacity-80">{count} item</div>

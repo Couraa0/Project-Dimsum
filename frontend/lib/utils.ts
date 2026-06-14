@@ -1,4 +1,4 @@
-export const formatCurrency = (amount: number): string =>
+﻿export const formatCurrency = (amount: number): string =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
 export const getImageUrl = (path: string): string => {
@@ -15,7 +15,7 @@ export const getStatusColor = (status: string) => {
         preparing: 'bg-orange-100 text-orange-700',
         ready: 'bg-green-100 text-green-700',
         delivered: 'bg-gray-100 text-gray-700',
-        cancelled: 'bg-red-100 text-red-700',
+        cancelled: 'bg-[var(--color-100)] text-red-700',
     };
     return map[status] || 'bg-gray-100 text-gray-700';
 };

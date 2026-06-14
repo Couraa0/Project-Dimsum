@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import Image from 'next/image';
 import { Plus, Star } from 'lucide-react';
 import type { MenuItem } from '@/types';
@@ -33,7 +33,7 @@ export default function MenuCard({ item, showAddButton = true }: MenuCardProps) 
                     onError={(e) => (e.currentTarget.src = '/images/food-placeholder.png')}
                 />
                 {item.isBestSeller && (
-                    <div className="absolute top-2 left-2 bg-[#C1121F] text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                    <div className="absolute top-2 left-2 bg-[var(--color-primary)] text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg">
                         <Star size={10} fill="white" /> Best Seller
                     </div>
                 )}
@@ -60,12 +60,12 @@ export default function MenuCard({ item, showAddButton = true }: MenuCardProps) 
                 <h3 className="font-semibold text-gray-800 mb-1 text-sm leading-snug">{item.name}</h3>
                 <p className="text-gray-400 text-xs mb-3 leading-relaxed line-clamp-2">{item.description}</p>
                 <div className="flex items-center justify-between mt-auto pt-3">
-                    <span className="font-bold text-[#C1121F] text-base">{formatCurrency(item.price)}</span>
+                    <span className="font-bold text-[var(--color-primary)] text-base">{formatCurrency(item.price)}</span>
                     {showAddButton && (
                         <button
                             onClick={handleAdd}
                             disabled={!item.isAvailable}
-                            className="w-8 h-8 bg-[#C1121F] text-white rounded-full flex items-center justify-center hover:bg-[#a50f1a] disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-110 shadow-md shadow-red-100"
+                            className="w-8 h-8 bg-[var(--color-primary)] text-white rounded-full flex items-center justify-center hover:bg-[var(--color-hover)] disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-110 shadow-md shadow-[0_4px_12px_rgba(var(--color-rgb),0.1)]"
                         >
                             <Plus size={16} />
                         </button>

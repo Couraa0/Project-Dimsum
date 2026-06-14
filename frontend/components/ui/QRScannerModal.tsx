@@ -137,7 +137,7 @@ export default function QRScannerModal({ onScan, onClose }: QRScannerModalProps)
                 {/* ── Header ────────────────────────── */}
                 <div className="flex items-center justify-between px-5 py-4">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 bg-gradient-to-br from-[#C1121F] to-[#8b0e16] rounded-xl flex items-center justify-center shadow">
+                        <div className="w-9 h-9 bg-gradient-to-br from-[var(--color-primary)] to-[#8b0e16] rounded-xl flex items-center justify-center shadow">
                             <QrCode size={17} className="text-white" />
                         </div>
                         <div>
@@ -158,14 +158,14 @@ export default function QRScannerModal({ onScan, onClose }: QRScannerModalProps)
                     <div className="px-5 pb-8 flex flex-col items-center text-center">
                         {/* Ilustrasi */}
                         <div className="relative mb-6 mt-2">
-                            <div className="w-32 h-32 bg-gradient-to-br from-red-50 to-amber-50 rounded-3xl flex items-center justify-center">
-                                <Camera size={56} className="text-[#C1121F]" strokeWidth={1.5} />
+                            <div className="w-32 h-32 bg-gradient-to-br from-[var(--color-50)] to-amber-50 rounded-3xl flex items-center justify-center">
+                                <Camera size={56} className="text-[var(--color-primary)]" strokeWidth={1.5} />
                             </div>
                             {/* corner decorations */}
-                            <span className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#C1121F] rounded-tl-lg" />
-                            <span className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#C1121F] rounded-tr-lg" />
-                            <span className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#C1121F] rounded-bl-lg" />
-                            <span className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#C1121F] rounded-br-lg" />
+                            <span className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--color-primary)] rounded-tl-lg" />
+                            <span className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[var(--color-primary)] rounded-tr-lg" />
+                            <span className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[var(--color-primary)] rounded-bl-lg" />
+                            <span className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--color-primary)] rounded-br-lg" />
                         </div>
 
                         <h3 className="font-extrabold text-gray-900 text-base mb-1.5">Izin Kamera Diperlukan</h3>
@@ -174,7 +174,7 @@ export default function QRScannerModal({ onScan, onClose }: QRScannerModalProps)
                         </p>
 
                         <button onClick={requestPermission}
-                            className="w-full py-4 bg-gradient-to-r from-[#C1121F] to-[#e01f2d] text-white rounded-2xl font-bold text-sm shadow-lg shadow-red-200 hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+                            className="w-full py-4 bg-gradient-to-r from-[var(--color-primary)] to-[#e01f2d] text-white rounded-2xl font-bold text-sm shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
                             <Camera size={17} /> Izinkan &amp; Buka Kamera
                         </button>
                         <button onClick={() => { stopScanner(); onClose(); }}
@@ -202,7 +202,7 @@ export default function QRScannerModal({ onScan, onClose }: QRScannerModalProps)
                                     <span className="absolute bottom-0 left-0 w-8 h-8 border-b-3 border-l-3 border-white rounded-bl-lg" style={{ borderWidth: 3 }} />
                                     <span className="absolute bottom-0 right-0 w-8 h-8 border-b-3 border-r-3 border-white rounded-br-lg" style={{ borderWidth: 3 }} />
                                     {/* Scan line animation */}
-                                    <span className="absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-[#C1121F] to-transparent animate-scan-line"
+                                    <span className="absolute left-2 right-2 h-0.5 bg-gradient-to-r from-transparent via-[var(--color-primary)] to-transparent animate-scan-line"
                                         style={{ position: 'absolute' }} />
                                 </div>
                             </div>
@@ -221,7 +221,7 @@ export default function QRScannerModal({ onScan, onClose }: QRScannerModalProps)
                             </p>
                             {cameras.length > 1 && (
                                 <button onClick={switchCamera}
-                                    className="flex items-center gap-1.5 text-xs font-semibold text-[#C1121F] hover:text-[#a50f1a] transition-colors px-3 py-2 bg-red-50 rounded-xl">
+                                    className="flex items-center gap-1.5 text-xs font-semibold text-[var(--color-primary)] hover:text-[var(--color-hover)] transition-colors px-3 py-2 bg-[var(--color-50)] rounded-xl">
                                     <SwitchCamera size={14} /> Ganti Kamera
                                 </button>
                             )}
@@ -232,8 +232,8 @@ export default function QRScannerModal({ onScan, onClose }: QRScannerModalProps)
                 {/* ── PHASE: ERROR ──────────────────── */}
                 {phase === 'error' && (
                     <div className="px-5 pb-8 flex flex-col items-center text-center">
-                        <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mb-4 mt-2">
-                            <AlertCircle size={36} className="text-[#C1121F]" strokeWidth={1.5} />
+                        <div className="w-20 h-20 bg-[var(--color-50)] rounded-3xl flex items-center justify-center mb-4 mt-2">
+                            <AlertCircle size={36} className="text-[var(--color-primary)]" strokeWidth={1.5} />
                         </div>
                         <h3 className="font-extrabold text-gray-900 text-base mb-2">Kamera Tidak Dapat Dibuka</h3>
                         <p className="text-sm text-gray-500 leading-relaxed mb-6 max-w-[270px]">{errorMsg}</p>
@@ -250,7 +250,7 @@ export default function QRScannerModal({ onScan, onClose }: QRScannerModalProps)
                         </div>
 
                         <button onClick={requestPermission}
-                            className="w-full py-4 bg-[#C1121F] text-white rounded-2xl font-bold text-sm hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-200 flex items-center justify-center gap-2">
+                            className="w-full py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold text-sm hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] flex items-center justify-center gap-2">
                             <RefreshCw size={15} /> Coba Lagi
                         </button>
                         <button onClick={() => { stopScanner(); onClose(); }}
@@ -268,7 +268,7 @@ export default function QRScannerModal({ onScan, onClose }: QRScannerModalProps)
                         </div>
                         <h3 className="font-extrabold text-gray-900 text-base mb-1">QR Code Terdeteksi!</h3>
                         <p className="text-gray-400 text-sm mb-2">Nomor meja berhasil dibaca</p>
-                        <div className="text-3xl font-extrabold text-[#C1121F] font-mono bg-red-50 px-8 py-2 rounded-2xl">
+                        <div className="text-3xl font-extrabold text-[var(--color-primary)] font-mono bg-[var(--color-50)] px-8 py-2 rounded-2xl">
                             Meja {scannedTable}
                         </div>
                     </div>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -39,7 +39,7 @@ export default function CartPage() {
             {/* header */}
             <div className="bg-white border-b border-gray-100 pt-5 pb-6">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                    <Link href="/menu" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-[#C1121F] transition-colors mb-4">
+                    <Link href="/menu" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-[var(--color-primary)] transition-colors mb-4">
                         <ArrowLeft size={15} /> Kembali ke Menu
                     </Link>
                     <h1 className="text-2xl font-extrabold text-gray-900">Keranjang</h1>
@@ -47,15 +47,15 @@ export default function CartPage() {
             </div>
             {/* body */}
             <div className="flex-1 flex flex-col items-center justify-center text-center px-6 -mt-10">
-                <div className="w-24 h-24 bg-red-50 rounded-3xl flex items-center justify-center mb-5">
-                    <ShoppingBag size={40} className="text-[#C1121F]" />
+                <div className="w-24 h-24 bg-[var(--color-50)] rounded-3xl flex items-center justify-center mb-5">
+                    <ShoppingBag size={40} className="text-[var(--color-primary)]" />
                 </div>
                 <h2 className="text-xl font-extrabold text-gray-900 mb-2">Keranjang Kosong</h2>
                 <p className="text-gray-400 text-sm mb-8 max-w-xs">
                     Tambahkan menu favorit Anda untuk mulai memesan
                 </p>
                 <Link href="/menu"
-                    className="inline-flex items-center gap-2 px-8 py-4 bg-[#C1121F] text-white rounded-2xl font-bold hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-200 hover:scale-[1.02]">
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] hover:scale-[1.02]">
                     Pilih Menu <ChevronRight size={18} />
                 </Link>
             </div>
@@ -91,11 +91,11 @@ export default function CartPage() {
                             return (
                                 <button key={value}
                                     onClick={() => { setOrderType(value); if (value !== 'dine-in') setTableNumber(''); }}
-                                    className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-2xl border-2 transition-all ${active ? 'border-[#C1121F] bg-red-50' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
-                                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${active ? 'bg-[#C1121F] text-white' : 'bg-gray-100 text-gray-400'}`}>
+                                    className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-2xl border-2 transition-all ${active ? 'border-[var(--color-primary)] bg-[var(--color-50)]' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
+                                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${active ? 'bg-[var(--color-primary)] text-white' : 'bg-gray-100 text-gray-400'}`}>
                                         <Icon size={17} />
                                     </div>
-                                    <span className={`text-xs font-bold ${active ? 'text-[#C1121F]' : 'text-gray-700'}`}>{label}</span>
+                                    <span className={`text-xs font-bold ${active ? 'text-[var(--color-primary)]' : 'text-gray-700'}`}>{label}</span>
                                     <span className="text-[10px] text-gray-400 leading-tight text-center">{desc}</span>
                                 </button>
                             );
@@ -167,16 +167,16 @@ export default function CartPage() {
                                 {/* info */}
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold text-gray-800 truncate">{menuItem.name}</p>
-                                    <p className="text-[#C1121F] font-bold text-sm mt-0.5">{formatCurrency(menuItem.price)}</p>
+                                    <p className="text-[var(--color-primary)] font-bold text-sm mt-0.5">{formatCurrency(menuItem.price)}</p>
                                     <div className="flex items-center gap-2 mt-2">
                                         {/* qty controls */}
                                         <button onClick={() => updateQuantity(menuItem._id, quantity - 1)}
-                                            className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center hover:bg-red-100 text-gray-500 transition-colors">
+                                            className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center hover:bg-[var(--color-100)] text-gray-500 transition-colors">
                                             <Minus size={11} />
                                         </button>
                                         <span className="w-5 text-center text-sm font-bold text-gray-800">{quantity}</span>
                                         <button onClick={() => updateQuantity(menuItem._id, quantity + 1)}
-                                            className="w-7 h-7 rounded-full bg-[#C1121F] text-white flex items-center justify-center hover:bg-[#a50f1a] transition-colors">
+                                            className="w-7 h-7 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center hover:bg-[var(--color-hover)] transition-colors">
                                             <Plus size={11} />
                                         </button>
                                         {/* subtotal */}
@@ -185,7 +185,7 @@ export default function CartPage() {
                                         </span>
                                         {/* delete */}
                                         <button onClick={() => removeItem(menuItem._id)}
-                                            className="text-gray-300 hover:text-red-500 transition-colors">
+                                            className="text-gray-300 hover:text-[var(--color-primary)] transition-colors">
                                             <Trash2 size={14} />
                                         </button>
                                     </div>
@@ -210,7 +210,7 @@ export default function CartPage() {
                     </div>
                     <div className="mt-3 pt-3 border-t border-dashed border-gray-200 flex justify-between items-center">
                         <span className="font-bold text-gray-800">Total Pembayaran</span>
-                        <span className="text-xl font-extrabold text-[#C1121F]">{formatCurrency(total)}</span>
+                        <span className="text-xl font-extrabold text-[var(--color-primary)]">{formatCurrency(total)}</span>
                     </div>
                 </section>
 
@@ -219,7 +219,7 @@ export default function CartPage() {
                     <div className="flex items-center justify-between mb-4">
                         <div>
                             <div className="text-xs text-gray-400 uppercase tracking-wider font-medium">Total Pembayaran</div>
-                            <div className="text-2xl font-extrabold text-[#C1121F] leading-tight mt-0.5">{formatCurrency(total)}</div>
+                            <div className="text-2xl font-extrabold text-[var(--color-primary)] leading-tight mt-0.5">{formatCurrency(total)}</div>
                         </div>
                         <div className="text-right text-xs text-gray-400">
                             <div>{count} item</div>
@@ -232,7 +232,7 @@ export default function CartPage() {
                                 return toast.error('Scan QR code meja terlebih dahulu', { icon: '📷' });
                             router.push('/order');
                         }}
-                        className="w-full py-4 bg-[#C1121F] text-white rounded-2xl font-bold text-sm hover:bg-[#a50f1a] transition-all shadow-lg shadow-red-200 hover:scale-[1.01] flex items-center justify-center gap-2">
+                        className="w-full py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold text-sm hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] hover:scale-[1.01] flex items-center justify-center gap-2">
                         Lanjut ke Checkout <ChevronRight size={17} />
                     </button>
                 </section>

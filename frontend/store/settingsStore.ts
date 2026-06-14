@@ -38,6 +38,7 @@ export interface StoreSettings {
     step3Desc: string;
     ctaTitle: string;
     ctaDesc: string;
+    colorTheme: string;
 }
 
 

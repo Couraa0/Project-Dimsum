@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -93,8 +93,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     return (
                         <Link key={href} href={href} onClick={() => setSidebarOpen(false)}
                             title={isMinimized ? label : undefined}
-                            className={`flex items-center ${isMinimized ? 'justify-center p-3' : 'gap-3 px-4 py-3'} rounded-xl text-sm font-medium transition-all group ${active ? 'bg-[#C1121F] text-white shadow-red-sm' : 'text-gray-600 hover:bg-red-50 hover:text-[#C1121F]'}`}>
-                            <Icon size={isMinimized ? 20 : 18} className={active ? 'text-white' : 'text-gray-400 group-hover:text-[#C1121F]'} />
+                            className={`flex items-center ${isMinimized ? 'justify-center p-3' : 'gap-3 px-4 py-3'} rounded-xl text-sm font-medium transition-all group ${active ? 'bg-[var(--color-primary)] text-white shadow-red-sm' : 'text-gray-600 hover:bg-[var(--color-50)] hover:text-[var(--color-primary)]'}`}>
+                            <Icon size={isMinimized ? 20 : 18} className={active ? 'text-white' : 'text-gray-400 group-hover:text-[var(--color-primary)]'} />
                             {!isMinimized && label}
                             {!isMinimized && active && <ChevronRight size={14} className="ml-auto" />}
                         </Link>
@@ -105,7 +105,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* User */}
             <div className={`border-t border-gray-100 ${isMinimized ? 'p-3' : 'p-4'}`}>
                 <div className={`flex items-center mb-3 ${isMinimized ? 'justify-center' : 'gap-3 px-2'}`}>
-                    <div className="w-9 h-9 bg-red-100 text-[#C1121F] rounded-full flex items-center justify-center font-bold text-sm shrink-0">
+                    <div className="w-9 h-9 bg-[var(--color-100)] text-[var(--color-primary)] rounded-full flex items-center justify-center font-bold text-sm shrink-0">
                         {user?.name?.charAt(0).toUpperCase()}
                     </div>
                     {!isMinimized && (
@@ -116,11 +116,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     )}
                 </div>
                 {isMinimized ? (
-                    <button onClick={handleLogout} title="Logout" className="flex items-center justify-center w-full text-gray-500 hover:text-red-500 p-2 hover:bg-red-50 rounded-xl transition-colors">
+                    <button onClick={handleLogout} title="Logout" className="flex items-center justify-center w-full text-gray-500 hover:text-[var(--color-primary)] p-2 hover:bg-[var(--color-50)] rounded-xl transition-colors">
                         <LogOut size={20} />
                     </button>
                 ) : (
-                    <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-gray-500 hover:text-red-500 px-2 py-2 w-full hover:bg-red-50 rounded-xl transition-colors">
+                    <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-gray-500 hover:text-[var(--color-primary)] px-2 py-2 w-full hover:bg-[var(--color-50)] rounded-xl transition-colors">
                         <LogOut size={16} /> Logout
                     </button>
                 )}

@@ -113,7 +113,7 @@ export default function PosPage() {
                 icon: 'success',
                 title: 'Pesanan Berhasil!',
                 text: 'Pesanan telah masuk ke sistem dapur.',
-                confirmButtonColor: '#C1121F'
+                confirmButtonColor: 'var(--color-primary)'
             });
 
             // Reset
@@ -127,7 +127,7 @@ export default function PosPage() {
                 icon: 'error',
                 title: 'Gagal',
                 text: error.response?.data?.message || 'Terjadi kesalahan saat memproses pesanan',
-                confirmButtonColor: '#C1121F'
+                confirmButtonColor: 'var(--color-primary)'
             });
         } finally {
             setIsSubmitting(false);
@@ -200,7 +200,7 @@ export default function PosPage() {
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center gap-2">
-                            <MonitorSmartphone className="text-[#C1121F]" /> Kasir POS
+                            <MonitorSmartphone className="text-[var(--color-primary)]" /> Kasir POS
                         </h1>
                         <p className="text-gray-500 text-sm">Pilih menu untuk pelanggan secara langsung</p>
                     </div>
@@ -214,7 +214,7 @@ export default function PosPage() {
                         placeholder="Cari menu..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-11 pr-10 py-3.5 border border-gray-200 rounded-2xl focus:outline-none focus:border-[#C1121F] focus:ring-2 focus:ring-red-100 transition-all text-sm bg-white shadow-sm"
+                        className="w-full pl-11 pr-10 py-3.5 border border-gray-200 rounded-2xl focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-100)] transition-all text-sm bg-white shadow-sm"
                     />
                     {searchQuery && (
                         <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -227,7 +227,7 @@ export default function PosPage() {
                 <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-none">
                     <button
                         onClick={() => setActiveCategory('all')}
-                        className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${activeCategory === 'all' ? 'bg-[#C1121F] text-white shadow-red-sm' : 'bg-white border border-gray-100 text-gray-600 hover:border-[#C1121F]/30 hover:bg-gray-50'}`}
+                        className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${activeCategory === 'all' ? 'bg-[var(--color-primary)] text-white shadow-red-sm' : 'bg-white border border-gray-100 text-gray-600 hover:border-[var(--color-primary)]/30 hover:bg-gray-50'}`}
                     >
                         🍽️ Semua
                     </button>
@@ -235,7 +235,7 @@ export default function PosPage() {
                         <button
                             key={cat._id}
                             onClick={() => setActiveCategory(cat._id)}
-                            className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${activeCategory === cat._id ? 'bg-[#C1121F] text-white shadow-red-sm border-[#C1121F]' : 'bg-white border border-gray-100 text-gray-600 hover:border-[#C1121F]/30 hover:bg-gray-50'}`}
+                            className={`shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${activeCategory === cat._id ? 'bg-[var(--color-primary)] text-white shadow-red-sm border-[var(--color-primary)]' : 'bg-white border border-gray-100 text-gray-600 hover:border-[var(--color-primary)]/30 hover:bg-gray-50'}`}
                         >
                             {cat.icon} {cat.name}
                         </button>
@@ -245,16 +245,16 @@ export default function PosPage() {
                 <div className="flex-1 overflow-y-auto pr-2">
                     <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                         {filteredMenus.map(menu => (
-                            <div key={menu._id} onClick={() => addToCart(menu)} className="bg-white rounded-2xl p-3 border border-gray-100 hover:shadow-lg hover:border-[#C1121F]/30 cursor-pointer transition-all group">
+                            <div key={menu._id} onClick={() => addToCart(menu)} className="bg-white rounded-2xl p-3 border border-gray-100 hover:shadow-lg hover:border-[var(--color-primary)]/30 cursor-pointer transition-all group">
                                 <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 mb-3 relative">
                                     <Image src={getImageUrl(menu.image)} alt={menu.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                                 </div>
                                 <div className="flex justify-between items-start gap-2">
                                     <div>
                                         <h3 className="font-semibold text-gray-900 text-sm line-clamp-2">{menu.name}</h3>
-                                        <p className="text-[#C1121F] font-bold text-sm mt-1">Rp {menu.price.toLocaleString('id-ID')}</p>
+                                        <p className="text-[var(--color-primary)] font-bold text-sm mt-1">Rp {menu.price.toLocaleString('id-ID')}</p>
                                     </div>
-                                    <button className="w-8 h-8 rounded-full bg-red-50 text-[#C1121F] flex items-center justify-center shrink-0 group-hover:bg-[#C1121F] group-hover:text-white transition-colors">
+                                    <button className="w-8 h-8 rounded-full bg-[var(--color-50)] text-[var(--color-primary)] flex items-center justify-center shrink-0 group-hover:bg-[var(--color-primary)] group-hover:text-white transition-colors">
                                         <Plus size={16} />
                                     </button>
                                 </div>
@@ -271,23 +271,23 @@ export default function PosPage() {
             <div className="w-full lg:w-[400px] bg-white border-l border-gray-200 flex flex-col h-full shrink-0">
                 <div className="p-5 border-b border-gray-100 bg-gray-50/50">
                     <h2 className="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
-                        <UtensilsCrossed size={18} className="text-[#C1121F]" /> Detail Pesanan
+                        <UtensilsCrossed size={18} className="text-[var(--color-primary)]" /> Detail Pesanan
                     </h2>
                     
                     <div className="space-y-3">
                         <div>
                             <label className="block text-xs font-semibold text-gray-500 mb-1">Nama Pemesan</label>
-                            <input type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} placeholder="Contoh: Budi" className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-[#C1121F] text-sm" />
+                            <input type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} placeholder="Contoh: Budi" className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-[var(--color-primary)] text-sm" />
                         </div>
                         
                         <div className="grid grid-cols-2 gap-2">
-                            <button onClick={() => setOrderType('dine-in')} className={`py-2 rounded-lg text-sm font-medium border ${orderType === 'dine-in' ? 'bg-[#C1121F] text-white border-[#C1121F]' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'}`}>
+                            <button onClick={() => setOrderType('dine-in')} className={`py-2 rounded-lg text-sm font-medium border ${orderType === 'dine-in' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'}`}>
                                 Dine-In
                             </button>
-                            <button onClick={() => setOrderType('takeaway')} className={`py-2 rounded-lg text-sm font-medium border ${orderType === 'takeaway' ? 'bg-[#C1121F] text-white border-[#C1121F]' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'}`}>
+                            <button onClick={() => setOrderType('takeaway')} className={`py-2 rounded-lg text-sm font-medium border ${orderType === 'takeaway' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'}`}>
                                 Takeaway
                             </button>
-                            <button onClick={() => setOrderType('delivery')} className={`py-2 rounded-lg text-sm font-medium border col-span-2 ${orderType === 'delivery' ? 'bg-[#C1121F] text-white border-[#C1121F]' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'}`}>
+                            <button onClick={() => setOrderType('delivery')} className={`py-2 rounded-lg text-sm font-medium border col-span-2 ${orderType === 'delivery' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'}`}>
                                 Delivery
                             </button>
                         </div>
@@ -295,7 +295,7 @@ export default function PosPage() {
                         {orderType === 'dine-in' && (
                             <div>
                                 <label className="block text-xs font-semibold text-gray-500 mb-1">Nomor Meja</label>
-                                <select value={tableNumber} onChange={e => setTableNumber(e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-[#C1121F] text-sm">
+                                <select value={tableNumber} onChange={e => setTableNumber(e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-[var(--color-primary)] text-sm">
                                     <option value="">Pilih meja kosong</option>
                                     {tables.map(t => (
                                         <option key={t._id} value={t.number}>Meja {t.number} ({t.capacity} kursi)</option>
@@ -321,18 +321,18 @@ export default function PosPage() {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h4 className="font-semibold text-sm text-gray-900 truncate">{item.name}</h4>
-                                        <div className="text-[#C1121F] text-sm font-medium">Rp {(item.price * item.quantity).toLocaleString('id-ID')}</div>
+                                        <div className="text-[var(--color-primary)] text-sm font-medium">Rp {(item.price * item.quantity).toLocaleString('id-ID')}</div>
                                     </div>
                                     <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1 border border-gray-100">
-                                        <button onClick={() => updateQuantity(item.menuItemId, -1)} className="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-gray-600 hover:text-[#C1121F]">
+                                        <button onClick={() => updateQuantity(item.menuItemId, -1)} className="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-gray-600 hover:text-[var(--color-primary)]">
                                             <Minus size={14} />
                                         </button>
                                         <span className="text-sm font-semibold w-5 text-center">{item.quantity}</span>
-                                        <button onClick={() => updateQuantity(item.menuItemId, 1)} className="w-6 h-6 flex items-center justify-center bg-[#C1121F] rounded shadow-sm text-white hover:bg-red-700">
+                                        <button onClick={() => updateQuantity(item.menuItemId, 1)} className="w-6 h-6 flex items-center justify-center bg-[var(--color-primary)] rounded shadow-sm text-white hover:bg-[var(--color-hover)]">
                                             <Plus size={14} />
                                         </button>
                                     </div>
-                                    <button onClick={() => removeFromCart(item.menuItemId)} className="p-2 text-gray-300 hover:text-red-500 transition-colors">
+                                    <button onClick={() => removeFromCart(item.menuItemId)} className="p-2 text-gray-300 hover:text-[var(--color-primary)] transition-colors">
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
@@ -371,7 +371,7 @@ export default function PosPage() {
                     <button
                         onClick={handleCheckout}
                         disabled={cart.length === 0 || isSubmitting}
-                        className="w-full py-3.5 bg-[#C1121F] hover:bg-red-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-500/30"
+                        className="w-full py-3.5 bg-[var(--color-primary)] hover:bg-[var(--color-hover)] text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.3)]"
                     >
                         {isSubmitting ? (
                             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
