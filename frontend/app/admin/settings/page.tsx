@@ -315,8 +315,8 @@ export default function AdminSettingsPage() {
                                 <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5 mb-2">
                                     <ImageIcon size={14} /> Logo Toko
                                 </h3>
-                                <p className="text-gray-400 text-xs mb-4 leading-relaxed max-w-md">
-                                    Format: <b>PNG (Transparan), JPG, JPEG</b>. Rekomendasi rasio <b>1:1 (Persegi)</b> dengan ukuran min. 200x200px. Maksimal ukuran file <b>2MB</b>.
+                                <p className="text-gray-400 text-[11px] mb-4 whitespace-nowrap overflow-hidden text-ellipsis">
+                                    Format: <b>PNG/JPG</b> (1:1), Min 200x200px, Max <b>2MB</b>.
                                 </p>
 
                                 <div 
@@ -362,8 +362,8 @@ export default function AdminSettingsPage() {
                                 <h3 className="text-xs font-extrabold text-[var(--color-primary)] uppercase tracking-wider pb-2 border-b border-gray-50 flex items-center gap-1.5 mb-2">
                                     <ImageIcon size={14} /> Gambar Banner Beranda
                                 </h3>
-                                <p className="text-gray-400 text-xs mb-4 leading-relaxed max-w-md">
-                                    Format: <b>JPG, JPEG, PNG, WEBP</b>. Rekomendasi dimensi <b>Landscape (16:9)</b> dengan resolusi tinggi (min. 1280x720px) agar tidak pecah di layar besar. Maksimal ukuran file <b>5MB</b>.
+                                <p className="text-gray-400 text-[11px] mb-4 whitespace-nowrap overflow-hidden text-ellipsis">
+                                    Format: <b>JPG/PNG/WEBP</b> (1:1), Min 800x800px, Max <b>5MB</b>.
                                 </p>
 
                                 <div 
