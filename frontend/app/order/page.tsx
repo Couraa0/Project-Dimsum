@@ -185,13 +185,16 @@ export default function OrderPage() {
                         setStep('success');
                     },
                 });
-            } else {
+            } else if (paymentMethod === 'cash') {
                 // Cash payment — langsung sukses
                 setIsPaid(true);
                 setOrderNumber(orderData.orderNumber);
                 setOrderSnapshot(snap);
                 clearCart();
                 setStep('success');
+            } else {
+                // Jika payment online tapi gagal load Midtrans
+                toast.error('Gagal memuat sistem pembayaran (Midtrans). Pastikan koneksi stabil atau hubungi admin.');
             }
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Gagal membuat pesanan. Coba lagi.');
@@ -371,7 +374,7 @@ export default function OrderPage() {
             <Script
                 src={SNAP_JS_URL}
                 data-client-key={MIDTRANS_CLIENT_KEY}
-                strategy="lazyOnload"
+                strategy="beforeInteractive"
             />
 
             {/* Header ─────────────────────────────────────── */}
