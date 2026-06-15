@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -10,6 +10,8 @@ import {
     QrCode, CheckCircle2, ScanLine, X
 } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
+import { useAuthStore } from '@/store/authStore';
+import { useSettingsStore } from '@/store/settingsStore';
 import { formatCurrency, getImageUrl } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
 import QRScannerModal from '@/components/ui/QRScannerModal';
@@ -28,10 +30,16 @@ export default function CartPage() {
         setOrderType, setTableNumber,
         getTotal, getCount,
     } = useCartStore();
+    const { isAuthenticated } = useAuthStore();
+    const { settings } = useSettingsStore();
 
     const [showScanner, setShowScanner] = useState(false);
-    const total = getTotal();
+    const subtotal = getTotal();
     const count = getCount();
+    
+    const taxRate = settings?.taxRate ?? 10;
+    const tax = Math.round(subtotal * (taxRate / 100));
+    const total = subtotal + tax;
 
     /* ── empty state ──────────────────────────────────────── */
     if (items.length === 0) return (
@@ -201,11 +209,11 @@ export default function CartPage() {
                     <div className="space-y-2.5 text-sm">
                         <div className="flex justify-between text-gray-500">
                             <span>Subtotal ({count} item)</span>
-                            <span>{formatCurrency(total)}</span>
+                            <span>{formatCurrency(subtotal)}</span>
                         </div>
                         <div className="flex justify-between text-gray-500">
-                            <span className="flex items-center gap-1.5"><Tag size={12} className="text-green-500" /> Biaya layanan</span>
-                            <span className="text-green-600 font-semibold">Gratis</span>
+                            <span className="flex items-center gap-1.5"><Tag size={12} className="text-[var(--color-primary)] opacity-80" /> Pajak ({taxRate}%)</span>
+                            <span>{formatCurrency(tax)}</span>
                         </div>
                     </div>
                     <div className="mt-3 pt-3 border-t border-dashed border-gray-200 flex justify-between items-center">
@@ -230,6 +238,12 @@ export default function CartPage() {
                         onClick={() => {
                             if (orderType === 'dine-in' && !tableNumber)
                                 return toast.error('Scan QR code meja terlebih dahulu', { icon: '📷' });
+                            
+                            if (!isAuthenticated) {
+                                toast.error('Anda harus login terlebih dahulu untuk memesan.', { icon: '🔒' });
+                                return router.push('/login');
+                            }
+                            
                             router.push('/order');
                         }}
                         className="w-full py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold text-sm hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] hover:scale-[1.01] flex items-center justify-center gap-2">

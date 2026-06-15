@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Script from 'next/script';
 import { useRouter } from 'next/navigation';
 import { useSettingsStore } from '@/store/settingsStore';
 
@@ -16,11 +17,31 @@ import { useCartStore } from '@/store/cartStore';
 import { ordersApi } from '@/lib/api';
 import { formatCurrency, getImageUrl } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
+import { useAuthStore } from '@/store/authStore';
+
+declare global {
+    interface Window {
+        snap: {
+            pay: (token: string, options: {
+                onSuccess?: (result: any) => void;
+                onPending?: (result: any) => void;
+                onError?: (result: any) => void;
+                onClose?: () => void;
+            }) => void;
+        };
+    }
+}
+
+const MIDTRANS_CLIENT_KEY = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || '';
+const MIDTRANS_IS_PRODUCTION = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
+const SNAP_JS_URL = MIDTRANS_IS_PRODUCTION
+    ? 'https://app.midtrans.com/snap/snap.js'
+    : 'https://app.sandbox.midtrans.com/snap/snap.js';
 
 const PAYMENT_METHODS = [
     { value: 'cash', label: 'Bayar di Kasir', icon: Banknote, desc: 'Bayar tunai saat di tempat' },
-    { value: 'qris', label: 'QRIS', icon: Smartphone, desc: 'GoPay, OVO, Dana, dll' },
-    { value: 'transfer', label: 'Transfer Bank', icon: CreditCard, desc: 'BCA · Mandiri · BNI' },
+    { value: 'qris', label: 'QRIS / E-Wallet', icon: Smartphone, desc: 'GoPay, OVO, Dana, ShopeePay' },
+    { value: 'transfer', label: 'Transfer Bank', icon: CreditCard, desc: 'BCA, Mandiri, BNI, BRI' },
 ] as const;
 
 type Step = 'info' | 'payment' | 'success';
@@ -41,6 +62,7 @@ export default function OrderPage() {
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
     const [orderNumber, setOrderNumber] = useState('');
+    const [isPaid, setIsPaid] = useState(false);
     const [orderSnapshot, setOrderSnapshot] = useState<{
         type: string; paymentMethod: string; tableNumber: string;
         customer: { name: string; phone: string; address?: string; notes?: string };
@@ -58,6 +80,7 @@ export default function OrderPage() {
         setPaymentMethod, setCustomer, clearCart,
         getTotal, getCount,
     } = useCartStore();
+    const { user } = useAuthStore();
 
     if (!mounted) {
         return (
@@ -70,7 +93,10 @@ export default function OrderPage() {
         );
     }
 
-    const total = getTotal();
+    const subtotal = getTotal();
+    const taxRate = settings?.taxRate ?? 10;
+    const tax = Math.round(subtotal * (taxRate / 100));
+    const total = subtotal + tax;
     const count = getCount();
 
     /* ── redirect if empty ───────────────────────────────── */
@@ -92,13 +118,17 @@ export default function OrderPage() {
     const handleSubmit = async () => {
         setLoading(true);
         try {
+            const orderCustomer = { ...customer, email: user?.email, name: customer.name || user?.name || 'Guest', phone: customer.phone || '' };
+            
             // simpan snapshot SEBELUM clearCart()
             const snap = {
                 type: orderType,
                 paymentMethod,
                 tableNumber,
-                customer: { ...customer },
+                customer: orderCustomer,
                 items: items.map(i => ({ name: i.menuItem.name, quantity: i.quantity, price: i.menuItem.price })),
+                subtotal,
+                tax,
                 total,
                 createdAt: new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' }),
             };
@@ -106,7 +136,7 @@ export default function OrderPage() {
                 type: orderType,
                 paymentMethod,
                 tableNumber,
-                customer,
+                customer: orderCustomer,
                 items: items.map(i => ({
                     menuItemId: i.menuItem._id,
                     name: i.menuItem.name,
@@ -114,16 +144,73 @@ export default function OrderPage() {
                     notes: i.notes,
                 })),
             });
-            setOrderNumber(res.data.data.orderNumber);
-            setOrderSnapshot(snap);
-            clearCart();
-            setStep('success');
+
+            const orderData = res.data.data;
+            const snapToken = orderData.snapToken;
+
+            // Jika pembayaran online (bukan cash) dan ada snapToken → buka Midtrans Snap
+            if (paymentMethod !== 'cash' && snapToken && window.snap) {
+                window.snap.pay(snapToken, {
+                    onSuccess: () => {
+                        setIsPaid(true);
+                        setOrderNumber(orderData.orderNumber);
+                        setOrderSnapshot(snap);
+                        clearCart();
+                        setStep('success');
+                        toast.success('Pembayaran berhasil! 🎉');
+                    },
+                    onPending: () => {
+                        setIsPaid(false);
+                        setOrderNumber(orderData.orderNumber);
+                        setOrderSnapshot(snap);
+                        clearCart();
+                        setStep('success');
+                        toast('Menunggu pembayaran...', { icon: '⏳' });
+                    },
+                    onError: () => {
+                        setIsPaid(false);
+                        toast.error('Pembayaran gagal. Anda bisa mencoba lagi dari halaman Cek Pesanan.');
+                        setOrderNumber(orderData.orderNumber);
+                        setOrderSnapshot(snap);
+                        clearCart();
+                        setStep('success');
+                    },
+                    onClose: () => {
+                        // Popup ditutup tanpa selesai bayar
+                        setIsPaid(false);
+                        toast('Pembayaran belum selesai. Anda bisa melanjutkan dari halaman Cek Pesanan.', { icon: '⚠️' });
+                        setOrderNumber(orderData.orderNumber);
+                        setOrderSnapshot(snap);
+                        clearCart();
+                        setStep('success');
+                    },
+                });
+            } else {
+                // Cash payment — langsung sukses
+                setIsPaid(true);
+                setOrderNumber(orderData.orderNumber);
+                setOrderSnapshot(snap);
+                clearCart();
+                setStep('success');
+            }
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Gagal membuat pesanan. Coba lagi.');
         } finally {
             setLoading(false);
         }
     };
+
+    const handleDummyPaySuccessPage = async () => {
+        try {
+            await ordersApi.dummyPay(orderNumber);
+            setIsPaid(true);
+            toast.success('Simulasi Pembayaran Berhasil! 🎉');
+        } catch (err) {
+            toast.error('Gagal simulasi pembayaran');
+        }
+    };
+
+
 
     /* ── helper: salin nomor pesanan ───────────────────── */
     const handleCopy = () => {
@@ -244,6 +331,15 @@ export default function OrderPage() {
 
                 {/* ─ Nav buttons ──────────────────────────────── */}
                 <div className="no-print mt-3 flex flex-col gap-3">
+                    {orderSnapshot?.paymentMethod !== 'cash' && !isPaid && (
+                        <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
+                            <p className="text-xs text-amber-700 font-medium mb-3 text-center">Pembayaran belum diselesaikan. Simulasi untuk Dev:</p>
+                            <button onClick={handleDummyPaySuccessPage}
+                                className="w-full py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-all shadow flex items-center justify-center gap-2">
+                                <CheckCircle size={16} /> Lunas (Dummy Dev)
+                            </button>
+                        </div>
+                    )}
                     <Link href={`/track?q=${orderNumber}`}
                         className="w-full py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] flex items-center justify-center gap-2 hover:scale-[1.01]">
                         <ExternalLink size={16} /> Pantau Status Pesanan
@@ -270,6 +366,13 @@ export default function OrderPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
+
+            {/* Midtrans Snap.js Script */}
+            <Script
+                src={SNAP_JS_URL}
+                data-client-key={MIDTRANS_CLIENT_KEY}
+                strategy="lazyOnload"
+            />
 
             {/* Header ─────────────────────────────────────── */}
             <div className="bg-white border-b border-gray-100 pt-5 pb-4">
@@ -381,6 +484,7 @@ export default function OrderPage() {
                                 <div className="p-6 space-y-3">
                                     {PAYMENT_METHODS.map(({ value, label, icon: Icon, desc }) => {
                                         const active = paymentMethod === value;
+                                        const isOnline = value !== 'cash';
                                         return (
                                             <button key={value} onClick={() => setPaymentMethod(value)}
                                                 className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${active ? 'border-[var(--color-primary)] bg-[var(--color-50)]' : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'}`}>
@@ -388,7 +492,9 @@ export default function OrderPage() {
                                                     <Icon size={22} />
                                                 </div>
                                                 <div className="flex-1 text-left">
-                                                    <div className={`text-base font-bold ${active ? 'text-[var(--color-primary)]' : 'text-gray-800'}`}>{label}</div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-base font-bold ${active ? 'text-[var(--color-primary)]' : 'text-gray-800'}`}>{label}</span>
+                                                    </div>
                                                     <div className="text-xs text-gray-400 mt-0.5">{desc}</div>
                                                 </div>
                                                 <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${active ? 'border-[var(--color-primary)] bg-[var(--color-primary)]' : 'border-gray-200'}`}>
@@ -483,16 +589,26 @@ export default function OrderPage() {
                                 </div>
 
                                 {/* total */}
-                                <div className="pt-4 flex justify-between items-center mb-6">
-                                    <span className="font-bold text-gray-500">Total Pembayaran</span>
-                                    <span className="text-2xl font-extrabold text-[var(--color-primary)]">{formatCurrency(total)}</span>
+                                <div className="pt-4 space-y-2 mb-6">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500">Subtotal</span>
+                                        <span className="font-semibold text-gray-800">{formatCurrency(subtotal)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500">Pajak ({taxRate}%)</span>
+                                        <span className="font-semibold text-gray-800">{formatCurrency(tax)}</span>
+                                    </div>
+                                    <div className="pt-2 border-t border-dashed border-gray-200 flex justify-between items-center">
+                                        <span className="font-bold text-gray-500">Total Pembayaran</span>
+                                        <span className="text-2xl font-extrabold text-[var(--color-primary)]">{formatCurrency(total)}</span>
+                                    </div>
                                 </div>
 
                                 <button onClick={handleSubmit} disabled={loading}
                                     className="w-full py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold hover:bg-[var(--color-hover)] disabled:opacity-60 transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] flex items-center justify-center gap-2 hover:scale-[1.01]">
                                     {loading
                                         ? <><span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Memproses...</>
-                                        : <><CheckCircle size={18} /> Konfirmasi &amp; Pesan</>
+                                        : <><CheckCircle size={18} /> {paymentMethod === 'cash' ? 'Konfirmasi & Pesan' : 'Bayar Sekarang'}</>
                                     }
                                 </button>
                             </section>

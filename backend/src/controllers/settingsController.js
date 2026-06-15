@@ -47,21 +47,24 @@ exports.getSettings = async (req, res) => {
                 step3Desc: 'Pilih metode bayar, pesanan langsung kami proses secepatnya',
                 ctaTitle: 'Siap Menikmati Dimsum Terbaik?',
                 ctaDesc: 'Kunjungi kami atau pesan delivery sekarang. Kami melayani dengan sepenuh hati!',
-                colorTheme: 'red'
+                colorTheme: 'red',
+                taxRate: 10.0
             };
         }
         
-        // If Prisma client doesn't know about colorTheme yet, fetch it via raw SQL
-        if (settings && settings.colorTheme === undefined) {
+        // If Prisma client doesn't know about colorTheme or taxRate yet, fetch it via raw SQL
+        if (settings && (settings.colorTheme === undefined || settings.taxRate === undefined)) {
             try {
                 const raw = await prisma.$queryRawUnsafe(
-                    `SELECT "colorTheme" FROM "StoreSettings" WHERE id = 'default'`
+                    `SELECT "colorTheme", "taxRate" FROM "StoreSettings" WHERE id = 'default'`
                 );
                 if (raw && raw.length > 0) {
                     settings.colorTheme = raw[0].colorTheme || 'red';
+                    settings.taxRate = raw[0].taxRate !== null ? raw[0].taxRate : 10.0;
                 }
             } catch (e) {
-                settings.colorTheme = 'red';
+                settings.colorTheme = settings.colorTheme || 'red';
+                settings.taxRate = settings.taxRate !== undefined ? settings.taxRate : 10.0;
             }
         }
         
@@ -77,7 +80,7 @@ exports.updateSettings = async (req, res) => {
             storeName, address, operatingHours, contact, instagram, mapUrl, facebookUrl, instagramUrl, tiktokUrl,
             heroTitle, heroDesc, stat1Val, stat1Label, stat2Val, stat2Label, stat3Val, stat3Label,
             feat1Title, feat1Desc, feat2Title, feat2Desc, feat3Title, feat3Desc, feat4Title, feat4Desc,
-            colorTheme,
+            colorTheme, taxRate,
             step1Title, step1Desc, step2Title, step2Desc, step3Title, step3Desc, ctaTitle, ctaDesc
         } = req.body;
         
@@ -88,12 +91,16 @@ exports.updateSettings = async (req, res) => {
             'heroTitle', 'heroDesc', 'stat1Val', 'stat1Label', 'stat2Val', 'stat2Label', 'stat3Val', 'stat3Label',
             'feat1Title', 'feat1Desc', 'feat2Title', 'feat2Desc', 'feat3Title', 'feat3Desc', 'feat4Title', 'feat4Desc',
             'step1Title', 'step1Desc', 'step2Title', 'step2Desc', 'step3Title', 'step3Desc', 'ctaTitle', 'ctaDesc',
-            'colorTheme'
+            'colorTheme', 'taxRate'
         ];
         
         updateFields.forEach(field => {
             if (req.body[field] !== undefined) {
-                updateData[field] = req.body[field];
+                if (field === 'taxRate') {
+                    updateData[field] = parseFloat(req.body[field]) || 0;
+                } else {
+                    updateData[field] = req.body[field];
+                }
             }
         });
 

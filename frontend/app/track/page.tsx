@@ -1,12 +1,34 @@
-﻿'use client';
+'use client';
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Search, Package, Clock, CheckCircle, XCircle, ChefHat, Truck, ArrowLeft, Receipt } from 'lucide-react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Script from 'next/script';
+import { Search, Package, Clock, CheckCircle, XCircle, ChefHat, Truck, ArrowLeft, Receipt, CreditCard, ChevronRight } from 'lucide-react';
 import { ordersApi } from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 import { formatCurrency, getStatusColor, getStatusLabel } from '@/lib/utils';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/utils';
+import { toast } from 'react-hot-toast';
+
+declare global {
+    interface Window {
+        snap: {
+            pay: (token: string, options: {
+                onSuccess?: (result: any) => void;
+                onPending?: (result: any) => void;
+                onError?: (result: any) => void;
+                onClose?: () => void;
+            }) => void;
+        };
+    }
+}
+
+const MIDTRANS_CLIENT_KEY = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || '';
+const MIDTRANS_IS_PRODUCTION = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
+const SNAP_JS_URL = MIDTRANS_IS_PRODUCTION
+    ? 'https://app.midtrans.com/snap/snap.js'
+    : 'https://app.sandbox.midtrans.com/snap/snap.js';
 
 const STATUS_STEPS = [
     { key: 'pending', label: 'Diterima', icon: Receipt },
@@ -22,47 +44,102 @@ function getStepIndex(status: string) {
 
 function TrackContent() {
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const { isAuthenticated, user } = useAuthStore();
+    
     const [orderNumber, setOrderNumber] = useState(searchParams.get('q') || '');
     const [order, setOrder] = useState<any>(null);
+    const [myOrders, setMyOrders] = useState<any[]>([]);
+    
     const [loading, setLoading] = useState(false);
+    const [loadingList, setLoadingList] = useState(true);
     const [error, setError] = useState('');
-    const [searched, setSearched] = useState(false);
 
-    // Auto-search jika ada query param ?q=
+    useEffect(() => {
+        if (!isAuthenticated) {
+            router.push('/login?redirect=/track');
+            return;
+        }
+        fetchMyOrders();
+    }, [isAuthenticated, router]);
+
+    const fetchMyOrders = async () => {
+        try {
+            setLoadingList(true);
+            const { data } = await ordersApi.getMyOrders();
+            setMyOrders(data.data);
+        } catch (err) {
+            toast.error('Gagal memuat daftar pesanan');
+        } finally {
+            setLoadingList(false);
+        }
+    };
+
     useEffect(() => {
         const q = searchParams.get('q');
-        if (q) {
+        if (q && isAuthenticated) {
             setOrderNumber(q.toUpperCase());
             doTrack(q.toUpperCase());
         }
-    }, []);
+    }, [searchParams, isAuthenticated]);
 
     const doTrack = async (num: string) => {
         if (!num.trim()) return;
         setLoading(true);
         setError('');
         setOrder(null);
-        setSearched(true);
         try {
             const res = await ordersApi.trackOrder(num.trim().toUpperCase());
             setOrder(res.data.data);
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Pesanan tidak ditemukan. Pastikan nomor pesanan benar.');
+            setError(err.response?.data?.message || 'Pesanan tidak ditemukan.');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleTrack = (e: React.FormEvent) => {
-        e.preventDefault();
-        doTrack(orderNumber);
-    };
-
     const currentStep = order ? getStepIndex(order.status) : -1;
     const isCancelled = order?.status === 'cancelled';
 
+    const handlePayNow = () => {
+        if (order?.snapToken && window.snap) {
+            window.snap.pay(order.snapToken, {
+                onSuccess: () => {
+                    toast.success('Pembayaran berhasil! 🎉');
+                    doTrack(order.orderNumber);
+                },
+                onPending: () => {
+                    toast('Menunggu pembayaran...', { icon: '⏳' });
+                },
+                onError: () => {
+                    toast.error('Pembayaran gagal. Silakan coba lagi.');
+                },
+                onClose: () => {
+                    toast('Popup pembayaran ditutup.', { icon: '⚠️' });
+                },
+            });
+        }
+    };
+
+    const handleDummyPay = async () => {
+        try {
+            await ordersApi.dummyPay(order.orderNumber);
+            toast.success('Simulasi Pembayaran Berhasil! 🎉');
+            doTrack(order.orderNumber);
+        } catch (err) {
+            toast.error('Gagal simulasi pembayaran');
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
+            {/* Midtrans Snap.js Script */}
+            <Script
+                src={SNAP_JS_URL}
+                data-client-key={MIDTRANS_CLIENT_KEY}
+                strategy="lazyOnload"
+            />
+
             {/* Page Header */}
             <div className="bg-gradient-to-br from-[var(--color-primary)] to-[#8b0e16] pt-24 pb-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -76,54 +153,52 @@ function TrackContent() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-6 pb-16">
 
-                {/* Search Form */}
-                <form onSubmit={handleTrack} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-6">
-                    <label className="block text-sm font-bold text-gray-800 mb-3">Nomor Pesanan</label>
-                    <div className="flex gap-3">
-                        <input
-                            type="text"
-                            placeholder="Contoh: DR202503020001"
-                            value={orderNumber}
-                            onChange={e => setOrderNumber(e.target.value.toUpperCase())}
-                            className="flex-1 px-4 py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-100)] text-sm font-mono tracking-wider bg-gray-50"
-                        />
-                        <button type="submit" disabled={loading || !orderNumber.trim()}
-                            className="px-6 py-3.5 bg-[var(--color-primary)] text-white rounded-xl font-bold hover:bg-[var(--color-hover)] disabled:opacity-50 transition-all flex items-center gap-2 shadow-md shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] hover:scale-[1.02]">
-                            {loading
-                                ? <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                                : <Search size={18} />
-                            }
-                            <span className="hidden sm:inline">Cek</span>
-                        </button>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-2.5">Nomor pesanan dapat ditemukan di struk atau notifikasi pesanan Anda</p>
-                </form>
-
                 {/* Error State */}
-                {searched && !loading && error && (
-                    <div className="bg-[var(--color-50)] border border-[var(--color-200)] rounded-2xl p-6 text-center">
+                {error && (
+                    <div className="bg-[var(--color-50)] border border-[var(--color-200)] rounded-2xl p-6 text-center mb-6">
                         <XCircle size={40} className="text-red-400 mx-auto mb-3" />
-                        <h3 className="font-bold text-red-800 mb-1">Pesanan Tidak Ditemukan</h3>
+                        <h3 className="font-bold text-red-800 mb-1">Terjadi Kesalahan</h3>
                         <p className="text-[var(--color-hover)] text-sm">{error}</p>
+                        <button onClick={() => { setError(''); setOrderNumber(''); }} className="mt-4 px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-bold">Kembali ke Daftar</button>
                     </div>
                 )}
 
-                {/* Empty state (belum search) */}
-                {!searched && !order && (
-                    <div className="bg-white rounded-2xl p-8 border border-gray-100 text-center">
-                        <div className="w-16 h-16 bg-[var(--color-50)] text-[var(--color-primary)] rounded-2xl flex items-center justify-center mx-auto mb-4">
-                            <Receipt size={28} />
+                {/* List Orders (ketika belum milih order) */}
+                {!order && !error && (
+                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                        <div className="px-6 py-5 border-b border-gray-50">
+                            <h2 className="text-lg font-bold text-gray-800">Daftar Pesanan Anda</h2>
                         </div>
-                        <h3 className="font-bold text-gray-800 mb-1">Belum ada pencarian</h3>
-                        <p className="text-gray-400 text-sm">Masukkan nomor pesanan di atas untuk melihat status dan detail pesanan Anda</p>
-                        <div className="mt-5 grid grid-cols-3 gap-3 pt-5 border-t border-gray-100">
-                            {[{ icon: <CheckCircle size={18} />, label: 'Status Real-time' }, { icon: <Package size={18} />, label: 'Detail Item' }, { icon: <Clock size={18} />, label: 'Estimasi Waktu' }].map((tip, i) => (
-                                <div key={i} className="text-center">
-                                    <div className="w-10 h-10 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center mx-auto mb-2">{tip.icon}</div>
-                                    <p className="text-xs text-gray-400 font-medium">{tip.label}</p>
-                                </div>
-                            ))}
-                        </div>
+                        {loadingList ? (
+                            <div className="p-10 flex justify-center">
+                                <div className="w-8 h-8 border-4 border-gray-200 border-t-[var(--color-primary)] rounded-full animate-spin" />
+                            </div>
+                        ) : myOrders.length === 0 ? (
+                            <div className="p-10 text-center">
+                                <Receipt size={40} className="text-gray-300 mx-auto mb-3" />
+                                <h3 className="font-bold text-gray-700 mb-1">Belum ada pesanan</h3>
+                                <p className="text-gray-400 text-sm mb-5">Anda belum pernah melakukan pemesanan.</p>
+                                <Link href="/menu" className="px-6 py-3 bg-[var(--color-primary)] text-white rounded-xl font-bold hover:bg-[var(--color-hover)] transition-colors inline-block">Mulai Pesan</Link>
+                            </div>
+                        ) : (
+                            <ul className="divide-y divide-gray-50">
+                                {myOrders.map((o) => (
+                                    <li key={o.id}>
+                                        <button onClick={() => { setOrderNumber(o.orderNumber); doTrack(o.orderNumber); }} className="w-full text-left px-6 py-4 hover:bg-gray-50 transition-colors flex items-center justify-between gap-4">
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="font-mono font-bold text-[var(--color-primary)]">{o.orderNumber}</span>
+                                                    <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${getStatusColor(o.status)}`}>{getStatusLabel(o.status)}</span>
+                                                </div>
+                                                <p className="text-xs text-gray-500">{new Date(o.createdAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                                                <p className="text-sm font-semibold text-gray-800 mt-1">{o.items.length} item • {formatCurrency(o.total)}</p>
+                                            </div>
+                                            <ChevronRight size={20} className="text-gray-300" />
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
                 )}
 
@@ -237,9 +312,39 @@ function TrackContent() {
                             </div>
                         </div>
 
+                        {/* Pay Now button for pending online payments */}
+                        {order.paymentStatus !== 'paid' && order.paymentMethod !== 'cash' && (
+                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-amber-200">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                                        <CreditCard size={20} />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-gray-900 text-sm">Pembayaran Belum Selesai</h3>
+                                        <p className="text-xs text-gray-400">Klik tombol di bawah untuk melanjutkan pembayaran</p>
+                                    </div>
+                                </div>
+                                
+                                {order.snapToken && (
+                                    <button onClick={handlePayNow}
+                                        className="w-full py-3.5 bg-amber-500 text-white rounded-xl font-bold hover:bg-amber-600 transition-all shadow-md flex items-center justify-center gap-2 mb-2">
+                                        <CreditCard size={16} /> Bayar Sekarang (Midtrans)
+                                    </button>
+                                )}
+                                
+                                <button onClick={handleDummyPay}
+                                    className="w-full py-3.5 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-all shadow-md flex items-center justify-center gap-2">
+                                    <CheckCircle size={16} /> Simulasi Pembayaran (Dummy Dev)
+                                </button>
+                            </div>
+                        )}
+
                         {/* Back to order */}
-                        <div className="text-center">
-                            <Link href="/menu" className="inline-flex items-center gap-2 px-8 py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] hover:scale-[1.02]">
+                        <div className="flex items-center justify-center gap-3">
+                            <button onClick={() => { setOrder(null); setOrderNumber(''); }} className="px-6 py-4 bg-gray-100 text-gray-600 rounded-2xl font-bold hover:bg-gray-200 transition-all shadow-sm">
+                                Kembali ke Daftar
+                            </button>
+                            <Link href="/menu" className="px-8 py-4 bg-[var(--color-primary)] text-white rounded-2xl font-bold hover:bg-[var(--color-hover)] transition-all shadow-lg shadow-[0_8px_24px_rgba(var(--color-rgb),0.15)] hover:scale-[1.02]">
                                 Pesan Lagi
                             </Link>
                         </div>

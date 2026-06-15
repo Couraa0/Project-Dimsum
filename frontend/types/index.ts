@@ -41,7 +41,7 @@ export interface OrderItemPayload {
 
 export type OrderType = 'dine-in' | 'takeaway' | 'delivery';
 export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
-export type PaymentMethod = 'transfer' | 'qris' | 'cash';
+export type PaymentMethod = 'transfer' | 'qris' | 'cash' | 'midtrans';
 export type PaymentStatus = 'unpaid' | 'paid';
 
 export interface OrderCustomer {
@@ -71,6 +71,9 @@ export interface Order {
     total: number;
     paymentMethod: PaymentMethod;
     paymentStatus: PaymentStatus;
+    midtransId?: string;
+    snapToken?: string;
+    snapRedirectUrl?: string;
     tableNumber?: string;
     customer: OrderCustomer;
     estimatedTime: number;

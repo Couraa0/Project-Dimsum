@@ -31,6 +31,7 @@ model User {
   lastLogin DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  orders    Order[]
 }
 
 model Category {
@@ -88,10 +89,16 @@ model Order {
   total           Float
   paymentMethod   String      @default("cash")
   paymentStatus   String      @default("unpaid")
+  midtransId      String?
+  snapToken       String?
+  snapRedirectUrl String?
   tableNumber     String?
   tableId         String?
   table           Table?      @relation("TableOrders", fields: [tableId], references: [id])
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id])
   customerName    String      @default("Guest")
+  customerEmail   String      @default("")
   customerPhone   String      @default("")
   customerAddress String      @default("")
   customerNotes   String      @default("")
@@ -153,6 +160,7 @@ model StoreSettings {
   ctaTitle       String   @default("Siap Menikmati Dimsum Terbaik?")
   ctaDesc        String   @default("Kunjungi kami atau pesan delivery sekarang. Kami melayani dengan sepenuh hati!")
   colorTheme     String   @default("red")
+  taxRate        Float    @default(10.0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

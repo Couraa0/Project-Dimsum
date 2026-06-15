@@ -56,6 +56,7 @@ export default function AdminSettingsPage() {
     const [ctaTitle, setCtaTitle] = useState('');
     const [ctaDesc, setCtaDesc] = useState('');
     const [colorTheme, setColorTheme] = useState<ThemeName>('red');
+    const [taxRate, setTaxRate] = useState<number>(10);
     
     const [saving, setSaving] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -113,6 +114,9 @@ export default function AdminSettingsPage() {
 
             // Color Theme
             setColorTheme((settings.colorTheme as ThemeName) || 'red');
+
+            // Tax Rate
+            setTaxRate(settings.taxRate ?? 10);
 
             // Logo Preview
             if (settings.logo) {
@@ -216,6 +220,7 @@ export default function AdminSettingsPage() {
             formData.append('ctaTitle', ctaTitle);
             formData.append('ctaDesc', ctaDesc);
             formData.append('colorTheme', colorTheme);
+            formData.append('taxRate', taxRate.toString());
 
             if (logoFile) {
                 formData.append('logo', logoFile);
@@ -436,6 +441,24 @@ export default function AdminSettingsPage() {
                                             onChange={(e) => setOperatingHours(e.target.value)}
                                             className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
                                         />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-500 block mb-1.5">
+                                            Pajak (Tax) %
+                                        </label>
+                                        <div className="relative">
+                                            <input 
+                                                type="number" 
+                                                placeholder="Contoh: 10"
+                                                value={taxRate}
+                                                onChange={(e) => setTaxRate(parseFloat(e.target.value))}
+                                                className="w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-100)] focus:border-[var(--color-primary)] text-sm hover:border-gray-300 transition-all"
+                                                min="0"
+                                                max="100"
+                                                step="0.1"
+                                            />
+                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">%</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

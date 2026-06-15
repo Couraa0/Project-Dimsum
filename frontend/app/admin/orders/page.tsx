@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useState, useEffect } from 'react';
 import { RefreshCw, Filter, Eye, ChevronDown } from 'lucide-react';
 import { ordersApi } from '@/lib/api';
@@ -115,7 +115,9 @@ export default function AdminOrdersPage() {
                                         <div className="text-xs text-gray-500">
                                             {order.customer.name} · {getTypeLabel(order.type)} {order.tableNumber ? `· Meja ${order.tableNumber}` : ''}
                                         </div>
-                                        <div className="font-bold text-[var(--color-primary)] text-sm">{formatCurrency(order.total)}</div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-bold text-[var(--color-primary)] text-sm">{formatCurrency(order.total)}</span>
+                                        </div>
                                     </div>
                                     {/* Quick action */}
                                     {STATUS_FLOW[order.status] && (
@@ -149,7 +151,9 @@ export default function AdminOrdersPage() {
                             </div>
                             <div className="bg-gray-50 rounded-xl p-3">
                                 <div className="text-xs text-gray-400 mb-1">Pembayaran</div>
-                                <div className="font-semibold text-sm capitalize">{selectedOrder.paymentMethod}</div>
+                                <div className="font-semibold text-sm capitalize flex items-center gap-1.5">
+                                    {selectedOrder.paymentMethod}
+                                </div>
                             </div>
                             <div className="bg-gray-50 rounded-xl p-3">
                                 <div className="text-xs text-gray-400 mb-1">Pelanggan</div>
@@ -179,14 +183,21 @@ export default function AdminOrdersPage() {
                         </div>
                         {/* Status Controls */}
                         <div className="space-y-2">
+                            {selectedOrder.midtransId && (
+                                <div className="bg-blue-50 border border-blue-100 rounded-xl px-3 py-2 mb-2">
+                                    <span className="text-[10px] font-bold text-blue-500 uppercase">Midtrans ID</span>
+                                    <p className="text-xs font-mono text-blue-700 truncate">{selectedOrder.midtransId}</p>
+                                </div>
+                            )}
                             <select value={selectedOrder.status} onChange={e => updateStatus(selectedOrder._id, e.target.value)}
                                 className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[var(--color-primary)]">
                                 {STATUS_OPTIONS.map(s => <option key={s} value={s}>{getStatusLabel(s)}</option>)}
                             </select>
                             <div className="flex gap-2">
-                                <button onClick={() => updatePayment(selectedOrder._id, 'paid')} disabled={selectedOrder.paymentStatus === 'paid'}
-                                    className="flex-1 py-2.5 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600 disabled:opacity-40 transition-colors">
-                                    ✅ Tandai Lunas
+                                <button onClick={() => updatePayment(selectedOrder._id, 'paid')} disabled={selectedOrder.paymentStatus === 'paid' || (selectedOrder.paymentMethod !== 'cash' && !selectedOrder.midtransId)}
+                                    className="flex-1 py-2.5 bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-600 disabled:opacity-40 transition-colors"
+                                    title={selectedOrder.paymentMethod !== 'cash' ? 'Pembayaran online dikelola otomatis oleh Midtrans' : ''}>
+                                    ✅ {selectedOrder.paymentMethod !== 'cash' && selectedOrder.paymentStatus === 'paid' ? 'Lunas (Midtrans)' : 'Tandai Lunas'}
                                 </button>
                                 <button onClick={() => updateStatus(selectedOrder._id, 'cancelled')}
                                     className="flex-1 py-2.5 bg-[var(--color-50)] text-[var(--color-primary)] rounded-xl text-sm font-semibold hover:bg-[var(--color-100)] transition-colors">

@@ -39,6 +39,7 @@ export interface StoreSettings {
     ctaTitle: string;
     ctaDesc: string;
     colorTheme: string;
+    taxRate: number;
 }
 
 

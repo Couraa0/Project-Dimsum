@@ -48,12 +48,13 @@ export const menuApi = {
     delete: (id: string) => api.delete(`/menu/${id}`),
 };
 
-// ── Orders ──────────────────────────────────────────
 export const ordersApi = {
     create: (data: object) => api.post('/orders', data),
     getAll: (params?: object) => api.get('/orders', { params }),
+    getMyOrders: () => api.get('/orders/my-orders'),
     getById: (id: string) => api.get(`/orders/${id}`),
     trackOrder: (orderNumber: string) => api.get(`/orders/track/${orderNumber}`),
+    dummyPay: (orderNumber: string) => api.patch(`/orders/track/${orderNumber}/dummy-pay`),
     updateStatus: (id: string, status: string) => api.patch(`/orders/${id}/status`, { status }),
     updatePayment: (id: string, paymentStatus: string) => api.patch(`/orders/${id}/payment`, { paymentStatus }),
     getDailyReport: (date?: string) => api.get('/orders/report/daily', { params: { date } }),

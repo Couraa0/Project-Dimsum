@@ -1,5 +1,6 @@
 const prisma = require('../utils/prisma');
 const { randomUUID } = require('crypto');
+const { snap, coreApi } = require('../config/midtransConfig');
 
 exports.createOrder = async (req, res) => {
     try {
@@ -16,7 +17,20 @@ exports.createOrder = async (req, res) => {
             populatedItems.push({ menuItem: menuItem.id, name: menuItem.name, price: menuItem.price, quantity: item.quantity, subtotal: subtotalItem, notes: item.notes || '' });
         }
 
-        const tax = Math.round(subtotal * 0.0);
+        let settings = await prisma.storeSettings.findUnique({ where: { id: 'default' } });
+        let taxRate = 10;
+        if (settings && settings.taxRate !== undefined) {
+            taxRate = settings.taxRate;
+        } else {
+            try {
+                const raw = await prisma.$queryRawUnsafe(`SELECT "taxRate" FROM "StoreSettings" WHERE id = 'default'`);
+                if (raw && raw.length > 0) {
+                    taxRate = raw[0].taxRate !== null ? raw[0].taxRate : 10;
+                }
+            } catch (e) { }
+        }
+
+        const tax = Math.round(subtotal * (taxRate / 100));
         const total = subtotal + tax;
 
         let tableRef = null;
@@ -48,9 +62,11 @@ exports.createOrder = async (req, res) => {
                 tableNumber,
                 tableId: tableRef ? tableRef.id : null,
                 customerName: customer?.name || 'Guest',
+                customerEmail: customer?.email || '',
                 customerPhone: customer?.phone || '',
                 customerAddress: customer?.address || '',
                 customerNotes: customer?.notes || '',
+                userId: req.user ? req.user.id : null,
                 items: {
                     create: populatedItems.map(item => ({
                         id: randomUUID(),
@@ -82,9 +98,63 @@ exports.createOrder = async (req, res) => {
             });
         }
 
+        // ── Midtrans Snap Transaction (for online payments) ──
+        let snapToken = null;
+        let snapRedirectUrl = null;
+
+        if (paymentMethod && paymentMethod !== 'cash') {
+            try {
+                const midtransParams = {
+                    transaction_details: {
+                        order_id: orderNumber,
+                        gross_amount: Math.round(total),
+                    },
+                    item_details: [
+                        ...populatedItems.map(item => ({
+                            id: item.menuItem,
+                            price: Math.round(item.price),
+                            quantity: item.quantity,
+                            name: item.name.substring(0, 50), // Midtrans max 50 chars
+                        })),
+                        ...(tax > 0 ? [{
+                            id: 'TAX',
+                            price: Math.round(tax),
+                            quantity: 1,
+                            name: `Pajak (${taxRate}%)`
+                        }] : [])
+                    ],
+                    customer_details: {
+                        first_name: customer?.name || 'Guest',
+                        phone: customer?.phone || '',
+                        shipping_address: customer?.address ? {
+                            address: customer.address
+                        } : undefined,
+                    },
+                };
+
+                const midtransResponse = await snap.createTransaction(midtransParams);
+                snapToken = midtransResponse.token;
+                snapRedirectUrl = midtransResponse.redirect_url;
+
+                // Update order with Midtrans data
+                await prisma.order.update({
+                    where: { id: orderId },
+                    data: {
+                        snapToken,
+                        snapRedirectUrl,
+                    }
+                });
+            } catch (midtransErr) {
+                console.error('Midtrans Snap Error:', midtransErr.message || midtransErr);
+                // Order tetap tersimpan, tapi tanpa Midtrans — admin bisa handle manual
+            }
+        }
+
         // Return order and rename customer fields for compatibility
         const orderResponse = {
             ...order,
+            snapToken,
+            snapRedirectUrl,
             customer: {
                 name: order.customerName,
                 phone: order.customerPhone,
@@ -95,6 +165,57 @@ exports.createOrder = async (req, res) => {
 
         res.status(201).json({ success: true, data: orderResponse, message: 'Pesanan berhasil dibuat!' });
     } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// ── Midtrans Webhook Notification Handler ──────────────
+exports.midtransNotification = async (req, res) => {
+    try {
+        const notification = req.body;
+        const statusResponse = await coreApi.transaction.notification(notification);
+
+        const orderId = statusResponse.order_id; // This is our orderNumber
+        const transactionStatus = statusResponse.transaction_status;
+        const fraudStatus = statusResponse.fraud_status;
+        const transactionId = statusResponse.transaction_id;
+
+        console.log(`[Midtrans Webhook] Order: ${orderId}, Status: ${transactionStatus}, Fraud: ${fraudStatus}`);
+
+        let paymentStatus = 'unpaid';
+
+        if (transactionStatus === 'capture') {
+            paymentStatus = (fraudStatus === 'accept') ? 'paid' : 'unpaid';
+        } else if (transactionStatus === 'settlement') {
+            paymentStatus = 'paid';
+        } else if (['cancel', 'deny', 'expire'].includes(transactionStatus)) {
+            paymentStatus = 'unpaid';
+        } else if (transactionStatus === 'pending') {
+            paymentStatus = 'unpaid';
+        }
+
+        // Update order in database
+        const order = await prisma.order.findUnique({
+            where: { orderNumber: orderId }
+        });
+
+        if (order) {
+            await prisma.order.update({
+                where: { id: order.id },
+                data: {
+                    paymentStatus,
+                    midtransId: transactionId,
+                }
+            });
+            console.log(`[Midtrans Webhook] Updated order ${orderId} → paymentStatus: ${paymentStatus}`);
+        } else {
+            console.warn(`[Midtrans Webhook] Order ${orderId} not found in database`);
+        }
+
+        // Midtrans requires 200 OK response
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('[Midtrans Webhook] Error:', err.message);
         res.status(500).json({ success: false, message: err.message });
     }
 };
@@ -206,6 +327,19 @@ exports.getByOrderNumber = async (req, res) => {
             }
         };
         res.json({ success: true, data: orderResponse });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+exports.dummyPay = async (req, res) => {
+    try {
+        const order = await prisma.order.update({
+            where: { orderNumber: req.params.orderNumber },
+            data: { paymentStatus: 'paid' }
+        });
+        if (!order) return res.status(404).json({ success: false, message: 'Pesanan tidak ditemukan' });
+        res.json({ success: true, data: order, message: 'Simulasi pembayaran berhasil' });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -387,6 +521,40 @@ exports.getMonthlyReport = async (req, res) => {
         });
 
         res.json({ success: true, data });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+exports.getMyOrders = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const orders = await prisma.order.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' },
+            include: {
+                items: {
+                    include: {
+                        menuItem: {
+                            select: { name: true, image: true }
+                        }
+                    }
+                }
+            }
+        });
+        
+        const formattedOrders = orders.map(order => ({
+            ...order,
+            customer: {
+                name: order.customerName,
+                email: order.customerEmail,
+                phone: order.customerPhone,
+                address: order.customerAddress,
+                notes: order.customerNotes
+            }
+        }));
+
+        res.json({ success: true, data: formattedOrders });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
