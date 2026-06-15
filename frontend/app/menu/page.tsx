@@ -1,18 +1,16 @@
-﻿'use client';
+'use client';
 import { useState, useEffect } from 'react';
 import { Search, Filter, ShoppingCart, X } from 'lucide-react';
-import { menuApi, categoriesApi } from '@/lib/api';
+import { useDataStore } from '@/store/dataStore';
 import type { MenuItem, Category } from '@/types';
 import MenuCard from '@/components/ui/MenuCard';
 import CartSidebar from '@/components/ui/CartSidebar';
 import { useCartStore } from '@/store/cartStore';
 
 export default function MenuPage() {
-    const [items, setItems] = useState<MenuItem[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const { menus: allMenus, categories, loading, fetchData } = useDataStore();
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [search, setSearch] = useState('');
-    const [loading, setLoading] = useState(true);
     const [showCart, setShowCart] = useState(false);
     const [mounted, setMounted] = useState(false);
     const count = useCartStore(s => s.getCount());
@@ -21,19 +19,20 @@ export default function MenuPage() {
 
     useEffect(() => {
         setMounted(true);
-        categoriesApi.getAll().then(res => setCategories(res.data.data));
-    }, []);
+        fetchData();
+    }, [fetchData]);
 
-    useEffect(() => {
-        setLoading(true);
-        const params: Record<string, string> = {};
-        if (selectedCategories.length > 0) params.category = selectedCategories.join(',');
-        if (search) params.search = search;
-        menuApi.getAll(params)
-            .then(res => setItems(res.data.data))
-            .catch(() => { })
-            .finally(() => setLoading(false));
-    }, [selectedCategories, search]);
+    const items = allMenus.filter(item => {
+        const matchSearch = search ? item.name.toLowerCase().includes(search.toLowerCase()) : true;
+        let matchCat = true;
+        if (selectedCategories.length > 0) {
+            matchCat = item.category.some(c => {
+                const cId = typeof c === 'string' ? c : (c as Category)._id;
+                return selectedCategories.includes(cId);
+            });
+        }
+        return matchSearch && matchCat;
+    });
 
     return (
         <div className="min-h-screen bg-gray-50">

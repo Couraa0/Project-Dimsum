@@ -3,18 +3,16 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Star, Clock, Truck, MapPin, Phone, QrCode, Package, UtensilsCrossed, CheckCircle, Leaf, ChefHat, Zap, CreditCard, ShieldCheck } from 'lucide-react';
-import { menuApi, testimonialsApi } from '@/lib/api';
+
 import type { MenuItem } from '@/types';
 import MenuCard from '@/components/ui/MenuCard';
 import { getImageUrl } from '@/lib/utils';
 import { useSettingsStore } from '@/store/settingsStore';
+import { useDataStore } from '@/store/dataStore';
 
 
 export default function HomePage() {
-  const [bestSellers, setBestSellers] = useState<MenuItem[]>([]);
-  const [featuredMenus, setFeaturedMenus] = useState<MenuItem[]>([]);
-  const [testimonials, setTestimonials] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { bestSellers, featuredMenus, testimonials, loading, fetchData } = useDataStore();
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
 
@@ -85,29 +83,8 @@ export default function HomePage() {
 
   useEffect(() => {
     setMounted(true);
-    menuApi.getAll({ bestSeller: 'true' })
-      .then(res => {
-        const withImg = res.data.data.filter((i: MenuItem) => i.image);
-        setBestSellers(withImg.slice(0, 6));
-      })
-      .catch(() => { })
-      .finally(() => setLoading(false));
-
-    menuApi.getAll()
-      .then(res => {
-        const withImg = res.data.data.filter((i: MenuItem) => i.image);
-        setFeaturedMenus(withImg.slice(0, 4));
-      })
-      .catch(() => { });
-
-    testimonialsApi.getAll()
-      .then(res => {
-        if (res.data && res.data.success) {
-          setTestimonials(res.data.data);
-        }
-      })
-      .catch(() => { });
-  }, []);
+    fetchData();
+  }, [fetchData]);
 
   useEffect(() => {
     if (testimonials.length === 0) return;
